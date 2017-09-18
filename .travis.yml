@@ -1,0 +1,16 @@
+language: node_js
+sudo: false
+node_js: 4
+install:
+    - npm install -g cordova
+    - npm install
+script:
+    - cd ..
+    - cordova create cordova-plugin-twilio-chat-test-project com.example.hello HelloWorld
+    - cd cordova-plugin-twilio-chat-test-project
+    - cordova platform add browser
+    - cordova plugin add ../cordova-plugin-twilio-chat/
+    - cordova build
+    - cd ..
+    - rm -rf cordova-plugin-twilio-chat-test-project
+    - cd cordova-plugin-twilio-chat

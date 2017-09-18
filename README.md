@@ -1,4 +1,6 @@
-# cordova-plugin-twilio-chat 
+cordova-plugin-twilio-chat 
+================
+[![NPM](https://img.shields.io/npm/v/cordova-plugin-twilio-chat.svg)](https://www.npmjs.com/package/cordova-plugin-twilio-chat) [![Build Status](https://travis-ci.org/twilio/cordova-plugin-twilio-chat.svg?branch=master)](https://travis-ci.org/twilio/cordova-plugin-twilio-chat)
 
 > This plugin offers support of [Twilio Programmable Chat](https://www.twilio.com/chat) for [Apache Cordova](https://cordova.apache.org/)
 
