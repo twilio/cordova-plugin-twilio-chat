@@ -4,6 +4,7 @@ node_js: 7
 install:
     - npm install -g cordova
     - npm install
+    - npm run prepare
 script:
     - cd ..
     - cordova create cordova-plugin-twilio-chat-test-project com.example.hello HelloWorld
