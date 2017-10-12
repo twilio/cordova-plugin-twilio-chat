@@ -1,4 +1,4 @@
-/* twilio-chat.js 1.2.0
+/* twilio-chat.js 1.2.1
 The following license applies to all parts of this software except as
 documented below.
 
@@ -6073,7 +6073,7 @@ var Session = function () {
             var createSessionIfNotFound = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                var context, list, message, code;
+                var context, list, message;
                 return _regenerator2.default.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
@@ -6105,7 +6105,7 @@ var Session = function () {
                             case 13:
                                 this.tokenSynced = true;
                                 this.tokenSyncInProgress = false;
-                                _context.next = 28;
+                                _context.next = 27;
                                 break;
 
                             case 17:
@@ -6123,13 +6123,12 @@ var Session = function () {
 
                             case 23:
                                 message = 'Couldn\'t update the token in session context';
-                                code = responsecodes_1.ResponseCodes.HTTP_400_BAD_REQUEST; //TBD -- proper code needed
 
                                 log.error(message, _context.t0);
                                 this.tokenSyncInProgress = false;
-                                throw new sessionerror_1.SessionError(message, code);
+                                throw new sessionerror_1.SessionError(message, _context.t0.code);
 
-                            case 28:
+                            case 27:
                             case "end":
                                 return _context.stop();
                         }
@@ -13371,7 +13370,7 @@ module.exports = ret;
 /*!
  * The buffer module from node.js, for the browser.
  *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @author   Feross Aboukhadijeh <https://feross.org>
  * @license  MIT
  */
 /* eslint-disable no-proto */
@@ -20236,7 +20235,7 @@ exports.TreeMap = TreeMap;
                   var cookie = window.document.cookie;
                   var location = cookie.indexOf(
                       encodeURIComponent(storageKey) + "=");
-                  if (location) {
+                  if (location !== -1) {
                       storedLevel = /^([^;]+)/.exec(cookie.slice(location))[1];
                   }
               } catch (ignore) {}
@@ -24807,61 +24806,61 @@ module.exports={
   "_args": [
     [
       {
-        "raw": "twilio-mcs-client@0.0.3",
+        "raw": "twilio-mcs-client@^0.0.4",
         "scope": null,
         "escapedName": "twilio-mcs-client",
         "name": "twilio-mcs-client",
-        "rawSpec": "0.0.3",
-        "spec": "0.0.3",
-        "type": "version"
+        "rawSpec": "^0.0.4",
+        "spec": ">=0.0.4 <0.0.5",
+        "type": "range"
       },
       "/var/lib/jenkins/jobs/twilio-chat.js/workspace"
     ]
   ],
-  "_from": "twilio-mcs-client@0.0.3",
-  "_id": "twilio-mcs-client@0.0.3",
+  "_from": "twilio-mcs-client@>=0.0.4 <0.0.5",
+  "_id": "twilio-mcs-client@0.0.4",
   "_inCache": true,
   "_location": "/twilio-mcs-client",
-  "_nodeVersion": "7.8.0",
+  "_nodeVersion": "8.4.0",
   "_npmOperationalInternal": {
     "host": "s3://npm-registry-packages",
-    "tmp": "tmp/twilio-mcs-client-0.0.3.tgz_1503521858787_0.7853501085191965"
+    "tmp": "tmp/twilio-mcs-client-0.0.4.tgz_1507280871206_0.1071092204656452"
   },
   "_npmUser": {
     "name": "twilio-ci",
     "email": "mroberts+twilio-ci@twilio.com"
   },
-  "_npmVersion": "4.6.1",
+  "_npmVersion": "5.3.0",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "twilio-mcs-client@0.0.3",
+    "raw": "twilio-mcs-client@^0.0.4",
     "scope": null,
     "escapedName": "twilio-mcs-client",
     "name": "twilio-mcs-client",
-    "rawSpec": "0.0.3",
-    "spec": "0.0.3",
-    "type": "version"
+    "rawSpec": "^0.0.4",
+    "spec": ">=0.0.4 <0.0.5",
+    "type": "range"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/twilio-mcs-client/-/twilio-mcs-client-0.0.3.tgz",
-  "_shasum": "015fffafdfb9c24a58ea375ab21973bc9d57b48f",
+  "_resolved": "https://registry.npmjs.org/twilio-mcs-client/-/twilio-mcs-client-0.0.4.tgz",
+  "_shasum": "369ccc8f1dfef9e914192dcd5d2c05377468a1da",
   "_shrinkwrap": null,
-  "_spec": "twilio-mcs-client@0.0.3",
+  "_spec": "twilio-mcs-client@^0.0.4",
   "_where": "/var/lib/jenkins/jobs/twilio-chat.js/workspace",
   "author": {
     "name": "Twilio"
   },
   "browser": "browser/index.js",
   "dependencies": {
-    "body-parser": "^1.17.2",
+    "body-parser": "^1.18.2",
     "dotenv": "^4.0.0",
     "isomorphic-form-data": "^1.0.0",
-    "loglevel": "^1.4.1",
+    "loglevel": "^1.5.0",
     "operation-retrier": "^1.3.2",
-    "pug": "^2.0.0-rc.1",
-    "twilio-transport": "^0.1.2"
+    "pug": "^2.0.0-rc.4",
+    "twilio-transport": "^0.1.4"
   },
   "description": "Twilio Media Content Service client library",
   "devDependencies": {
@@ -24871,15 +24870,15 @@ module.exports={
     "@types/chai-string": "^1.1.30",
     "@types/core-js": "^0.9.42",
     "@types/form-data": "0.0.33",
-    "@types/mocha": "^2.2.41",
+    "@types/mocha": "^2.2.43",
     "@types/node": "^7.0.18",
-    "@types/sinon": "^2.3.2",
+    "@types/sinon": "^2.3.5",
     "@types/sinon-chai": "^2.7.27",
     "async": "^2.5.0",
     "async-test-tools": "^1.0.7",
     "babel-eslint": "^7.2.3",
     "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-istanbul": "^4.1.3",
+    "babel-plugin-istanbul": "^4.1.5",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -24894,7 +24893,7 @@ module.exports={
     "chai-string": "^1.3.0",
     "cheerio": "^0.22.0",
     "del": "^3.0.0",
-    "express": "^4.15.2",
+    "express": "^4.16.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-derequire": "^2.1.0",
@@ -24920,17 +24919,17 @@ module.exports={
     "karma-mocha-reporter": "^2.2.3",
     "karma-sinon-chai": "^1.3.1",
     "karma-sinon-ie": "^2.0.0",
-    "karma-typescript": "^3.0.2",
+    "karma-typescript": "^3.0.7",
     "loglevel-message-prefix": "^2.0.1",
-    "nyc": "^11.0.3",
+    "nyc": "^11.2.1",
     "proxyquire": "^1.8.0",
     "sinon": "^2.3.8",
-    "sinon-chai": "^2.10.0",
+    "sinon-chai": "^2.14.0",
     "t": "^0.5.1",
     "ts-node": "^3.2.0",
     "tslint": "^5.5.0",
-    "twilio": "^3.5.0",
-    "typescript": "^2.3.2",
+    "twilio": "^3.7.0",
+    "typescript": "^2.5.3",
     "uglify-save-license": "^0.4.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
@@ -24938,13 +24937,14 @@ module.exports={
   },
   "directories": {},
   "dist": {
-    "shasum": "015fffafdfb9c24a58ea375ab21973bc9d57b48f",
-    "tarball": "https://registry.npmjs.org/twilio-mcs-client/-/twilio-mcs-client-0.0.3.tgz"
+    "integrity": "sha512-4NWzSInfENIP48G58gyN13E5XlqItX8hU93yVsMX+FrIvcpUS3A4snXko6NvIt1ZTMhG+sXrt6OF3Mx555tTPw==",
+    "shasum": "369ccc8f1dfef9e914192dcd5d2c05377468a1da",
+    "tarball": "https://registry.npmjs.org/twilio-mcs-client/-/twilio-mcs-client-0.0.4.tgz"
   },
   "engines": {
     "node": ">=6"
   },
-  "gitHead": "795125e390bc0e952b6060fda66d80ccc7ddbf62",
+  "gitHead": "339764692c93f2bd32b56889048ea7a05266abdd",
   "license": "MIT",
   "main": "lib/index.js",
   "maintainers": [
@@ -24960,7 +24960,7 @@ module.exports={
     "start": "node app.js"
   },
   "types": "./lib/client.d.ts",
-  "version": "0.0.3"
+  "version": "0.0.4"
 }
 
 },{}],240:[function(_dereq_,module,exports){
@@ -32239,6 +32239,10 @@ function _classCallCheck(instance, Constructor) {
 var XHR = typeof XMLHttpRequest === 'undefined' ? _dereq_('xmlhttprequest').XMLHttpRequest : XMLHttpRequest;
 
 function parseResponseHeaders(headerString) {
+  if (!headerString) {
+    return {};
+  }
+
   return headerString.split('\r\n').map(function (el) {
     return el.split(': ');
   }).filter(function (el) {
@@ -36083,7 +36087,7 @@ module.exports = XXH64
 },{"buffer":71,"cuint":209}],291:[function(_dereq_,module,exports){
 module.exports={
   "name": "twilio-chat",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Twilio Chat service client library",
   "main": "lib/index.js",
   "browser": "browser/index.js",
@@ -36091,17 +36095,17 @@ module.exports={
   "author": "Twilio",
   "license": "MIT",
   "dependencies": {
-    "twilio-mcs-client": "0.0.3",
+    "twilio-mcs-client": "^0.0.4",
     "durational": "^1.1.0",
     "isomorphic-form-data": "^1.0.0",
-    "loglevel": "^1.4.1",
+    "loglevel": "^1.5.0",
     "operation-retrier": "^1.3.2",
     "platform": "^1.3.4",
     "rfc6902": "^1.3.0",
     "twilio-ems-client": "^0.2.6",
     "twilio-notifications": "^0.4.4",
     "twilio-sync": "^0.5.10",
-    "twilio-transport": "^0.1.3",
+    "twilio-transport": "^0.1.4",
     "twilsock": "^0.3.5",
     "uuid": "^3.1.0"
   },
@@ -36110,15 +36114,15 @@ module.exports={
     "@types/chai-as-promised": "0.0.31",
     "@types/chai-string": "^1.1.30",
     "@types/core-js": "^0.9.41",
-    "@types/mocha": "^2.2.39",
+    "@types/mocha": "^2.2.43",
     "@types/node": "^7.0.5",
-    "@types/sinon": "^2.2.2",
+    "@types/sinon": "^2.3.5",
     "@types/sinon-chai": "^2.7.27",
     "async": "^2.1.5",
     "async-test-tools": "^1.0.6",
     "babel-eslint": "^7.2.3",
     "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-istanbul": "^4.1.3",
+    "babel-plugin-istanbul": "^4.1.5",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -36157,14 +36161,14 @@ module.exports={
     "karma-sinon-ie": "^2.0.0",
     "loglevel-message-prefix": "^2.0.1",
     "mocha.parallel": "^0.15.0",
-    "nyc": "^11.0.1",
+    "nyc": "^11.2.1",
     "path": "^0.12.7",
     "sinon": "^2.3.2",
-    "sinon-chai": "^2.10.0",
+    "sinon-chai": "^2.14.0",
     "ts-node": "^3.0.4",
     "tslint": "^5.4.2",
-    "twilio": "^3.3.0",
-    "typescript": "^2.3.2",
+    "twilio": "^3.7.0",
+    "typescript": "^2.5.3",
     "uglify-save-license": "^0.4.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
