@@ -1,4 +1,4 @@
-/* twilio-chat.js 1.2.1
+/* twilio-chat.js 2.0.0
 The following license applies to all parts of this software except as
 documented below.
 
@@ -592,7 +592,7 @@ var Channel = function (_events_1$EventEmitte) {
          * Rejects if User is not Member of Channel.
          * Last consumed Message index is updated only if new index value is higher than previous.
          * @param {Number} index - Message index to advance to as last read
-         * @returns {Promise<void|Error|SessionError>}
+         * @returns {Promise<number|Error|SessionError>} resulting unread messages count in the channel
          */
 
     }, {
@@ -611,22 +611,13 @@ var Channel = function (_events_1$EventEmitte) {
                                 throw new Error('Channel.advanceLastConsumedMessageIndex requires an integral <Number>index parameter');
 
                             case 2:
-                                if (!(this.lastConsumedMessageIndex !== null && index <= this.lastConsumedMessageIndex || 0)) {
-                                    _context4.next = 4;
-                                    break;
-                                }
-
-                                return _context4.abrupt("return");
-
-                            case 4:
-                                _context4.next = 6;
+                                _context4.next = 4;
                                 return this._subscribeStreams();
 
-                            case 6:
-                                this.services.consumptionHorizon.advanceLastConsumedMessageIndexForChannel(this.sid, index);
-                                return _context4.abrupt("return", this);
+                            case 4:
+                                return _context4.abrupt("return", this.services.consumptionHorizon.advanceLastConsumedMessageIndexForChannel(this.sid, index, this.lastConsumedMessageIndex));
 
-                            case 8:
+                            case 5:
                             case "end":
                                 return _context4.stop();
                         }
@@ -885,16 +876,24 @@ var Channel = function (_events_1$EventEmitte) {
                                 response = _context12.sent;
 
                                 if (!response.body.channels.length) {
-                                    _context12.next = 9;
+                                    _context12.next = 13;
                                     break;
                                 }
 
-                                return _context12.abrupt("return", response.body.channels[0].unread_messages_count || 0);
+                                if (!(typeof response.body.channels[0].unread_messages_count !== 'undefined' && response.body.channels[0].unread_messages_count != null)) {
+                                    _context12.next = 12;
+                                    break;
+                                }
 
-                            case 9:
+                                return _context12.abrupt("return", response.body.channels[0].unread_messages_count);
+
+                            case 12:
+                                return _context12.abrupt("return", null);
+
+                            case 13:
                                 throw new Error('Channel is not in user channels list');
 
-                            case 10:
+                            case 14:
                             case "end":
                                 return _context12.stop();
                         }
@@ -948,7 +947,7 @@ var Channel = function (_events_1$EventEmitte) {
                         switch (_context14.prev = _context14.next) {
                             case 0:
                                 _context14.next = 2;
-                                return this.services.session.addCommand('joinChannel', { channelSid: this.sid });
+                                return this.services.session.addCommand('joinChannelV2', { channelSid: this.sid });
 
                             case 2:
                                 return _context14.abrupt("return", this);
@@ -1079,7 +1078,7 @@ var Channel = function (_events_1$EventEmitte) {
          */
         /**
          * Set last consumed Channel's Message index to last known Message's index in this Channel.
-         * @returns {Promise<Channel>}
+         * @returns {Promise<number>} resulting unread messages count in the channel
          */
 
     }, {
@@ -1102,17 +1101,16 @@ var Channel = function (_events_1$EventEmitte) {
                                 messagesPage = _context18.sent;
 
                                 if (!(messagesPage.items.length > 0)) {
-                                    _context18.next = 8;
+                                    _context18.next = 7;
                                     break;
                                 }
 
-                                _context18.next = 8;
-                                return this.advanceLastConsumedMessageIndex(messagesPage.items[0].index);
+                                return _context18.abrupt("return", this.advanceLastConsumedMessageIndex(messagesPage.items[0].index));
+
+                            case 7:
+                                return _context18.abrupt("return", _promise2.default.resolve(0));
 
                             case 8:
-                                return _context18.abrupt("return", this);
-
-                            case 9:
                             case "end":
                                 return _context18.stop();
                         }
@@ -1122,7 +1120,7 @@ var Channel = function (_events_1$EventEmitte) {
         }
         /**
          * Set all messages in the channel unread.
-         * @returns {Promise<Channel>}
+         * @returns {Promise<number>} resulting unread messages count in the channel
          */
 
     }, {
@@ -1137,10 +1135,9 @@ var Channel = function (_events_1$EventEmitte) {
                                 return this._subscribeStreams();
 
                             case 2:
-                                this.services.consumptionHorizon.updateLastConsumedMessageIndexForChannel(this.sid, null);
-                                return _context19.abrupt("return", this);
+                                return _context19.abrupt("return", this.services.consumptionHorizon.updateLastConsumedMessageIndexForChannel(this.sid, null));
 
-                            case 4:
+                            case 3:
                             case "end":
                                 return _context19.stop();
                         }
@@ -1244,8 +1241,9 @@ var Channel = function (_events_1$EventEmitte) {
         }
         /**
          * Set last consumed Channel's Message index to current consumption horizon.
-         * @param {Number|null} index - Message index to set as last read. Null if no messages have been read
-         * @returns {Promise<void|Error|SessionError>}
+         * @param {Number|null} index - Message index to set as last read.
+         * If null provided, then the behavior is identical to {@link Channel#setNoMessagesConsumed}
+         * @returns {Promise<number|Error|SessionError>} resulting unread messages count in the channel
          */
 
     }, {
@@ -1268,10 +1266,9 @@ var Channel = function (_events_1$EventEmitte) {
                                 return this._subscribeStreams();
 
                             case 4:
-                                this.services.consumptionHorizon.updateLastConsumedMessageIndexForChannel(this.sid, index);
-                                return _context22.abrupt("return", this);
+                                return _context22.abrupt("return", this.services.consumptionHorizon.updateLastConsumedMessageIndexForChannel(this.sid, index));
 
-                            case 6:
+                            case 5:
                             case "end":
                                 return _context22.stop();
                         }
@@ -1704,25 +1701,16 @@ var ClientServices = function ClientServices() {
 var Client = function (_events_1$EventEmitte) {
     (0, _inherits3.default)(Client, _events_1$EventEmitte);
 
-    /**
-     * This constructor is not supposed to be used directly.
-     * Using it for client initialization is deprecated and will be removed in the future.
-     * Please use factory method instead: {@link Client.create}.
-     *
-     * @param {String} token - Access token
-     * @param {Client#ClientOptions} options - Options to customize the Client
-     *
-     * @private
-     */
     function Client(token, options) {
         (0, _classCallCheck3.default)(this, Client);
 
         var _this = (0, _possibleConstructorReturn3.default)(this, (Client.__proto__ || (0, _getPrototypeOf2.default)(Client)).call(this));
 
         _this.connectionState = 'connecting';
-        _this.initializePromise = null; // TBD - any?
         _this.sessionPromise = null;
         _this.channelsPromise = null;
+        _this.version = SDK_VERSION;
+        _this.parsePushNotification = Client.parsePushNotification;
         _this.options = options || {};
         _this.options.logLevel = _this.options.logLevel || 'error';
         _this.options.productId = 'ip_messaging';
@@ -1802,7 +1790,6 @@ var Client = function (_events_1$EventEmitte) {
             _this.emit('connectionStateChanged', _this.connectionState);
         });
         _this.fpaToken = token;
-        _this.initializePromise = _this._initialize();
         return _this;
     }
     /**
@@ -1815,15 +1802,19 @@ var Client = function (_events_1$EventEmitte) {
 
 
     (0, _createClass3.default)(Client, [{
-        key: "_initialize",
+        key: "subscribeToPushNotifications",
+        value: function subscribeToPushNotifications(channelType) {
+            var _this2 = this;
 
-        /**
-         * @returns {Promise.<T>|Request}
-         * @private
-         */
-        value: function _initialize() {
+            [notificationtypes_1.NotificationTypes.NEW_MESSAGE, notificationtypes_1.NotificationTypes.ADDED_TO_CHANNEL, notificationtypes_1.NotificationTypes.INVITED_TO_CHANNEL, notificationtypes_1.NotificationTypes.REMOVED_FROM_CHANNEL, notificationtypes_1.NotificationTypes.TYPING_INDICATOR, notificationtypes_1.NotificationTypes.CONSUMPTION_UPDATE].forEach(function (messageType) {
+                _this2.services.notificationClient.subscribe(messageType, channelType);
+            });
+        }
+    }, {
+        key: "initialize",
+        value: function initialize() {
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                var _this2 = this;
+                var _this3 = this;
 
                 var response, links, options;
                 return _regenerator2.default.wrap(function _callee$(_context) {
@@ -1842,7 +1833,7 @@ var Client = function (_events_1$EventEmitte) {
 
                             case 6:
                                 Client.supportedPushChannels.forEach(function (channelType) {
-                                    return _this2.subscribeToPushNotifications(channelType);
+                                    return _this3.subscribeToPushNotifications(channelType);
                                 });
                                 _context.next = 9;
                                 return this.services.session.getSessionLinks();
@@ -1867,34 +1858,6 @@ var Client = function (_events_1$EventEmitte) {
                 }, _callee, this);
             }));
         }
-    }, {
-        key: "subscribeToPushNotifications",
-        value: function subscribeToPushNotifications(channelType) {
-            var _this3 = this;
-
-            [notificationtypes_1.NotificationTypes.NEW_MESSAGE, notificationtypes_1.NotificationTypes.ADDED_TO_CHANNEL, notificationtypes_1.NotificationTypes.INVITED_TO_CHANNEL, notificationtypes_1.NotificationTypes.REMOVED_FROM_CHANNEL, notificationtypes_1.NotificationTypes.TYPING_INDICATOR, notificationtypes_1.NotificationTypes.CONSUMPTION_UPDATE].forEach(function (messageType) {
-                _this3.services.notificationClient.subscribe(messageType, channelType);
-            });
-        }
-        /**
-         * Initializes library
-         * Library will be eventually initialized even without this method called,
-         * but client can use returned promise to track library initialization state.
-         * It's safe to call this method multiple times. It won't reinitialize library in ready state.
-         *
-         * @public
-         * @returns {Promise<Client>}
-         */
-
-    }, {
-        key: "initialize",
-        value: function initialize() {
-            var _this4 = this;
-
-            return this.initializePromise.then(function () {
-                return _this4;
-            });
-        }
         /**
          * Gracefully shutting down library instance.
          */
@@ -1915,7 +1878,7 @@ var Client = function (_events_1$EventEmitte) {
         key: "updateToken",
         value: function updateToken(token) {
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-                var _this5 = this;
+                var _this4 = this;
 
                 return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
@@ -1946,23 +1909,23 @@ var Client = function (_events_1$EventEmitte) {
                                     }
                                     return response.token;
                                 }).then(function (rtdToken) {
-                                    return _this5.services.twilsockClient.updateToken(token).then(function () {
-                                        return _this5.services.syncClient.updateToken(token);
+                                    return _this4.services.twilsockClient.updateToken(token).then(function () {
+                                        return _this4.services.syncClient.updateToken(token);
                                     }).then(function () {
-                                        return _this5.services.notificationClient.updateToken(token);
+                                        return _this4.services.notificationClient.updateToken(token);
                                     }).then(function () {
-                                        return _this5.services.mcsClient.updateToken(token);
+                                        return _this4.services.mcsClient.updateToken(token);
                                     }).then(function () {
-                                        return _this5.sessionPromise;
+                                        return _this4.sessionPromise;
                                     }).then(function () {
-                                        return _this5.services.session.updateToken(rtdToken);
+                                        return _this4.services.session.updateToken(rtdToken);
                                     }).then(function () {
                                         return rtdToken;
                                     });
                                 }).then(function (rtdToken) {
-                                    _this5.config.updateToken(rtdToken);
-                                    _this5.fpaToken = token;
-                                    return _this5;
+                                    _this4.config.updateToken(rtdToken);
+                                    _this4.fpaToken = token;
+                                    return _this4;
                                 }));
 
                             case 6:
@@ -1983,7 +1946,7 @@ var Client = function (_events_1$EventEmitte) {
         key: "getChannelBySid",
         value: function getChannelBySid(channelSid) {
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
-                var _this6 = this;
+                var _this5 = this;
 
                 return _regenerator2.default.wrap(function _callee3$(_context3) {
                     while (1) {
@@ -1997,9 +1960,11 @@ var Client = function (_events_1$EventEmitte) {
                                 throw new Error('Client.getChannelBySid requires a <String>channelSid parameter');
 
                             case 2:
-                                return _context3.abrupt("return", this.channels.getChannel(channelSid).then(function (channel) {
-                                    return channel || _this6.services.publicChannels.getChannelBySid(channelSid).then(function (x) {
-                                        return _this6.channels.pushChannel(x);
+                                return _context3.abrupt("return", this.channels.syncListRead.promise.then(function () {
+                                    return _this5.channels.getChannel(channelSid).then(function (channel) {
+                                        return channel || _this5.services.publicChannels.getChannelBySid(channelSid).then(function (x) {
+                                            return _this5.channels.pushChannel(x);
+                                        });
                                     });
                                 }));
 
@@ -2021,7 +1986,7 @@ var Client = function (_events_1$EventEmitte) {
         key: "getChannelByUniqueName",
         value: function getChannelByUniqueName(uniqueName) {
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee4() {
-                var _this7 = this;
+                var _this6 = this;
 
                 return _regenerator2.default.wrap(function _callee4$(_context4) {
                     while (1) {
@@ -2035,8 +2000,10 @@ var Client = function (_events_1$EventEmitte) {
                                 throw new Error('Client.getChannelByUniqueName requires a <String>uniqueName parameter');
 
                             case 2:
-                                return _context4.abrupt("return", this.services.publicChannels.getChannelByUniqueName(uniqueName).then(function (x) {
-                                    return _this7.channels.pushChannel(x);
+                                return _context4.abrupt("return", this.channels.syncListRead.promise.then(function () {
+                                    return _this6.services.publicChannels.getChannelByUniqueName(uniqueName).then(function (x) {
+                                        return _this6.channels.pushChannel(x);
+                                    });
                                 }));
 
                             case 3:
@@ -2443,7 +2410,7 @@ exports.default = Client;
  * @type {PushNotification}
  */
 
-},{"./../package.json":291,"./configuration":4,"./data/channels":5,"./data/publicchannels":8,"./data/userchannels":9,"./data/users":11,"./interfaces/notificationtypes":12,"./logger":14,"./pushnotification":18,"./services/consumptionhorizon":20,"./services/network":21,"./services/typingindicator":22,"./session":23,"./synclist":25,"./user":27,"./util":30,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57,"events":214,"twilio-ems-client":229,"twilio-mcs-client":235,"twilio-notifications":242,"twilio-sync":253,"twilio-transport":273,"twilsock":276}],4:[function(_dereq_,module,exports){
+},{"./../package.json":290,"./configuration":4,"./data/channels":5,"./data/publicchannels":8,"./data/userchannels":9,"./data/users":11,"./interfaces/notificationtypes":12,"./logger":14,"./pushnotification":18,"./services/consumptionhorizon":20,"./services/network":21,"./services/typingindicator":22,"./session":23,"./synclist":25,"./user":27,"./util":30,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57,"events":214,"twilio-ems-client":229,"twilio-mcs-client":235,"twilio-notifications":242,"twilio-sync":253,"twilio-transport":272,"twilsock":275}],4:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -2633,6 +2600,7 @@ var events_1 = _dereq_("events");
 var logger_1 = _dereq_("../logger");
 var channel_1 = _dereq_("../channel");
 exports.Channel = channel_1.Channel;
+var deferred_1 = _dereq_("../util/deferred");
 var log = logger_1.Logger.scope('');
 /**
  * Represents channels collection
@@ -2651,6 +2619,7 @@ var Channels = function (_events_1$EventEmitte) {
         _this.channels = new _map2.default();
         _this.thumbstones = new _set2.default();
         _this.syncListFetched = false;
+        _this.syncListRead = new deferred_1.Deferred();
         return _this;
     }
 
@@ -2784,7 +2753,7 @@ var Channels = function (_events_1$EventEmitte) {
                                     items = paginator.items;
 
                                     items.forEach(function (item) {
-                                        upserts.push(_this4.upsertChannel('chat', item.channel_sid, item.descriptor));
+                                        upserts.push(_this4.upsertChannel('synclist', item.channel_sid, item.descriptor));
                                     });
 
                                 case 9:
@@ -2800,15 +2769,16 @@ var Channels = function (_events_1$EventEmitte) {
                                     paginator = _context2.sent;
 
                                     paginator.items.forEach(function (item) {
-                                        upserts.push(_this4.upsertChannel('chat', item.channel_sid, item.descriptor));
+                                        upserts.push(_this4.upsertChannel('synclist', item.channel_sid, item.descriptor));
                                     });
                                     _context2.next = 9;
                                     break;
 
                                 case 16:
+                                    this.syncListRead.set(true);
                                     return _context2.abrupt("return", _promise2.default.all(upserts));
 
-                                case 17:
+                                case 18:
                                 case "end":
                                     return _context2.stop();
                             }
@@ -2910,7 +2880,7 @@ var Channels = function (_events_1$EventEmitte) {
             // Update the Channel's status if we know about it
             if (channel) {
                 log.trace('upsertChannel: channel ' + sid + ' is known and it\'s' + ' status is known from source ' + channel._statusSource() + ' and update came from source ' + source, channel);
-                if (typeof channel._statusSource() === 'undefined' || source === channel._statusSource() || source === 'sync') {
+                if (typeof channel._statusSource() === 'undefined' || source === channel._statusSource() || source === 'synclist' && channel._statusSource() !== 'sync' || source === 'sync') {
                     if (data.status === 'joined' && channel.status !== 'joined') {
                         channel._setStatus('joined', source);
                         if (typeof data.lastConsumedMessageIndex !== 'undefined') {
@@ -2946,7 +2916,7 @@ var Channels = function (_events_1$EventEmitte) {
                     return channel;
                 });
             }
-            if (source === 'chat' && this.thumbstones.has(sid)) {
+            if ((source === 'chat' || source === 'synclist') && this.thumbstones.has(sid)) {
                 // if channel was deleted, we ignore it
                 log.trace('upsertChannel: channel is deleted and came again from chat, ignoring', sid);
                 return;
@@ -3003,7 +2973,7 @@ var Channels = function (_events_1$EventEmitte) {
 
 exports.Channels = Channels;
 
-},{"../channel":1,"../logger":14,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/core-js/set":47,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57,"events":214}],6:[function(_dereq_,module,exports){
+},{"../channel":1,"../logger":14,"../util/deferred":29,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/core-js/set":47,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57,"events":214}],6:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -3214,7 +3184,7 @@ var Members = function (_events_1$EventEmitte) {
     }, {
         key: "add",
         value: function add(username) {
-            return this.services.session.addCommand('addMember', {
+            return this.services.session.addCommand('addMemberV2', {
                 channelSid: this.channel.sid,
                 username: username
             });
@@ -3515,26 +3485,35 @@ var Messages = function (_events_1$EventEmitte) {
 
                             case 8:
                                 media = _context3.sent;
-                                _context3.next = 16;
+                                _context3.next = 18;
                                 break;
 
                             case 11:
                                 log.debug('Sending media message as SendMediaOptions', mediaContent, attributes);
                                 mediaOptions = mediaContent;
-                                _context3.next = 15;
-                                return this.services.mcsClient.post(mediaOptions.contentType, mediaOptions.media);
+
+                                if (!(!mediaOptions.contentType || !mediaOptions.media)) {
+                                    _context3.next = 15;
+                                    break;
+                                }
+
+                                throw new Error('Media content <Channel#SendMediaOptions> must contain non-empty contentType and media');
 
                             case 15:
+                                _context3.next = 17;
+                                return this.services.mcsClient.post(mediaOptions.contentType, mediaOptions.media);
+
+                            case 17:
                                 media = _context3.sent;
 
-                            case 16:
+                            case 18:
                                 return _context3.abrupt("return", this.services.session.addCommand('sendMediaMessage', {
                                     channelSid: this.channel.sid,
                                     mediaSid: media.sid,
                                     attributes: (0, _stringify2.default)(attributes)
                                 }));
 
-                            case 17:
+                            case 19:
                             case "end":
                                 return _context3.stop();
                         }
@@ -3998,7 +3977,7 @@ var UserDescriptors = function () {
                                 return _context2.abrupt("return", new restpaginator_1.RestPaginator(response.body.users.map(function (x) {
                                     return new userdescriptor_1.UserDescriptor(_this.services, x);
                                 }), function (pageToken) {
-                                    return _this.getChannelUserDescriptors(channelSid, pageToken);
+                                    return _this.getChannelUserDescriptors(channelSid, { pageToken: pageToken });
                                 }, response.body.meta.prev_token, response.body.meta.next_token));
 
                             case 5:
@@ -5018,12 +4997,12 @@ function parseAttributes(msgSid, attributes) {
  * @property {String} body - The body of the Message
  * @property {Object} attributes - Message custom attributes
  * @property {Channel} channel - Channel Message belongs to
- * @property {Date} dateUpdated - When Message was sent
+ * @property {Date} dateUpdated - When Message was updated
  * @property {Number} index - Index of Message in the Channel's messages list
  * @property {String} lastUpdatedBy - Identity of the last user that updated Message
  * @property {Media} media - Contains Media information (if present)
  * @property {String} sid - The server-assigned unique identifier for Message
- * @property {Date} timestamp - When Message was sent
+ * @property {Date} timestamp - When Message was created
  * @property {'text' | 'media' } type - Type of message: 'text' or 'media'
  * @fires Message#updated
  */
@@ -5038,13 +5017,12 @@ var Message = function (_events_1$EventEmitte) {
 
         _this.channel = channel;
         _this.services = services;
-        var timestamp = new Date(data.timestamp);
         _this.state = {
             sid: data.sid,
             index: index,
             author: data.author,
             body: data.text,
-            timestamp: timestamp,
+            timestamp: data.timestamp ? new Date(data.timestamp) : null,
             dateUpdated: data.dateUpdated ? new Date(data.dateUpdated) : null,
             lastUpdatedBy: data.lastUpdatedBy ? data.lastUpdatedBy : null,
             attributes: parseAttributes(data.sid, data.attributes),
@@ -5068,6 +5046,10 @@ var Message = function (_events_1$EventEmitte) {
             }
             if (data.dateUpdated && new Date(data.dateUpdated).getTime() !== (this.state.dateUpdated && this.state.dateUpdated.getTime())) {
                 this.state.dateUpdated = new Date(data.dateUpdated);
+                updated = true;
+            }
+            if (data.timestamp && new Date(data.timestamp).getTime() !== (this.state.timestamp && this.state.timestamp.getTime())) {
+                this.state.timestamp = new Date(data.timestamp);
                 updated = true;
             }
             var updatedAttributes = parseAttributes(this.sid, data.attributes);
@@ -5388,31 +5370,49 @@ exports.RestPaginator = RestPaginator;
 },{"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],20:[function(_dereq_,module,exports){
 "use strict";
 
+var _promise = _dereq_("babel-runtime/core-js/promise");
+
+var _promise2 = _interopRequireDefault(_promise);
+
 var _map = _dereq_("babel-runtime/core-js/map");
 
 var _map2 = _interopRequireDefault(_map);
-
-var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
 var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
+var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var sessionerror_1 = _dereq_("../sessionerror");
+
+var ConsumptionReportRequest = function ConsumptionReportRequest() {
+    (0, _classCallCheck3.default)(this, ConsumptionReportRequest);
+};
+
+var ConsumptionReportEntry = function ConsumptionReportEntry() {
+    (0, _classCallCheck3.default)(this, ConsumptionReportEntry);
+};
+
+var ConsumptionHorizonPromise = function ConsumptionHorizonPromise() {
+    (0, _classCallCheck3.default)(this, ConsumptionHorizonPromise);
+};
 /**
  * @classdesc Provides consumption horizon management functionality
  */
+
 
 var ConsumptionHorizon = function () {
     function ConsumptionHorizon(services) {
         (0, _classCallCheck3.default)(this, ConsumptionHorizon);
 
         this.services = services;
-        this.consumptionHorizonReports = new _map2.default();
+        this.consumptionHorizonRequests = new _map2.default();
         this.consumptionHorizonUpdateTimer = null;
     }
 
@@ -5431,17 +5431,62 @@ var ConsumptionHorizon = function () {
             if (this.consumptionHorizonUpdateTimer !== null) {
                 return;
             }
+            this.sendConsumptionReport(true);
             this.consumptionHorizonUpdateTimer = setTimeout(function () {
-                var reports = [];
-                _this.consumptionHorizonReports.forEach(function (entry) {
-                    return reports.push(entry);
-                });
-                if (reports.length > 0) {
-                    _this.services.session.addCommand('consumptionReport', { report: reports });
-                }
-                _this.consumptionHorizonUpdateTimer = null;
-                _this.consumptionHorizonReports.clear();
+                _this.sendConsumptionReport(false);
             }, delay);
+        }
+    }, {
+        key: "sendConsumptionReport",
+        value: function sendConsumptionReport(keepTimer) {
+            var _this2 = this;
+
+            var reports = [];
+            var promises = new _map2.default();
+            this.consumptionHorizonRequests.forEach(function (request, channelSid) {
+                reports.push(request.entry);
+                promises.set(channelSid, request.promises);
+            });
+            if (reports.length > 0) {
+                this.services.session.addCommand('consumptionReportV2', { report: reports }).then(function (response) {
+                    return _this2.processConsumptionReportResponse(response, promises);
+                }).catch(function (err) {
+                    return _this2.processConsumptionReportError(err, promises);
+                });
+            }
+            if (!keepTimer) {
+                this.consumptionHorizonUpdateTimer = null;
+            }
+            this.consumptionHorizonRequests.clear();
+        }
+    }, {
+        key: "processConsumptionReportResponse",
+        value: function processConsumptionReportResponse(response, promises) {
+            if (response && response.report && Array.isArray(response.report) && response.report.length > 0) {
+                response.report.forEach(function (entry) {
+                    var responseEntry = entry;
+                    if (promises.has(responseEntry.channelSid)) {
+                        var unreadMessagesCount = null;
+                        if (typeof responseEntry.unreadMessagesCount !== 'undefined' && responseEntry.unreadMessagesCount != null) {
+                            unreadMessagesCount = responseEntry.unreadMessagesCount;
+                        }
+                        promises.get(responseEntry.channelSid).forEach(function (promise) {
+                            return promise.resolve(unreadMessagesCount);
+                        });
+                        promises.delete(responseEntry.channelSid);
+                    }
+                });
+            }
+            this.processConsumptionReportError(new sessionerror_1.SessionError('Error while setting LastConsumedMessageIndex', null), promises);
+        }
+    }, {
+        key: "processConsumptionReportError",
+        value: function processConsumptionReportError(err, promises) {
+            promises.forEach(function (channelPromises) {
+                return channelPromises.forEach(function (promise) {
+                    return promise.reject(err);
+                });
+            });
         }
         /**
          * Updates consumption horizon value without any checks
@@ -5450,11 +5495,13 @@ var ConsumptionHorizon = function () {
     }, {
         key: "updateLastConsumedMessageIndexForChannel",
         value: function updateLastConsumedMessageIndexForChannel(channelSid, messageIdx) {
-            var _this2 = this;
+            var _this3 = this;
 
-            this.consumptionHorizonReports.set(channelSid, { channelSid: channelSid, messageIdx: messageIdx });
-            this.getReportInterval().then(function (delay) {
-                return _this2.delayedSendConsumptionHorizon(delay);
+            return new _promise2.default(function (resolve, reject) {
+                _this3.addPendingConsumptionHorizonRequest(channelSid, { channelSid: channelSid, messageIdx: messageIdx }, { resolve: resolve, reject: reject });
+                _this3.getReportInterval().then(function (delay) {
+                    return _this3.delayedSendConsumptionHorizon(delay);
+                });
             });
         }
         /**
@@ -5463,17 +5510,39 @@ var ConsumptionHorizon = function () {
 
     }, {
         key: "advanceLastConsumedMessageIndexForChannel",
-        value: function advanceLastConsumedMessageIndexForChannel(channelSid, messageIdx) {
-            var _this3 = this;
+        value: function advanceLastConsumedMessageIndexForChannel(channelSid, messageIdx, currentChannelLastConsumedIndex) {
+            var _this4 = this;
 
-            var currentHorizon = this.consumptionHorizonReports.get(channelSid);
-            if (currentHorizon && currentHorizon.messageIdx >= messageIdx) {
-                return;
-            }
-            this.consumptionHorizonReports.set(channelSid, { channelSid: channelSid, messageIdx: messageIdx });
-            this.getReportInterval().then(function (delay) {
-                return _this3.delayedSendConsumptionHorizon(delay);
+            var currentHorizon = this.consumptionHorizonRequests.get(channelSid);
+            return new _promise2.default(function (resolve, reject) {
+                if (currentHorizon && currentHorizon.entry) {
+                    if (currentHorizon.entry.messageIdx >= messageIdx) {
+                        _this4.addPendingConsumptionHorizonRequest(channelSid, currentHorizon.entry, { resolve: resolve, reject: reject });
+                    } else {
+                        _this4.addPendingConsumptionHorizonRequest(channelSid, { channelSid: channelSid, messageIdx: messageIdx }, { resolve: resolve, reject: reject });
+                    }
+                } else {
+                    if (currentChannelLastConsumedIndex !== null && messageIdx < currentChannelLastConsumedIndex) {
+                        _this4.addPendingConsumptionHorizonRequest(channelSid, { channelSid: channelSid, messageIdx: currentChannelLastConsumedIndex }, { resolve: resolve, reject: reject });
+                    } else {
+                        _this4.addPendingConsumptionHorizonRequest(channelSid, { channelSid: channelSid, messageIdx: messageIdx }, { resolve: resolve, reject: reject });
+                    }
+                }
+                _this4.getReportInterval().then(function (delay) {
+                    return _this4.delayedSendConsumptionHorizon(delay);
+                });
             });
+        }
+    }, {
+        key: "addPendingConsumptionHorizonRequest",
+        value: function addPendingConsumptionHorizonRequest(channelSid, entry, promise) {
+            if (this.consumptionHorizonRequests.has(channelSid)) {
+                var request = this.consumptionHorizonRequests.get(channelSid);
+                request.entry = entry;
+                request.promises.push(promise);
+            } else {
+                this.consumptionHorizonRequests.set(channelSid, { entry: entry, promises: [promise] });
+            }
         }
     }]);
     return ConsumptionHorizon;
@@ -5481,7 +5550,7 @@ var ConsumptionHorizon = function () {
 
 exports.ConsumptionHorizon = ConsumptionHorizon;
 
-},{"babel-runtime/core-js/map":35,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],21:[function(_dereq_,module,exports){
+},{"../sessionerror":24,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],21:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -6338,7 +6407,7 @@ var Session = function () {
 
 exports.Session = Session;
 
-},{"./../package.json":291,"./interfaces/responsecodes":13,"./logger":14,"./sessionerror":24,"./util/deferred":29,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/regenerator":57,"durational":212,"platform":221,"uuid":283}],24:[function(_dereq_,module,exports){
+},{"./../package.json":290,"./interfaces/responsecodes":13,"./logger":14,"./sessionerror":24,"./util/deferred":29,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/regenerator":57,"durational":212,"platform":221,"uuid":282}],24:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -7491,7 +7560,7 @@ Backoff.prototype.reset = function() {
 
 module.exports = Backoff;
 
-},{"events":214,"precond":222,"util":282}],60:[function(_dereq_,module,exports){
+},{"events":214,"precond":222,"util":281}],60:[function(_dereq_,module,exports){
 //      Copyright (c) 2012 Mathieu Turcotte
 //      Licensed under the MIT license.
 
@@ -7683,7 +7752,7 @@ FunctionCall.prototype.handleBackoff_ = function(number, delay, err) {
 
 module.exports = FunctionCall;
 
-},{"./backoff":59,"./strategy/fibonacci":62,"events":214,"precond":222,"util":282}],61:[function(_dereq_,module,exports){
+},{"./backoff":59,"./strategy/fibonacci":62,"events":214,"precond":222,"util":281}],61:[function(_dereq_,module,exports){
 //      Copyright (c) 2012 Mathieu Turcotte
 //      Licensed under the MIT license.
 
@@ -7726,7 +7795,7 @@ ExponentialBackoffStrategy.prototype.reset_ = function() {
 
 module.exports = ExponentialBackoffStrategy;
 
-},{"./strategy":63,"precond":222,"util":282}],62:[function(_dereq_,module,exports){
+},{"./strategy":63,"precond":222,"util":281}],62:[function(_dereq_,module,exports){
 //      Copyright (c) 2012 Mathieu Turcotte
 //      Licensed under the MIT license.
 
@@ -7756,7 +7825,7 @@ FibonacciBackoffStrategy.prototype.reset_ = function() {
 
 module.exports = FibonacciBackoffStrategy;
 
-},{"./strategy":63,"util":282}],63:[function(_dereq_,module,exports){
+},{"./strategy":63,"util":281}],63:[function(_dereq_,module,exports){
 //      Copyright (c) 2012 Mathieu Turcotte
 //      Licensed under the MIT license.
 
@@ -7838,7 +7907,7 @@ BackoffStrategy.prototype.reset_ = function() {
 
 module.exports = BackoffStrategy;
 
-},{"events":214,"util":282}],64:[function(_dereq_,module,exports){
+},{"events":214,"util":281}],64:[function(_dereq_,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -20255,6 +20324,8 @@ exports.TreeMap = TreeMap;
        *
        */
 
+      self.name = name;
+
       self.levels = { "TRACE": 0, "DEBUG": 1, "INFO": 2, "WARN": 3,
           "ERROR": 4, "SILENT": 5};
 
@@ -20335,6 +20406,10 @@ exports.TreeMap = TreeMap;
         }
 
         return defaultLogger;
+    };
+
+    defaultLogger.getLoggers = function getLoggers() {
+        return _loggersByName;
     };
 
     return defaultLogger;
@@ -21798,7 +21873,7 @@ module.exports.checkIsBoolean = typeCheck('boolean');
 module.exports.checkIsFunction = typeCheck('function');
 module.exports.checkIsObject = typeCheck('object');
 
-},{"./errors":224,"util":282}],224:[function(_dereq_,module,exports){
+},{"./errors":224,"util":281}],224:[function(_dereq_,module,exports){
 /*
  * Copyright (c) 2012 Mathieu Turcotte
  * Licensed under the MIT license.
@@ -21824,7 +21899,7 @@ IllegalStateError.prototype.name = 'IllegalStateError';
 
 module.exports.IllegalStateError = IllegalStateError;
 module.exports.IllegalArgumentError = IllegalArgumentError;
-},{"util":282}],225:[function(_dereq_,module,exports){
+},{"util":281}],225:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -23842,7 +23917,7 @@ exports.EmsClient = EmsClient;
 var EMSClient = EmsClient;
 exports.EMSClient = EMSClient;
 exports.default = EMSClient;
-},{"./configuration":230,"./logger":231,"./persistentState":232,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57,"events":214,"operation-retrier":220,"twilio-transport":273}],230:[function(_dereq_,module,exports){
+},{"./configuration":230,"./logger":231,"./persistentState":232,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57,"events":214,"operation-retrier":220,"twilio-transport":272}],230:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -24220,7 +24295,7 @@ Client.version = SDK_VERSION;
 exports.Client = Client;
 exports.McsClient = Client;
 exports.default = Client;
-},{"./../package.json":239,"./configuration":234,"./logger":236,"./media":237,"./services/network":238,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":57,"twilio-transport":273}],234:[function(_dereq_,module,exports){
+},{"./../package.json":239,"./configuration":234,"./logger":236,"./media":237,"./services/network":238,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":57,"twilio-transport":272}],234:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -25309,7 +25384,7 @@ var Client = function (_EventEmitter) {
 exports.default = Client;
 module.exports = exports['default'];
 
-},{"./configuration":241,"./logger":243,"./registrar":245,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"bottleneck":69,"events":214,"twilio-ems-client":229,"twilio-transport":273,"twilsock":276}],241:[function(_dereq_,module,exports){
+},{"./configuration":241,"./logger":243,"./registrar":245,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"bottleneck":69,"events":214,"twilio-ems-client":229,"twilio-transport":272,"twilsock":275}],241:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26201,7 +26276,7 @@ exports.default = TwilsockConnector;
 (0, _freeze2.default)(TwilsockConnector);
 module.exports = exports['default'];
 
-},{"./logger":243,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/object/freeze":41,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/set":47,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"events":214,"uuid":283}],247:[function(_dereq_,module,exports){
+},{"./logger":243,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/object/freeze":41,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/set":47,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"events":214,"uuid":282}],247:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -26385,7 +26460,6 @@ var utils_2 = _dereq_("./utils");
 // TODO: Pick some small library and use it instead
 var deferred_1 = _dereq_("./utils/deferred");
 var syncerror_1 = _dereq_("./syncerror");
-var synctopic_1 = _dereq_("./topics/synctopic");
 var SYNC_PRODUCT_ID = 'data_sync';
 var SDK_VERSION = _dereq_('../package.json').version;
 function subscribe(subscribable) {
@@ -26685,54 +26759,6 @@ var SyncClient = function (_events_1$EventEmitte) {
             }));
         }
     }, {
-        key: "_getTopic",
-        value: function _getTopic(id) {
-            var optimistic = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee6() {
-                return _regenerator2.default.wrap(function _callee6$(_context6) {
-                    while (1) {
-                        switch (_context6.prev = _context6.next) {
-                            case 0:
-                                return _context6.abrupt("return", this.readRootFromSessionCache(synctopic_1.SyncTopic.type, id) || this._get(this.services.config.topicsUri, id, optimistic));
-
-                            case 1:
-                            case "end":
-                                return _context6.stop();
-                        }
-                    }
-                }, _callee6, this);
-            }));
-        }
-    }, {
-        key: "_createTopic",
-        value: function _createTopic(id) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee7() {
-                var requestBody, response, topicDescriptor;
-                return _regenerator2.default.wrap(function _callee7$(_context7) {
-                    while (1) {
-                        switch (_context7.prev = _context7.next) {
-                            case 0:
-                                requestBody = {
-                                    unique_name: id
-                                };
-                                _context7.next = 3;
-                                return this.services.network.post(this.services.config.topicsUri, requestBody);
-
-                            case 3:
-                                response = _context7.sent;
-                                topicDescriptor = response.body;
-                                return _context7.abrupt("return", topicDescriptor);
-
-                            case 6:
-                            case "end":
-                                return _context7.stop();
-                        }
-                    }
-                }, _callee7, this);
-            }));
-        }
-    }, {
         key: "getCached",
         value: function getCached(id, type) {
             if (id) {
@@ -26758,10 +26784,196 @@ var SyncClient = function (_events_1$EventEmitte) {
     }, {
         key: "document",
         value: function document(arg) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee8() {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee6() {
                 var _this2 = this;
 
                 var _decompose, id, data, mode, docFromInMemoryCache, docDescriptor, syncDocument;
+
+                return _regenerator2.default.wrap(function _callee6$(_context6) {
+                    while (1) {
+                        switch (_context6.prev = _context6.next) {
+                            case 0:
+                                _context6.next = 2;
+                                return this.ensureReady();
+
+                            case 2:
+                                _decompose = decompose(arg), id = _decompose.id, data = _decompose.data, mode = _decompose.mode;
+                                docFromInMemoryCache = this.getCached(id, 'document');
+
+                                if (!docFromInMemoryCache) {
+                                    _context6.next = 8;
+                                    break;
+                                }
+
+                                return _context6.abrupt("return", docFromInMemoryCache);
+
+                            case 8:
+                                _context6.next = 10;
+                                return this._getDocument(id);
+
+                            case 10:
+                                docDescriptor = _context6.sent;
+
+                                if (docDescriptor) {
+                                    _context6.next = 29;
+                                    break;
+                                }
+
+                                if (!(mode === 'open')) {
+                                    _context6.next = 16;
+                                    break;
+                                }
+
+                                throw new syncerror_1.default('Not found', 404);
+
+                            case 16:
+                                _context6.prev = 16;
+                                _context6.next = 19;
+                                return this._createDocument(id, data);
+
+                            case 19:
+                                docDescriptor = _context6.sent;
+                                _context6.next = 29;
+                                break;
+
+                            case 22:
+                                _context6.prev = 22;
+                                _context6.t0 = _context6["catch"](16);
+
+                                if (!(_context6.t0.status === 409)) {
+                                    _context6.next = 28;
+                                    break;
+                                }
+
+                                return _context6.abrupt("return", this.document(arg));
+
+                            case 28:
+                                throw _context6.t0;
+
+                            case 29:
+                                this.storeRootInSessionCache(syncdocument_1.SyncDocument.type, id, docDescriptor);
+                                syncDocument = new syncdocument_1.SyncDocument(this.services, docDescriptor, function (type, sid, uniqueName) {
+                                    return _this2.removeFromCacheAndSession(type, sid, uniqueName);
+                                });
+
+                                syncDocument = this.entities.store(syncDocument);
+                                return _context6.abrupt("return", subscribe(syncDocument));
+
+                            case 33:
+                            case "end":
+                                return _context6.stop();
+                        }
+                    }
+                }, _callee6, this, [[16, 22]]);
+            }));
+        }
+        /**
+         * Open a Map by identifier, or create one if none exists
+         * @param {string} id Map identifier. Unique name or sid.
+         * @return {Promise<Map>}
+         * @public
+         */
+
+    }, {
+        key: "map",
+        value: function map(arg) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee7() {
+                var _this3 = this;
+
+                var _decompose2, id, mode, optimistic, mapFromInMemoryCache, mapDescriptor, syncMap;
+
+                return _regenerator2.default.wrap(function _callee7$(_context7) {
+                    while (1) {
+                        switch (_context7.prev = _context7.next) {
+                            case 0:
+                                _context7.next = 2;
+                                return this.ensureReady();
+
+                            case 2:
+                                _decompose2 = decompose(arg), id = _decompose2.id, mode = _decompose2.mode, optimistic = _decompose2.optimistic;
+                                mapFromInMemoryCache = this.getCached(id, 'map');
+
+                                if (!mapFromInMemoryCache) {
+                                    _context7.next = 8;
+                                    break;
+                                }
+
+                                return _context7.abrupt("return", mapFromInMemoryCache);
+
+                            case 8:
+                                _context7.next = 10;
+                                return this._getMap(id, optimistic);
+
+                            case 10:
+                                mapDescriptor = _context7.sent;
+
+                                if (mapDescriptor) {
+                                    _context7.next = 29;
+                                    break;
+                                }
+
+                                if (!(mode === 'open')) {
+                                    _context7.next = 16;
+                                    break;
+                                }
+
+                                throw new syncerror_1.default('Not found', 404);
+
+                            case 16:
+                                _context7.prev = 16;
+                                _context7.next = 19;
+                                return this._createMap(id);
+
+                            case 19:
+                                mapDescriptor = _context7.sent;
+                                _context7.next = 29;
+                                break;
+
+                            case 22:
+                                _context7.prev = 22;
+                                _context7.t0 = _context7["catch"](16);
+
+                                if (!(_context7.t0.status === 409)) {
+                                    _context7.next = 28;
+                                    break;
+                                }
+
+                                return _context7.abrupt("return", this.map(arg));
+
+                            case 28:
+                                throw _context7.t0;
+
+                            case 29:
+                                this.storeRootInSessionCache(syncmap_1.SyncMap.type, id, mapDescriptor);
+                                syncMap = new syncmap_1.SyncMap(this.services, mapDescriptor, function (type, sid, uniqueName) {
+                                    return _this3.removeFromCacheAndSession(type, sid, uniqueName);
+                                });
+
+                                syncMap = this.entities.store(syncMap);
+                                return _context7.abrupt("return", subscribe(syncMap));
+
+                            case 33:
+                            case "end":
+                                return _context7.stop();
+                        }
+                    }
+                }, _callee7, this, [[16, 22]]);
+            }));
+        }
+        /**
+         * Open a List by identifier, or create one if none exists
+         * @param {string} id List identifier. Unique name or sid.
+         * @return {Promise<List>}
+         * @public
+         */
+
+    }, {
+        key: "list",
+        value: function list(arg) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee8() {
+                var _this4 = this;
+
+                var _decompose3, id, purpose, context, mode, listFromInMemoryCache, listDescriptor, syncList;
 
                 return _regenerator2.default.wrap(function _callee8$(_context8) {
                     while (1) {
@@ -26771,24 +26983,24 @@ var SyncClient = function (_events_1$EventEmitte) {
                                 return this.ensureReady();
 
                             case 2:
-                                _decompose = decompose(arg), id = _decompose.id, data = _decompose.data, mode = _decompose.mode;
-                                docFromInMemoryCache = this.getCached(id, 'document');
+                                _decompose3 = decompose(arg), id = _decompose3.id, purpose = _decompose3.purpose, context = _decompose3.context, mode = _decompose3.mode;
+                                listFromInMemoryCache = this.getCached(id, 'list');
 
-                                if (!docFromInMemoryCache) {
+                                if (!listFromInMemoryCache) {
                                     _context8.next = 8;
                                     break;
                                 }
 
-                                return _context8.abrupt("return", docFromInMemoryCache);
+                                return _context8.abrupt("return", listFromInMemoryCache);
 
                             case 8:
                                 _context8.next = 10;
-                                return this._getDocument(id);
+                                return this._getList(id);
 
                             case 10:
-                                docDescriptor = _context8.sent;
+                                listDescriptor = _context8.sent;
 
-                                if (docDescriptor) {
+                                if (listDescriptor) {
                                     _context8.next = 29;
                                     break;
                                 }
@@ -26803,10 +27015,10 @@ var SyncClient = function (_events_1$EventEmitte) {
                             case 16:
                                 _context8.prev = 16;
                                 _context8.next = 19;
-                                return this._createDocument(id, data);
+                                return this._createList(id, purpose, context);
 
                             case 19:
-                                docDescriptor = _context8.sent;
+                                listDescriptor = _context8.sent;
                                 _context8.next = 29;
                                 break;
 
@@ -26819,196 +27031,10 @@ var SyncClient = function (_events_1$EventEmitte) {
                                     break;
                                 }
 
-                                return _context8.abrupt("return", this.document(arg));
+                                return _context8.abrupt("return", this.list(arg));
 
                             case 28:
                                 throw _context8.t0;
-
-                            case 29:
-                                this.storeRootInSessionCache(syncdocument_1.SyncDocument.type, id, docDescriptor);
-                                syncDocument = new syncdocument_1.SyncDocument(this.services, docDescriptor, function (type, sid, uniqueName) {
-                                    return _this2.removeFromCacheAndSession(type, sid, uniqueName);
-                                });
-
-                                syncDocument = this.entities.store(syncDocument);
-                                return _context8.abrupt("return", subscribe(syncDocument));
-
-                            case 33:
-                            case "end":
-                                return _context8.stop();
-                        }
-                    }
-                }, _callee8, this, [[16, 22]]);
-            }));
-        }
-        /**
-         * Open a Map by identifier, or create one if none exists
-         * @param {string} id Map identifier. Unique name or sid.
-         * @return {Promise<Map>}
-         * @public
-         */
-
-    }, {
-        key: "map",
-        value: function map(arg) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee9() {
-                var _this3 = this;
-
-                var _decompose2, id, mode, optimistic, mapFromInMemoryCache, mapDescriptor, syncMap;
-
-                return _regenerator2.default.wrap(function _callee9$(_context9) {
-                    while (1) {
-                        switch (_context9.prev = _context9.next) {
-                            case 0:
-                                _context9.next = 2;
-                                return this.ensureReady();
-
-                            case 2:
-                                _decompose2 = decompose(arg), id = _decompose2.id, mode = _decompose2.mode, optimistic = _decompose2.optimistic;
-                                mapFromInMemoryCache = this.getCached(id, 'map');
-
-                                if (!mapFromInMemoryCache) {
-                                    _context9.next = 8;
-                                    break;
-                                }
-
-                                return _context9.abrupt("return", mapFromInMemoryCache);
-
-                            case 8:
-                                _context9.next = 10;
-                                return this._getMap(id, optimistic);
-
-                            case 10:
-                                mapDescriptor = _context9.sent;
-
-                                if (mapDescriptor) {
-                                    _context9.next = 29;
-                                    break;
-                                }
-
-                                if (!(mode === 'open')) {
-                                    _context9.next = 16;
-                                    break;
-                                }
-
-                                throw new syncerror_1.default('Not found', 404);
-
-                            case 16:
-                                _context9.prev = 16;
-                                _context9.next = 19;
-                                return this._createMap(id);
-
-                            case 19:
-                                mapDescriptor = _context9.sent;
-                                _context9.next = 29;
-                                break;
-
-                            case 22:
-                                _context9.prev = 22;
-                                _context9.t0 = _context9["catch"](16);
-
-                                if (!(_context9.t0.status === 409)) {
-                                    _context9.next = 28;
-                                    break;
-                                }
-
-                                return _context9.abrupt("return", this.map(arg));
-
-                            case 28:
-                                throw _context9.t0;
-
-                            case 29:
-                                this.storeRootInSessionCache(syncmap_1.SyncMap.type, id, mapDescriptor);
-                                syncMap = new syncmap_1.SyncMap(this.services, mapDescriptor, function (type, sid, uniqueName) {
-                                    return _this3.removeFromCacheAndSession(type, sid, uniqueName);
-                                });
-
-                                syncMap = this.entities.store(syncMap);
-                                return _context9.abrupt("return", subscribe(syncMap));
-
-                            case 33:
-                            case "end":
-                                return _context9.stop();
-                        }
-                    }
-                }, _callee9, this, [[16, 22]]);
-            }));
-        }
-        /**
-         * Open a List by identifier, or create one if none exists
-         * @param {string} id List identifier. Unique name or sid.
-         * @return {Promise<List>}
-         * @public
-         */
-
-    }, {
-        key: "list",
-        value: function list(arg) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee10() {
-                var _this4 = this;
-
-                var _decompose3, id, purpose, context, mode, listFromInMemoryCache, listDescriptor, syncList;
-
-                return _regenerator2.default.wrap(function _callee10$(_context10) {
-                    while (1) {
-                        switch (_context10.prev = _context10.next) {
-                            case 0:
-                                _context10.next = 2;
-                                return this.ensureReady();
-
-                            case 2:
-                                _decompose3 = decompose(arg), id = _decompose3.id, purpose = _decompose3.purpose, context = _decompose3.context, mode = _decompose3.mode;
-                                listFromInMemoryCache = this.getCached(id, 'list');
-
-                                if (!listFromInMemoryCache) {
-                                    _context10.next = 8;
-                                    break;
-                                }
-
-                                return _context10.abrupt("return", listFromInMemoryCache);
-
-                            case 8:
-                                _context10.next = 10;
-                                return this._getList(id);
-
-                            case 10:
-                                listDescriptor = _context10.sent;
-
-                                if (listDescriptor) {
-                                    _context10.next = 29;
-                                    break;
-                                }
-
-                                if (!(mode === 'open')) {
-                                    _context10.next = 16;
-                                    break;
-                                }
-
-                                throw new syncerror_1.default('Not found', 404);
-
-                            case 16:
-                                _context10.prev = 16;
-                                _context10.next = 19;
-                                return this._createList(id, purpose, context);
-
-                            case 19:
-                                listDescriptor = _context10.sent;
-                                _context10.next = 29;
-                                break;
-
-                            case 22:
-                                _context10.prev = 22;
-                                _context10.t0 = _context10["catch"](16);
-
-                                if (!(_context10.t0.status === 409)) {
-                                    _context10.next = 28;
-                                    break;
-                                }
-
-                                return _context10.abrupt("return", this.list(arg));
-
-                            case 28:
-                                throw _context10.t0;
 
                             case 29:
                                 this.storeRootInSessionCache(synclist_1.SyncList.type, id, listDescriptor);
@@ -27017,110 +27043,14 @@ var SyncClient = function (_events_1$EventEmitte) {
                                 });
 
                                 syncList = this.entities.store(syncList);
-                                return _context10.abrupt("return", subscribe(syncList));
+                                return _context8.abrupt("return", subscribe(syncList));
 
                             case 33:
                             case "end":
-                                return _context10.stop();
+                                return _context8.stop();
                         }
                     }
-                }, _callee10, this, [[16, 22]]);
-            }));
-        }
-        /**
-         * Open a SyncTopic by identifier, or create one if none exists
-         * @param {string} id SyncTopic identifier. Unique name or sid.
-         * @return {Promise<SyncTopic>}
-         * @private
-         */
-
-    }, {
-        key: "topic",
-        value: function topic(arg) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee11() {
-                var _this5 = this;
-
-                var _decompose4, id, mode, optimistic, topicFromInMemoryCache, topicDescriptor, topicRemovalHandler, syncTopic;
-
-                return _regenerator2.default.wrap(function _callee11$(_context11) {
-                    while (1) {
-                        switch (_context11.prev = _context11.next) {
-                            case 0:
-                                _context11.next = 2;
-                                return this.ensureReady();
-
-                            case 2:
-                                _decompose4 = decompose(arg), id = _decompose4.id, mode = _decompose4.mode, optimistic = _decompose4.optimistic;
-                                topicFromInMemoryCache = this.getCached(id, synctopic_1.SyncTopic.type);
-
-                                if (!topicFromInMemoryCache) {
-                                    _context11.next = 8;
-                                    break;
-                                }
-
-                                return _context11.abrupt("return", topicFromInMemoryCache);
-
-                            case 8:
-                                _context11.next = 10;
-                                return this._getTopic(id, optimistic);
-
-                            case 10:
-                                topicDescriptor = _context11.sent;
-
-                                if (topicDescriptor) {
-                                    _context11.next = 29;
-                                    break;
-                                }
-
-                                if (!(mode === 'open')) {
-                                    _context11.next = 16;
-                                    break;
-                                }
-
-                                throw new syncerror_1.default('Not found', 404);
-
-                            case 16:
-                                _context11.prev = 16;
-                                _context11.next = 19;
-                                return this._createTopic(id);
-
-                            case 19:
-                                topicDescriptor = _context11.sent;
-                                _context11.next = 29;
-                                break;
-
-                            case 22:
-                                _context11.prev = 22;
-                                _context11.t0 = _context11["catch"](16);
-
-                                if (!(_context11.t0.status === 409)) {
-                                    _context11.next = 28;
-                                    break;
-                                }
-
-                                return _context11.abrupt("return", this.topic(arg));
-
-                            case 28:
-                                throw _context11.t0;
-
-                            case 29:
-                                this.storeRootInSessionCache(synctopic_1.SyncTopic.type, id, topicDescriptor);
-
-                                topicRemovalHandler = function topicRemovalHandler(type, sid, uniqueName) {
-                                    return _this5.removeFromCacheAndSession(type, sid, uniqueName);
-                                };
-
-                                syncTopic = new synctopic_1.SyncTopic(this.services, topicDescriptor, topicRemovalHandler);
-
-                                syncTopic = this.entities.store(syncTopic);
-                                return _context11.abrupt("return", subscribe(syncTopic));
-
-                            case 34:
-                            case "end":
-                                return _context11.stop();
-                        }
-                    }
-                }, _callee11, this, [[16, 22]]);
+                }, _callee8, this, [[16, 22]]);
             }));
         }
         /**
@@ -27133,24 +27063,24 @@ var SyncClient = function (_events_1$EventEmitte) {
     }, {
         key: "shutdown",
         value: function shutdown() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee12() {
-                return _regenerator2.default.wrap(function _callee12$(_context12) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee9() {
+                return _regenerator2.default.wrap(function _callee9$(_context9) {
                     while (1) {
-                        switch (_context12.prev = _context12.next) {
+                        switch (_context9.prev = _context9.next) {
                             case 0:
-                                _context12.next = 2;
+                                _context9.next = 2;
                                 return this.services.subscriptions.shutdown();
 
                             case 2:
-                                _context12.next = 4;
+                                _context9.next = 4;
                                 return this.services.twilsock.disconnect();
 
                             case 4:
                             case "end":
-                                return _context12.stop();
+                                return _context9.stop();
                         }
                     }
-                }, _callee12, this);
+                }, _callee9, this);
             }));
         }
         /**
@@ -27163,19 +27093,19 @@ var SyncClient = function (_events_1$EventEmitte) {
     }, {
         key: "updateToken",
         value: function updateToken(fpaToken) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee13() {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee10() {
                 var response;
-                return _regenerator2.default.wrap(function _callee13$(_context13) {
+                return _regenerator2.default.wrap(function _callee10$(_context10) {
                     while (1) {
-                        switch (_context13.prev = _context13.next) {
+                        switch (_context10.prev = _context10.next) {
                             case 0:
-                                _context13.next = 2;
+                                _context10.next = 2;
                                 return this.services.emsClient.setToken(fpaToken);
 
                             case 2:
-                                response = _context13.sent;
+                                response = _context10.sent;
                                 this.services.config.updateToken(response.token);
-                                _context13.next = 6;
+                                _context10.next = 6;
                                 return _promise2.default.all([this.services.notifications.updateToken(fpaToken), this.services.twilsock.updateToken(fpaToken)]);
 
                             case 6:
@@ -27183,10 +27113,10 @@ var SyncClient = function (_events_1$EventEmitte) {
 
                             case 7:
                             case "end":
-                                return _context13.stop();
+                                return _context10.stop();
                         }
                     }
-                }, _callee13, this);
+                }, _callee10, this);
             }));
         }
     }, {
@@ -27228,7 +27158,7 @@ exports.default = SyncClient;
  * @param {Client#ConnectionState} connectionState Contains current service connection state.
  * @event Client#connectionStateChanged
  */
-},{"../package.json":271,"./clientInfo":249,"./configuration":250,"./entitiesCache":251,"./logger":255,"./network":257,"./router":260,"./services/storage":261,"./subscriptions":262,"./syncdocument":264,"./syncerror":265,"./synclist":266,"./syncmap":267,"./topics/synctopic":268,"./utils":269,"./utils/deferred":270,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57,"events":214,"twilio-ems-client":229,"twilio-notifications":242,"twilio-transport":273,"twilsock":276,"xxhashjs":288}],249:[function(_dereq_,module,exports){
+},{"../package.json":270,"./clientInfo":249,"./configuration":250,"./entitiesCache":251,"./logger":255,"./network":257,"./router":260,"./services/storage":261,"./subscriptions":262,"./syncdocument":264,"./syncerror":265,"./synclist":266,"./syncmap":267,"./utils":268,"./utils/deferred":269,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57,"events":214,"twilio-ems-client":229,"twilio-notifications":242,"twilio-transport":272,"twilsock":275,"xxhashjs":287}],249:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -27272,7 +27202,6 @@ var SUBSCRIPTIONS_PATH = '/v4/Subscriptions';
 var MAPS_PATH = '/v3/Maps';
 var LISTS_PATH = '/v3/Lists';
 var DOCUMENTS_PATH = '/v3/Documents';
-var TOPICS_PATH = '/v3/Topics';
 function getWithDefault(container, key, defaultValue) {
     if (container && typeof container[key] !== 'undefined') {
         return container[key];
@@ -27299,7 +27228,6 @@ var Configuration = function () {
             documentsUri: baseUri + DOCUMENTS_PATH,
             listsUri: baseUri + LISTS_PATH,
             mapsUri: baseUri + MAPS_PATH,
-            topicsUri: baseUri + TOPICS_PATH,
             sessionStorageEnabled: getWithDefault(options, 'enableSessionStorage', true)
         };
     }
@@ -27333,11 +27261,6 @@ var Configuration = function () {
         key: "mapsUri",
         get: function get() {
             return this.settings.mapsUri;
-        }
-    }, {
-        key: "topicsUri",
-        get: function get() {
-            return this.settings.topicsUri;
         }
     }, {
         key: "backoffConfig",
@@ -27972,7 +27895,7 @@ var Network = function () {
 
 exports.Network = Network;
 exports.default = Network;
-},{"./logger":255,"./syncNetworkError":263,"./syncerror":265,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"operation-retrier":220,"twilio-transport":273,"uuid":283}],258:[function(_dereq_,module,exports){
+},{"./logger":255,"./syncNetworkError":263,"./syncerror":265,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"operation-retrier":220,"twilio-transport":272,"uuid":282}],258:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -28597,6 +28520,7 @@ var SubscribedEntity = function () {
 
         this.localObject = entity;
         this.pendingCorrelationId = null;
+        this.pendingAction = null;
         this.established = false;
         this.retryCount = 0;
     }
@@ -28607,9 +28531,15 @@ var SubscribedEntity = function () {
             this.localObject._update(event, isStrictlyOrderd);
         }
     }, {
+        key: "updatePending",
+        value: function updatePending(action, correlationId) {
+            this.pendingAction = action;
+            this.pendingCorrelationId = correlationId;
+        }
+    }, {
         key: "reset",
         value: function reset() {
-            this.pendingCorrelationId = null;
+            this.updatePending(null, null);
             this.retryCount = 0;
             this.established = false;
             this.localObject._setSubscriptionState('none');
@@ -28618,13 +28548,13 @@ var SubscribedEntity = function () {
         key: "markAsFailed",
         value: function markAsFailed(message) {
             this.rejectedWithError = message.error;
-            this.pendingCorrelationId = null;
+            this.updatePending(null, null);
             this.localObject.reportFailure(new syncerror_1.SyncError("Failed to subscribe on service events: " + message.error.message, message.error.status, message.error.code));
         }
     }, {
         key: "complete",
         value: function complete(eventId) {
-            this.pendingCorrelationId = null;
+            this.updatePending(null, null);
             this.established = true;
             this.localObject._advanceLastEventId(eventId);
         }
@@ -28642,11 +28572,6 @@ var SubscribedEntity = function () {
         key: "lastEventId",
         get: function get() {
             return this.localObject.lastEventId;
-        }
-    }, {
-        key: "isInTransition",
-        get: function get() {
-            return this.pendingCorrelationId !== null;
         }
     }, {
         key: "isEstablished",
@@ -28715,7 +28640,7 @@ var Subscriptions = function () {
     (0, _createClass3.default)(Subscriptions, [{
         key: "getSubscriptionUpdateBatch",
         value: function getSubscriptionUpdateBatch() {
-            function substract(these, those, ignoreCurrentOp, limit) {
+            function substract(these, those, action, limit) {
                 var result = [];
                 var _iteratorNormalCompletion = true;
                 var _didIteratorError = false;
@@ -28728,7 +28653,7 @@ var Subscriptions = function () {
                             thisValue = _step$value[1];
 
                         var otherValue = those.get(thisKey);
-                        if (!otherValue && (ignoreCurrentOp || !thisValue.isInTransition) && !thisValue.rejectedWithError) {
+                        if (!otherValue && action !== thisValue.pendingAction && !thisValue.rejectedWithError) {
                             result.push(thisValue);
                             if (limit && result.length >= limit) {
                                 break;
@@ -28752,11 +28677,11 @@ var Subscriptions = function () {
 
                 return result;
             }
-            var listToAdd = substract(this.subscriptions, this.persisted, false, this.maxBatchSize);
+            var listToAdd = substract(this.subscriptions, this.persisted, 'establish', this.maxBatchSize);
             if (listToAdd.length > 0) {
                 return { action: 'establish', subscriptions: listToAdd };
             }
-            var listToRemove = substract(this.persisted, this.subscriptions, true, this.maxBatchSize);
+            var listToRemove = substract(this.persisted, this.subscriptions, 'cancel', this.maxBatchSize);
             if (listToRemove.length > 0) {
                 return { action: 'cancel', subscriptions: listToRemove };
             }
@@ -28961,7 +28886,7 @@ var Subscriptions = function () {
                 requests.filter(function (r) {
                     return r.pendingCorrelationId === correlationId;
                 }).forEach(function (r) {
-                    r.pendingCorrelationId = null;
+                    r.updatePending(null, null);
                     r.retryCount++;
                     _this3.persisted.delete(r.sid);
                 });
@@ -28991,11 +28916,11 @@ var Subscriptions = function () {
             attemptedSubscription.localObject._setSubscriptionState('request_in_flight');
             if (action === 'establish') {
                 this.persisted.set(attemptedSubscription.sid, attemptedSubscription);
-                attemptedSubscription.pendingCorrelationId = correlationId;
+                attemptedSubscription.updatePending(action, correlationId);
             } else {
                 var persistedSubscription = this.persisted.get(attemptedSubscription.sid);
                 if (persistedSubscription) {
-                    persistedSubscription.pendingCorrelationId = correlationId;
+                    persistedSubscription.updatePending(action, correlationId);
                 }
             }
         }
@@ -29003,7 +28928,7 @@ var Subscriptions = function () {
         key: "recordActionFailureOn",
         value: function recordActionFailureOn(attemptedSubscription, action) {
             attemptedSubscription.localObject._setSubscriptionState('none');
-            attemptedSubscription.pendingCorrelationId = null;
+            attemptedSubscription.updatePending(null, null);
             if (action === 'establish') {
                 this.persisted.delete(attemptedSubscription.sid);
             }
@@ -29110,7 +29035,7 @@ var Subscriptions = function () {
                 case 'subscription_failed':
                     this.applySubscriptionFailedMessage(message.event, message.correlation_id);
                     break;
-                case (message.event_type.match(/^(?:map|list|document|topic)_/) || {}).input:
+                case (message.event_type.match(/^(?:map|list|document)_/) || {}).input:
                     {
                         var typedSid = function typedSid() {
                             if (message.event_type.match(/^map_/)) {
@@ -29119,8 +29044,6 @@ var Subscriptions = function () {
                                 return message.event.list_sid;
                             } else if (message.event_type.match(/^document_/)) {
                                 return message.event.document_sid;
-                            } else if (message.event_type.match(/^topic_/)) {
-                                return message.event.topic_sid;
                             } else {
                                 return undefined;
                             }
@@ -29143,7 +29066,7 @@ var Subscriptions = function () {
             if (subscriptionIntent && subscriptionIntent.pendingCorrelationId === correlationId) {
                 if (message.replay_status === 'interrupted') {
                     logger_1.default.debug("Event Replay for subscription to " + sid + " (c:" + correlationId + ") interrupted; continuing eagerly.");
-                    subscriptionIntent.pendingCorrelationId = null;
+                    subscriptionIntent.updatePending(null, null);
                     this.persisted.delete(subscriptionIntent.sid);
                     this.backoff.reset();
                 } else if (message.replay_status === 'completed') {
@@ -29163,7 +29086,7 @@ var Subscriptions = function () {
         value: function applySubscriptionCancelledMessage(message, correlationId) {
             var persistedSubscription = this.persisted.get(message.object_sid);
             if (persistedSubscription && persistedSubscription.pendingCorrelationId === correlationId) {
-                persistedSubscription.pendingCorrelationId = null;
+                persistedSubscription.updatePending(null, null);
                 persistedSubscription.localObject._setSubscriptionState('none');
                 this.persisted.delete(message.object_sid);
             } else {
@@ -29316,7 +29239,7 @@ var Subscriptions = function () {
 
 exports.Subscriptions = Subscriptions;
 exports.default = Subscriptions;
-},{"./logger":255,"./syncerror":265,"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/helpers/slicedToArray":55,"babel-runtime/regenerator":57,"backoff":58,"twilio-transport":273}],263:[function(_dereq_,module,exports){
+},{"./logger":255,"./syncerror":265,"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/helpers/slicedToArray":55,"babel-runtime/regenerator":57,"backoff":58,"twilio-transport":272}],263:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -29825,7 +29748,7 @@ exports.default = SyncDocument;
  * @event Document#updatedRemotely
  * @param {Object} - A snapshot of the document's new contents.
  */
-},{"./entity":252,"./logger":255,"./retryingqueue":259,"./utils":269,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57,"rfc6902":228}],265:[function(_dereq_,module,exports){
+},{"./entity":252,"./logger":255,"./retryingqueue":259,"./utils":268,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57,"rfc6902":228}],265:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -30720,7 +30643,7 @@ exports.default = SyncList;
  * Fired when remote code deletes a list.
  * @event List#collectionRemovedRemotely
  */
-},{"./cache":247,"./entity":252,"./listitem":254,"./logger":255,"./paginator":258,"./retryingqueue":259,"./utils":269,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57}],267:[function(_dereq_,module,exports){
+},{"./cache":247,"./entity":252,"./listitem":254,"./logger":255,"./paginator":258,"./retryingqueue":259,"./utils":268,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57}],267:[function(_dereq_,module,exports){
 "use strict";
 
 var _extends2 = _dereq_("babel-runtime/helpers/extends");
@@ -31660,262 +31583,7 @@ exports.default = SyncMap;
  * Fired when remote code deletes a map.
  * @event Map#collectionRemovedRemotely
  */
-},{"./cache":247,"./entity":252,"./mapitem":256,"./paginator":258,"./retryingqueue":259,"./utils":269,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57}],268:[function(_dereq_,module,exports){
-"use strict";
-
-var _regenerator = _dereq_("babel-runtime/regenerator");
-
-var _regenerator2 = _interopRequireDefault(_regenerator);
-
-var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
-
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _possibleConstructorReturn2 = _dereq_("babel-runtime/helpers/possibleConstructorReturn");
-
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-var _inherits2 = _dereq_("babel-runtime/helpers/inherits");
-
-var _inherits3 = _interopRequireDefault(_inherits2);
-
-var _promise = _dereq_("babel-runtime/core-js/promise");
-
-var _promise2 = _interopRequireDefault(_promise);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var __awaiter = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = _promise2.default))(function (resolve, reject) {
-        function fulfilled(value) {
-            try {
-                step(generator.next(value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-        function rejected(value) {
-            try {
-                step(generator["throw"](value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-        function step(result) {
-            result.done ? resolve(result.value) : new P(function (resolve) {
-                resolve(result.value);
-            }).then(fulfilled, rejected);
-        }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var entity_1 = _dereq_("../entity");
-/**
- * @class
- * @alias Topic
- * @classdesc A Sync primitive for high-throughput pub-sub
- * @property {String} sid - Topic SID
- * @property {String} uniqueName - Topic unique name
- */
-
-var SyncTopic = function (_entity_1$SyncEntity) {
-    (0, _inherits3.default)(SyncTopic, _entity_1$SyncEntity);
-
-    /**
-     * @private
-     */
-    function SyncTopic(services, descriptor, removalHandler) {
-        (0, _classCallCheck3.default)(this, SyncTopic);
-
-        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncTopic.__proto__ || (0, _getPrototypeOf2.default)(SyncTopic)).call(this, services, removalHandler));
-
-        _this.descriptor = descriptor;
-        return _this;
-    }
-
-    (0, _createClass3.default)(SyncTopic, [{
-        key: "publishMessage",
-
-        /**
-         * Publish a Message to the Topic.
-         * @param {Object} value Topic Message value
-         * @return {Promise<TopicMessage>}
-         * @public
-         */
-        value: function publishMessage(value) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                var requestBody, response, responseBody, event;
-                return _regenerator2.default.wrap(function _callee$(_context) {
-                    while (1) {
-                        switch (_context.prev = _context.next) {
-                            case 0:
-                                requestBody = { data: value };
-                                _context.next = 3;
-                                return this.services.network.post(this.links.messages, requestBody);
-
-                            case 3:
-                                response = _context.sent;
-                                responseBody = response.body;
-                                event = this._handleMessagePublished(responseBody.sid, value, false);
-                                return _context.abrupt("return", event);
-
-                            case 7:
-                            case "end":
-                                return _context.stop();
-                        }
-                    }
-                }, _callee, this);
-            }));
-        }
-        /**
-         * Permanently delete the Topic.
-         * @return {Promise} Promise to delete the Topic
-         * @public
-         */
-
-    }, {
-        key: "removeTopic",
-        value: function removeTopic() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-                return _regenerator2.default.wrap(function _callee2$(_context2) {
-                    while (1) {
-                        switch (_context2.prev = _context2.next) {
-                            case 0:
-                                _context2.next = 2;
-                                return this.services.network.delete(this.uri);
-
-                            case 2:
-                                this.onRemoved(true);
-
-                            case 3:
-                            case "end":
-                                return _context2.stop();
-                        }
-                    }
-                }, _callee2, this);
-            }));
-        }
-        /**
-         * Handle event from the server
-         * @private
-         */
-
-    }, {
-        key: "_update",
-        value: function _update(update) {
-            switch (update.type) {
-                case 'topic_message_published':
-                    {
-                        this._handleMessagePublished(update.message_sid, update.message_data, true);
-                        break;
-                    }
-                case 'topic_removed':
-                    {
-                        this.onRemoved(false);
-                        break;
-                    }
-            }
-        }
-    }, {
-        key: "_handleMessagePublished",
-        value: function _handleMessagePublished(sid, data, remote) {
-            var event = {
-                sid: sid,
-                value: data,
-                remote: remote
-            };
-            this.emit('messagePublished', event);
-            if (remote) {
-                this.emit('messagePublishedRemotely', event);
-            }
-            return event;
-        }
-    }, {
-        key: "onRemoved",
-        value: function onRemoved(isLocal) {
-            this._unsubscribe();
-            this.removalHandler(this.type, this.sid, this.uniqueName);
-            this.emit('topicRemoved', isLocal);
-            if (!isLocal) {
-                this.emit('topicRemovedRemotely');
-            }
-        }
-    }, {
-        key: "sid",
-        get: function get() {
-            return this.descriptor.sid;
-        }
-    }, {
-        key: "uniqueName",
-        get: function get() {
-            return this.descriptor.unique_name || null;
-        }
-    }, {
-        key: "uri",
-        get: function get() {
-            return this.descriptor.url;
-        }
-    }, {
-        key: "links",
-        get: function get() {
-            return this.descriptor.links;
-        }
-    }, {
-        key: "type",
-        get: function get() {
-            return 'topic';
-        }
-    }, {
-        key: "lastEventId",
-        get: function get() {
-            return null;
-        }
-    }], [{
-        key: "type",
-        get: function get() {
-            return 'topic';
-        }
-    }]);
-    return SyncTopic;
-}(entity_1.SyncEntity);
-
-exports.SyncTopic = SyncTopic;
-exports.default = SyncTopic;
-/**
- * @class TopicMessage
- * @classdesc Topic Message descriptor
- * @property {String} sid - Topic Message SID
- * @property {Object} value - Topic Message value
- * @property {boolean} remote - Indicates whether the Message was published by a remote actor
- */
-/**
- * Fired when a Message is published to the Topic, either locally or by a remote actor
- * @event Topic#messagePublished
- * @type {TopicMessage} Topic Message descriptor
- */
-/**
- * Fired when a Message is published to the Topic by a remote actor
- * @event Topic#messagePublishedRemotely
- * @type {TopicMessage} Topic Message descriptor
- */
-/**
- * Fired when the Topic is deleted
- * @event Topic#removed
- */
-/**
- * Fired when the Topic is deleted by a remote actor
- * @event Topic#removedRemotely
- */
-},{"../entity":252,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57}],269:[function(_dereq_,module,exports){
+},{"./cache":247,"./entity":252,"./mapitem":256,"./paginator":258,"./retryingqueue":259,"./utils":268,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/extends":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":57}],268:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -31987,7 +31655,7 @@ var UriBuilder = function () {
 }();
 
 exports.UriBuilder = UriBuilder;
-},{"babel-runtime/core-js/json/stringify":34,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],270:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/json/stringify":34,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],269:[function(_dereq_,module,exports){
 "use strict";
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
@@ -32044,7 +31712,7 @@ var Deferred = function () {
 }();
 
 exports.Deferred = Deferred;
-},{"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],271:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],270:[function(_dereq_,module,exports){
 module.exports={
   "_args": [
     [
@@ -32061,13 +31729,13 @@ module.exports={
     ]
   ],
   "_from": "twilio-sync@>=0.5.10 <0.6.0",
-  "_id": "twilio-sync@0.5.10",
+  "_id": "twilio-sync@0.5.11",
   "_inCache": true,
   "_location": "/twilio-sync",
   "_nodeVersion": "7.7.1",
   "_npmOperationalInternal": {
     "host": "s3://npm-registry-packages",
-    "tmp": "tmp/twilio-sync-0.5.10.tgz_1503303914949_0.8794955047778785"
+    "tmp": "tmp/twilio-sync-0.5.11.tgz_1510235981043_0.8974383089225739"
   },
   "_npmUser": {
     "name": "twilio-ci",
@@ -32087,8 +31755,8 @@ module.exports={
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.5.10.tgz",
-  "_shasum": "38fcfbd31fe72b48ac0fe29b37baf8c215d0bc76",
+  "_resolved": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.5.11.tgz",
+  "_shasum": "b903849019308da8a203d2949e7cc9bcdd61c947",
   "_shrinkwrap": null,
   "_spec": "twilio-sync@^0.5.10",
   "_where": "/var/lib/jenkins/jobs/twilio-chat.js/workspace",
@@ -32170,13 +31838,13 @@ module.exports={
   },
   "directories": {},
   "dist": {
-    "shasum": "38fcfbd31fe72b48ac0fe29b37baf8c215d0bc76",
-    "tarball": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.5.10.tgz"
+    "shasum": "b903849019308da8a203d2949e7cc9bcdd61c947",
+    "tarball": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.5.11.tgz"
   },
   "engines": {
     "node": ">=6"
   },
-  "gitHead": "cfefba94f7be630b924854ff63a9766218b2bdcd",
+  "gitHead": "1e2b9bc33de636fa6270254e16d178ef1226e37a",
   "license": "MIT",
   "main": "lib/index.js",
   "maintainers": [
@@ -32196,10 +31864,10 @@ module.exports={
     "prepublish": "gulp build",
     "test": "gulp unit-test"
   },
-  "version": "0.5.10"
+  "version": "0.5.11"
 }
 
-},{}],272:[function(_dereq_,module,exports){
+},{}],271:[function(_dereq_,module,exports){
 'use strict';
 
 var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
@@ -32370,7 +32038,7 @@ exports.default = Request;
 module.exports = Request;
 module.exports = exports['default'];
 
-},{"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/define-property":40,"babel-runtime/core-js/promise":45,"xmlhttprequest":70}],273:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/define-property":40,"babel-runtime/core-js/promise":45,"xmlhttprequest":70}],272:[function(_dereq_,module,exports){
 'use strict';
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
@@ -32799,7 +32467,7 @@ exports.default = Transport;
 exports.Transport = Transport;
 exports.TwilsockUnavailableError = TwilsockUnavailableError;
 
-},{"./httprequest":272,"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/create":38,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/object/define-property":40,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/object/keys":43,"babel-runtime/core-js/object/set-prototype-of":44,"babel-runtime/core-js/promise":45,"babel-runtime/core-js/reflect/construct":46,"babel-runtime/helpers/typeof":56}],274:[function(_dereq_,module,exports){
+},{"./httprequest":271,"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/create":38,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/object/define-property":40,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/object/keys":43,"babel-runtime/core-js/object/set-prototype-of":44,"babel-runtime/core-js/promise":45,"babel-runtime/core-js/reflect/construct":46,"babel-runtime/helpers/typeof":56}],273:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -32934,6 +32602,15 @@ var TwilsockClient = function (_EventEmitter) {
     _this._socket.on('stateChanged', function (state) {
       return _this.emit('stateChanged', state);
     });
+
+    if (typeof window !== 'undefined' && typeof window.addEventListener !== 'undefined') {
+      window.addEventListener('online', function () {
+        _logger2.default.debug('Got online');
+        if (twilsock.isRetrying()) {
+          twilsock.reconnect();
+        }
+      });
+    }
     return _this;
   }
 
@@ -33111,7 +32788,7 @@ exports.default = TwilsockClient;
 
 module.exports = exports['default'];
 
-},{"./configuration":275,"./logger":277,"./packetinterface":278,"./twilsock":279,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/object/freeze":41,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/core-js/set":47,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"events":214,"uuid":283}],275:[function(_dereq_,module,exports){
+},{"./configuration":274,"./logger":276,"./packetinterface":277,"./twilsock":278,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/object/freeze":41,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/core-js/set":47,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"events":214,"uuid":282}],274:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -33180,9 +32857,9 @@ var TwilsockConfig = function () {
 exports.default = TwilsockConfig;
 module.exports = exports['default'];
 
-},{"babel-runtime/core-js/object/define-properties":39,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],276:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/object/define-properties":39,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],275:[function(_dereq_,module,exports){
 arguments[4][242][0].apply(exports,arguments)
-},{"./client":274,"dup":242}],277:[function(_dereq_,module,exports){
+},{"./client":273,"dup":242}],276:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -33228,7 +32905,7 @@ exports.default = {
 };
 module.exports = exports['default'];
 
-},{"babel-runtime/core-js/array/from":31,"loglevel":219}],278:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/array/from":31,"loglevel":219}],277:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -33395,7 +33072,7 @@ var PacketInterface = function () {
 exports.default = PacketInterface;
 module.exports = exports['default'];
 
-},{"./logger":277,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],279:[function(_dereq_,module,exports){
+},{"./logger":276,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],278:[function(_dereq_,module,exports){
 (function (global){
 'use strict';
 
@@ -33746,6 +33423,8 @@ var TwilsockChannel = function (_EventEmitter) {
   }, {
     key: '_modifyBackoff',
     value: function _modifyBackoff(body) {
+      var _this3 = this;
+
       _logger2.default.trace('_modifyBackoff', body);
 
       var backoffPolicy = body ? body.backoff_policy : null;
@@ -33761,12 +33440,15 @@ var TwilsockChannel = function (_EventEmitter) {
           initialDelay: min,
           maxDelay: max
         });
+        this._backoff.on('ready', function () {
+          _this3._retry();
+        });
       }
     }
   }, {
     key: '_startDisconnectTimer',
     value: function _startDisconnectTimer() {
-      var _this3 = this;
+      var _this4 = this;
 
       _logger2.default.trace('_startDisconnectTimer');
 
@@ -33777,7 +33459,7 @@ var TwilsockChannel = function (_EventEmitter) {
 
       this._disconnectingTimer = setTimeout(function () {
         _logger2.default.debug('disconnecting is timed out');
-        _this3._closeSocket();
+        _this4._closeSocket();
       }, DISCONNECTING_TIMEOUT);
     }
   }, {
@@ -33833,7 +33515,7 @@ var TwilsockChannel = function (_EventEmitter) {
   }, {
     key: '_storeRequest',
     value: function _storeRequest(id, type, timeoutMs) {
-      var _this4 = this;
+      var _this5 = this;
 
       _logger2.default.trace('_storeRequest');
 
@@ -33846,7 +33528,7 @@ var TwilsockChannel = function (_EventEmitter) {
             _logger2.default.error('unknown request type', type);
           }
 
-          _this4._closeSocket();
+          _this5._closeSocket();
         }, timeoutMs)
       };
 
@@ -34236,6 +33918,28 @@ var TwilsockChannel = function (_EventEmitter) {
     }
 
     /**
+     * Retry the twilsock connection
+     */
+
+  }, {
+    key: 'reconnect',
+    value: function reconnect() {
+      _logger2.default.trace('reconnect');
+      this._resetBackoff();
+      this._fsm.userRetry();
+    }
+
+    /**
+     * Check twilsock is in retry state
+     */
+
+  }, {
+    key: 'isRetrying',
+    value: function isRetrying() {
+      return this._fsm.current === 'retrying';
+    }
+
+    /**
      * Close twilsock connection
      * If already disconnected, it does nothing
      */
@@ -34243,7 +33947,7 @@ var TwilsockChannel = function (_EventEmitter) {
   }, {
     key: 'disconnect',
     value: function disconnect() {
-      var _this5 = this;
+      var _this6 = this;
 
       _logger2.default.trace('disconnect');
 
@@ -34252,8 +33956,8 @@ var TwilsockChannel = function (_EventEmitter) {
       }
 
       return new _promise2.default(function (resolve) {
-        _this5._disconnectedPromiseResolve = resolve;
-        _this5._fsm.userDisconnect();
+        _this6._disconnectedPromiseResolve = resolve;
+        _this6._fsm.userDisconnect();
       });
     }
 
@@ -34351,14 +34055,14 @@ var TwilsockChannel = function (_EventEmitter) {
   }, {
     key: '_startWatchdogTimer',
     value: function _startWatchdogTimer() {
-      var _this6 = this;
+      var _this7 = this;
 
       _logger2.default.trace('_startWatchdogTimer');
 
       this._timestamp = Date.now();
       this._watchTimer = setInterval(function () {
-        if (Date.now() - _this6._timestamp > ACTIVITY_TIMEOUT && _this6._socket) {
-          _this6._socket.close();
+        if (Date.now() - _this7._timestamp > ACTIVITY_TIMEOUT && _this7._socket) {
+          _this7._socket.close();
         }
       }, ACTIVITY_CHECK_INTERVAL);
     }
@@ -34410,7 +34114,7 @@ TwilsockChannel.state = {
 module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./logger":277,"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/object/freeze":41,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/helpers/slicedToArray":55,"babel-runtime/helpers/typeof":56,"backoff":58,"events":214,"javascript-state-machine":217,"uuid":283,"ws":70}],280:[function(_dereq_,module,exports){
+},{"./logger":276,"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/define-properties":39,"babel-runtime/core-js/object/freeze":41,"babel-runtime/core-js/object/get-prototype-of":42,"babel-runtime/core-js/promise":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/helpers/slicedToArray":55,"babel-runtime/helpers/typeof":56,"backoff":58,"events":214,"javascript-state-machine":217,"uuid":282,"ws":70}],279:[function(_dereq_,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -34435,14 +34139,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],281:[function(_dereq_,module,exports){
+},{}],280:[function(_dereq_,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],282:[function(_dereq_,module,exports){
+},{}],281:[function(_dereq_,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -35032,7 +34736,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,_dereq_('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":281,"_process":225,"inherits":280}],283:[function(_dereq_,module,exports){
+},{"./support/isBuffer":280,"_process":225,"inherits":279}],282:[function(_dereq_,module,exports){
 var v1 = _dereq_('./v1');
 var v4 = _dereq_('./v4');
 
@@ -35042,7 +34746,7 @@ uuid.v4 = v4;
 
 module.exports = uuid;
 
-},{"./v1":286,"./v4":287}],284:[function(_dereq_,module,exports){
+},{"./v1":285,"./v4":286}],283:[function(_dereq_,module,exports){
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
@@ -35067,7 +34771,7 @@ function bytesToUuid(buf, offset) {
 
 module.exports = bytesToUuid;
 
-},{}],285:[function(_dereq_,module,exports){
+},{}],284:[function(_dereq_,module,exports){
 (function (global){
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
@@ -35104,7 +34808,7 @@ if (!rng) {
 module.exports = rng;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],286:[function(_dereq_,module,exports){
+},{}],285:[function(_dereq_,module,exports){
 var rng = _dereq_('./lib/rng');
 var bytesToUuid = _dereq_('./lib/bytesToUuid');
 
@@ -35206,7 +34910,7 @@ function v1(options, buf, offset) {
 
 module.exports = v1;
 
-},{"./lib/bytesToUuid":284,"./lib/rng":285}],287:[function(_dereq_,module,exports){
+},{"./lib/bytesToUuid":283,"./lib/rng":284}],286:[function(_dereq_,module,exports){
 var rng = _dereq_('./lib/rng');
 var bytesToUuid = _dereq_('./lib/bytesToUuid');
 
@@ -35237,13 +34941,13 @@ function v4(options, buf, offset) {
 
 module.exports = v4;
 
-},{"./lib/bytesToUuid":284,"./lib/rng":285}],288:[function(_dereq_,module,exports){
+},{"./lib/bytesToUuid":283,"./lib/rng":284}],287:[function(_dereq_,module,exports){
 module.exports = {
 	h32: _dereq_("./xxhash")
 ,	h64: _dereq_("./xxhash64")
 }
 
-},{"./xxhash":289,"./xxhash64":290}],289:[function(_dereq_,module,exports){
+},{"./xxhash":288,"./xxhash64":289}],288:[function(_dereq_,module,exports){
 (function (Buffer){
 /**
 xxHash implementation in pure Javascript
@@ -35636,7 +35340,7 @@ XXH.prototype.digest = function () {
 module.exports = XXH
 
 }).call(this,_dereq_("buffer").Buffer)
-},{"buffer":71,"cuint":209}],290:[function(_dereq_,module,exports){
+},{"buffer":71,"cuint":209}],289:[function(_dereq_,module,exports){
 (function (Buffer){
 /**
 xxHash64 implementation in pure Javascript
@@ -36084,10 +35788,10 @@ XXH64.prototype.digest = function () {
 module.exports = XXH64
 
 }).call(this,_dereq_("buffer").Buffer)
-},{"buffer":71,"cuint":209}],291:[function(_dereq_,module,exports){
+},{"buffer":71,"cuint":209}],290:[function(_dereq_,module,exports){
 module.exports={
   "name": "twilio-chat",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "Twilio Chat service client library",
   "main": "lib/index.js",
   "browser": "browser/index.js",
@@ -36098,7 +35802,7 @@ module.exports={
     "twilio-mcs-client": "^0.0.4",
     "durational": "^1.1.0",
     "isomorphic-form-data": "^1.0.0",
-    "loglevel": "^1.5.0",
+    "loglevel": "^1.6.0",
     "operation-retrier": "^1.3.2",
     "platform": "^1.3.4",
     "rfc6902": "^1.3.0",
@@ -36114,11 +35818,11 @@ module.exports={
     "@types/chai-as-promised": "0.0.31",
     "@types/chai-string": "^1.1.30",
     "@types/core-js": "^0.9.41",
-    "@types/mocha": "^2.2.43",
+    "@types/mocha": "^2.2.44",
     "@types/node": "^7.0.5",
-    "@types/sinon": "^2.3.5",
+    "@types/sinon": "^2.3.7",
     "@types/sinon-chai": "^2.7.27",
-    "async": "^2.1.5",
+    "async": "^2.6.0",
     "async-test-tools": "^1.0.6",
     "babel-eslint": "^7.2.3",
     "babel-plugin-add-module-exports": "^0.2.1",
@@ -36130,7 +35834,7 @@ module.exports={
     "babel-require": "^1.0.1",
     "babel-runtime": "^6.23.0",
     "babelify": "^7.3.0",
-    "browserify": "^14.1.0",
+    "browserify": "^14.5.0",
     "browserify-replace": "^0.9.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
@@ -36146,29 +35850,29 @@ module.exports={
     "gulp-rename": "^1.2.2",
     "gulp-tap": "^1.0.1",
     "gulp-tslint": "^8.1.0",
-    "gulp-typescript": "^3.1.7",
+    "gulp-typescript": "^3.2.3",
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
     "gulpclass": "^0.1.2",
     "ink-docstrap": "^1.3.0",
-    "jsdoc": "3.4.3",
+    "jsdoc": "^3.5.5",
     "jsdoc-strip-async-await": "^0.1.0",
     "karma": "^1.5.0",
-    "karma-browserify": "^5.1.1",
+    "karma-browserify": "^5.1.2",
     "karma-browserstack-launcher": "^1.2.0",
     "karma-mocha": "^1.3.0",
-    "karma-mocha-reporter": "^2.2.2",
+    "karma-mocha-reporter": "^2.2.5",
     "karma-sinon-ie": "^2.0.0",
     "loglevel-message-prefix": "^2.0.1",
     "mocha.parallel": "^0.15.0",
-    "nyc": "^11.2.1",
+    "nyc": "^11.3.0",
     "path": "^0.12.7",
     "sinon": "^2.3.2",
     "sinon-chai": "^2.14.0",
     "ts-node": "^3.0.4",
-    "tslint": "^5.4.2",
-    "twilio": "^3.7.0",
-    "typescript": "^2.5.3",
+    "tslint": "^5.8.0",
+    "twilio": "^3.10.0",
+    "typescript": "^2.6.1",
     "uglify-save-license": "^0.4.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
