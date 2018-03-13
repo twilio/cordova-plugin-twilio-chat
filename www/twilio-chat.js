@@ -1,4 +1,4 @@
-/* twilio-chat.js 2.1.0
+/* twilio-chat.js 2.2.0
 The following license applies to all parts of this software except as
 documented below.
 
@@ -147,7 +147,7 @@ This software includes platform.js under the following license.
     WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}(g.Twilio || (g.Twilio = {})).Chat = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}(g.Twilio || (g.Twilio = {})).Chat = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(_dereq_,module,exports){
 "use strict";
 
 var _getIterator2 = _dereq_("babel-runtime/core-js/get-iterator");
@@ -229,6 +229,7 @@ var messages_1 = _dereq_("./data/messages");
 var util_1 = _dereq_("./util");
 var log = logger_1.Logger.scope('');
 var fieldMappings = {
+    lastMessage: 'lastMessage',
     attributes: 'attributes',
     createdBy: 'createdBy',
     dateCreated: 'dateCreated',
@@ -267,6 +268,7 @@ exports.filterStatus = filterStatus;
  * @property {String} friendlyName - The Channel's name
  * @property {Boolean} isPrivate - Whether the channel is private (as opposed to public)
  * @property {Number} lastConsumedMessageIndex - Index of the last Message the User has consumed in this Channel
+ * @property {Channel#LastMessage} lastMessage - Last Message sent to this Channel
  * @property {String} sid - The Channel's unique system identifier
  * @property {('unknown' | 'known' | 'invited' | 'joined' | 'failed')} status - Whether the Channel
  * is 'known' to local Client, Client is 'invited' to or is 'joined' to this Channel
@@ -334,6 +336,13 @@ var Channel = function (_events_1$EventEmitte) {
     (0, _createClass3.default)(Channel, [{
         key: "_subscribe",
 
+        /**
+         * The last message of the Channel.
+         * @typedef {Object} Channel#LastMessage
+         * @property {String} author - Message's author
+         * @property {String} sid - Message's SID
+         * @property {Date} timestamp - Message's creation timestamp
+         */
         /**
          * Load and Subscribe to this Channel and do not subscribe to its Members and Messages.
          * This or _subscribeStreams will need to be called before any events on Channel will fire.
@@ -503,6 +512,30 @@ var Channel = function (_events_1$EventEmitte) {
                     if (!util_1.isDeepEqual(this.state.attributes, update.attributes)) {
                         this.state.attributes = update.attributes;
                         updated = true;
+                    }
+                } else if (localKey === fieldMappings.lastMessage) {
+                    if (this.state.lastMessage && !update.lastMessage) {
+                        delete this.state.lastMessage;
+                        updated = true;
+                    } else {
+                        if (!this.state.lastMessage) {
+                            this.state.lastMessage = {};
+                        }
+                        if (update.lastMessage && update.lastMessage.sid && update.lastMessage.sid !== this.state.lastMessage.sid) {
+                            this.state.lastMessage.sid = update.lastMessage.sid;
+                            updated = true;
+                        }
+                        if (update.lastMessage && update.lastMessage.author && update.lastMessage.author !== this.state.lastMessage.author) {
+                            this.state.lastMessage.author = update.lastMessage.author;
+                            updated = true;
+                        }
+                        if (update.lastMessage && update.lastMessage.timestamp && (!this.state.lastMessage.timestamp || this.state.lastMessage.timestamp.getTime() !== update.lastMessage.timestamp.getTime())) {
+                            this.state.lastMessage.timestamp = update.lastMessage.timestamp;
+                            updated = true;
+                        }
+                        if (util_1.isDeepEqual(this.state.lastMessage, {})) {
+                            delete this.state.lastMessage;
+                        }
                     }
                 } else if (update[key] instanceof Date) {
                     if (!this.state[localKey] || this.state[localKey].getTime() !== update[key].getTime()) {
@@ -1385,6 +1418,11 @@ var Channel = function (_events_1$EventEmitte) {
         get: function get() {
             return this.state.lastConsumedMessageIndex;
         }
+    }, {
+        key: "lastMessage",
+        get: function get() {
+            return this.state.lastMessage;
+        }
     }], [{
         key: "preprocessUpdate",
         value: function preprocessUpdate(update, channelSid) {
@@ -1403,7 +1441,7 @@ var Channel = function (_events_1$EventEmitte) {
                     update.dateCreated = new Date(update.dateCreated);
                 }
             } catch (e) {
-                log.warn('Retrieved malformed attributes from the server for channel: ' + channelSid);
+                log.warn('Retrieved malformed dateCreated from the server for channel: ' + channelSid);
                 delete update.dateCreated;
             }
             try {
@@ -1411,8 +1449,16 @@ var Channel = function (_events_1$EventEmitte) {
                     update.dateUpdated = new Date(update.dateUpdated);
                 }
             } catch (e) {
-                log.warn('Retrieved malformed attributes from the server for channel: ' + channelSid);
+                log.warn('Retrieved malformed dateUpdated from the server for channel: ' + channelSid);
                 delete update.dateUpdated;
+            }
+            try {
+                if (update.lastMessage && update.lastMessage.timestamp) {
+                    update.lastMessage.timestamp = new Date(update.lastMessage.timestamp);
+                }
+            } catch (e) {
+                log.warn('Retrieved malformed lastMessage.timestamp from the server for channel: ' + channelSid);
+                delete update.lastMessage.timestamp;
             }
         }
     }]);
@@ -1667,8 +1713,6 @@ var ClientServices = function ClientServices() {
 /**
  * A Client is a starting point to access Twilio Programmable Chat functionality.
  *
- * @property {Map<sid, Channel>} channels - A Map containing all Channels known locally on
- *   the Client. Use {@link Client#getSubscribedChannels} too ensure Channels have loaded before getting a response
  * @property {Client#ConnectionState} connectionState - Client connection state
  * @property {Boolean} reachabilityEnabled - Client reachability state
  * @property {User} user - Information for logged in user
@@ -1699,6 +1743,12 @@ var ClientServices = function ClientServices() {
 var Client = function (_events_1$EventEmitte) {
     (0, _inherits3.default)(Client, _events_1$EventEmitte);
 
+    /**
+     * These options can be passed to {@link Client#getLocalChannels}.
+     * @typedef {Object} Client#ChannelSortingOptions
+     * @property {('lastMessage'|'friendlyName'|'uniqueName')} criteria - Sorting criteria for Channels array
+     * @property {('ascending'|'descending')} [order] - Sorting order. If not present, then default is <code>ascending</code>
+     */
     function Client(token, options) {
         (0, _classCallCheck3.default)(this, Client);
 
@@ -1710,6 +1760,9 @@ var Client = function (_events_1$EventEmitte) {
         _this.version = SDK_VERSION;
         _this.parsePushNotification = Client.parsePushNotification;
         _this.options = options || {};
+        if (!_this.options.disableDeepClone) {
+            _this.options = util_1.deepClone(_this.options);
+        }
         _this.options.logLevel = _this.options.logLevel || 'error';
         _this.options.productId = 'ip_messaging';
         // Disable local storage for Sync now
@@ -1813,15 +1866,28 @@ var Client = function (_events_1$EventEmitte) {
         value: function subscribeToPushNotifications(channelType) {
             var _this2 = this;
 
+            var subscriptions = [];
             [notificationtypes_1.NotificationTypes.NEW_MESSAGE, notificationtypes_1.NotificationTypes.ADDED_TO_CHANNEL, notificationtypes_1.NotificationTypes.INVITED_TO_CHANNEL, notificationtypes_1.NotificationTypes.REMOVED_FROM_CHANNEL, notificationtypes_1.NotificationTypes.TYPING_INDICATOR, notificationtypes_1.NotificationTypes.CONSUMPTION_UPDATE].forEach(function (messageType) {
-                _this2.services.notificationClient.subscribe(messageType, channelType);
+                subscriptions.push(_this2.services.notificationClient.subscribe(messageType, channelType));
             });
+            return _promise2.default.all(subscriptions);
+        }
+    }, {
+        key: "unsubscribeFromPushNotifications",
+        value: function unsubscribeFromPushNotifications(channelType) {
+            var _this3 = this;
+
+            var subscriptions = [];
+            [notificationtypes_1.NotificationTypes.NEW_MESSAGE, notificationtypes_1.NotificationTypes.ADDED_TO_CHANNEL, notificationtypes_1.NotificationTypes.INVITED_TO_CHANNEL, notificationtypes_1.NotificationTypes.REMOVED_FROM_CHANNEL, notificationtypes_1.NotificationTypes.TYPING_INDICATOR, notificationtypes_1.NotificationTypes.CONSUMPTION_UPDATE].forEach(function (messageType) {
+                subscriptions.push(_this3.services.notificationClient.unsubscribe(messageType, channelType));
+            });
+            return _promise2.default.all(subscriptions);
         }
     }, {
         key: "initialize",
         value: function initialize() {
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                var _this3 = this;
+                var _this4 = this;
 
                 var response, links, options;
                 return _regenerator2.default.wrap(function _callee$(_context) {
@@ -1840,7 +1906,7 @@ var Client = function (_events_1$EventEmitte) {
 
                             case 6:
                                 Client.supportedPushChannels.forEach(function (channelType) {
-                                    return _this3.subscribeToPushNotifications(channelType);
+                                    return _this4.subscribeToPushNotifications(channelType);
                                 });
                                 _context.next = 9;
                                 return this.services.session.getSessionLinks();
@@ -1901,7 +1967,7 @@ var Client = function (_events_1$EventEmitte) {
         key: "updateToken",
         value: function updateToken(token) {
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
-                var _this4 = this;
+                var _this5 = this;
 
                 return _regenerator2.default.wrap(function _callee3$(_context3) {
                     while (1) {
@@ -1932,21 +1998,21 @@ var Client = function (_events_1$EventEmitte) {
                                     }
                                     return response.token;
                                 }).then(function (rtdToken) {
-                                    return _this4.services.twilsockClient.updateToken(token).then(function () {
-                                        return _this4.services.syncClient.updateToken(token);
+                                    return _this5.services.twilsockClient.updateToken(token).then(function () {
+                                        return _this5.services.syncClient.updateToken(token);
                                     }).then(function () {
-                                        return _this4.services.notificationClient.updateToken(token);
+                                        return _this5.services.notificationClient.updateToken(token);
                                     }).then(function () {
-                                        return _this4.services.mcsClient.updateToken(token);
+                                        return _this5.services.mcsClient.updateToken(token);
                                     }).then(function () {
-                                        return _this4.sessionPromise;
+                                        return _this5.sessionPromise;
                                     }).then(function () {
                                         return rtdToken;
                                     });
                                 }).then(function (rtdToken) {
-                                    _this4.config.updateToken(rtdToken);
-                                    _this4.fpaToken = token;
-                                    return _this4;
+                                    _this5.config.updateToken(rtdToken);
+                                    _this5.fpaToken = token;
+                                    return _this5;
                                 }));
 
                             case 6:
@@ -1967,7 +2033,7 @@ var Client = function (_events_1$EventEmitte) {
         key: "getChannelBySid",
         value: function getChannelBySid(channelSid) {
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee4() {
-                var _this5 = this;
+                var _this6 = this;
 
                 return _regenerator2.default.wrap(function _callee4$(_context4) {
                     while (1) {
@@ -1982,9 +2048,9 @@ var Client = function (_events_1$EventEmitte) {
 
                             case 2:
                                 return _context4.abrupt("return", this.channels.syncListRead.promise.then(function () {
-                                    return _this5.channels.getChannel(channelSid).then(function (channel) {
-                                        return channel || _this5.services.publicChannels.getChannelBySid(channelSid).then(function (x) {
-                                            return _this5.channels.pushChannel(x);
+                                    return _this6.channels.getChannel(channelSid).then(function (channel) {
+                                        return channel || _this6.services.publicChannels.getChannelBySid(channelSid).then(function (x) {
+                                            return _this6.channels.pushChannel(x);
                                         });
                                     });
                                 }));
@@ -2007,7 +2073,7 @@ var Client = function (_events_1$EventEmitte) {
         key: "getChannelByUniqueName",
         value: function getChannelByUniqueName(uniqueName) {
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee5() {
-                var _this6 = this;
+                var _this7 = this;
 
                 return _regenerator2.default.wrap(function _callee5$(_context5) {
                     while (1) {
@@ -2022,8 +2088,8 @@ var Client = function (_events_1$EventEmitte) {
 
                             case 2:
                                 return _context5.abrupt("return", this.channels.syncListRead.promise.then(function () {
-                                    return _this6.services.publicChannels.getChannelByUniqueName(uniqueName).then(function (x) {
-                                        return _this6.channels.pushChannel(x);
+                                    return _this7.services.publicChannels.getChannelByUniqueName(uniqueName).then(function (x) {
+                                        return _this7.channels.pushChannel(x);
                                     });
                                 }));
 
@@ -2048,12 +2114,57 @@ var Client = function (_events_1$EventEmitte) {
             });
         }
         /**
-         * Get the public channels directory content.
-         * @returns {Promise<Paginator<ChannelDescriptor>>}
+         * Get array of Channels locally known to Client in provided sorting order.
+         * Locally known channels are the ones created and/or joined during client runtime and currently logged in User subscribed Channels.
+         * To ensure full list of subscribed Channels fetched - call the {@link Client#getSubscribedChannels} method
+         * and fetch all pages with help of {@link Paginator#nextPage} method.
+         * @param {Client#ChannelSortingOptions} [sortingOptions] - Options for the Channel sorting
+         * @returns {Promise<Array<Channel>>}
          */
 
     }, {
+        key: "getLocalChannels",
+        value: function getLocalChannels(sortingOptions) {
+            return this.channelsPromise.then(function (channels) {
+                var result = [];
+                channels.channels.forEach(function (value) {
+                    result.push(value);
+                });
+                var sortingOrder = 'ascending';
+                if (sortingOptions && sortingOptions.order) {
+                    if (sortingOptions.order === 'descending') {
+                        sortingOrder = 'descending';
+                    } else if (sortingOptions.order !== 'ascending') {
+                        throw new Error('Sorting order should be `ascending` or `descending`');
+                    }
+                }
+                if (sortingOptions && sortingOptions.criteria) {
+                    if (sortingOptions.criteria === 'lastMessage') {
+                        result.sort(function (a, b) {
+                            return Client.compareChannelsByLastMessage(a, b, sortingOrder);
+                        });
+                    } else if (sortingOptions.criteria === 'uniqueName') {
+                        result.sort(function (a, b) {
+                            return Client.compareChannelsByStringProperty(a.uniqueName, b.uniqueName, sortingOrder);
+                        });
+                    } else if (sortingOptions.criteria === 'friendlyName') {
+                        result.sort(function (a, b) {
+                            return Client.compareChannelsByStringProperty(a.friendlyName, b.friendlyName, sortingOrder);
+                        });
+                    } else {
+                        throw new Error('Sorting criteria should be one of `lastMessage`, `uniqueName` or `friendlyName`');
+                    }
+                }
+                return result;
+            });
+        }
+    }, {
         key: "getPublicChannelDescriptors",
+
+        /**
+         * Get the public channels directory content.
+         * @returns {Promise<Paginator<ChannelDescriptor>>}
+         */
         value: function getPublicChannelDescriptors() {
             return this.services.publicChannels.getChannels();
         }
@@ -2094,15 +2205,72 @@ var Client = function (_events_1$EventEmitte) {
          * Registers for push notifications.
          * @param {string} channelType - 'gcm', 'apn' and 'fcm' are supported
          * @param {string} registrationId - Push notification id provided by platform
+         * @returns {Promise<void>}
          */
 
     }, {
         key: "setPushRegistrationId",
         value: function setPushRegistrationId(channelType, registrationId) {
-            if (Client.supportedPushChannels.indexOf(channelType) === -1) {
-                throw new Error('Invalid or unsupported channelType: ' + channelType);
-            }
-            this.services.notificationClient.setPushRegistrationId(registrationId, channelType);
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee6() {
+                var _this8 = this;
+
+                return _regenerator2.default.wrap(function _callee6$(_context6) {
+                    while (1) {
+                        switch (_context6.prev = _context6.next) {
+                            case 0:
+                                if (!(Client.supportedPushChannels.indexOf(channelType) === -1)) {
+                                    _context6.next = 2;
+                                    break;
+                                }
+
+                                throw new Error('Invalid or unsupported channelType: ' + channelType);
+
+                            case 2:
+                                _context6.next = 4;
+                                return this.subscribeToPushNotifications(channelType).then(function () {
+                                    return _this8.services.notificationClient.setPushRegistrationId(registrationId, channelType);
+                                });
+
+                            case 4:
+                            case "end":
+                                return _context6.stop();
+                        }
+                    }
+                }, _callee6, this);
+            }));
+        }
+        /**
+         * Unregisters from push notifications.
+         * @param {string} channelType - 'gcm', 'apn' and 'fcm' are supported
+         * @returns {Promise<void>}
+         */
+
+    }, {
+        key: "unsetPushRegistrationId",
+        value: function unsetPushRegistrationId(channelType) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee7() {
+                return _regenerator2.default.wrap(function _callee7$(_context7) {
+                    while (1) {
+                        switch (_context7.prev = _context7.next) {
+                            case 0:
+                                if (!(Client.supportedPushChannels.indexOf(channelType) === -1)) {
+                                    _context7.next = 2;
+                                    break;
+                                }
+
+                                throw new Error('Invalid or unsupported channelType: ' + channelType);
+
+                            case 2:
+                                _context7.next = 4;
+                                return this.unsubscribeFromPushNotifications(channelType);
+
+                            case 4:
+                            case "end":
+                                return _context7.stop();
+                        }
+                    }
+                }, _callee7, this);
+            }));
         }
     }, {
         key: "handlePushNotification",
@@ -2113,20 +2281,20 @@ var Client = function (_events_1$EventEmitte) {
          * @returns {void|Error}
          */
         value: function handlePushNotification(notificationPayload) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee6() {
-                return _regenerator2.default.wrap(function _callee6$(_context6) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee8() {
+                return _regenerator2.default.wrap(function _callee8$(_context8) {
                     while (1) {
-                        switch (_context6.prev = _context6.next) {
+                        switch (_context8.prev = _context8.next) {
                             case 0:
                                 log.debug('handlePushNotification, notificationPayload=', notificationPayload);
                                 this.emit('pushNotification', Client.parsePushNotification(notificationPayload));
 
                             case 2:
                             case "end":
-                                return _context6.stop();
+                                return _context8.stop();
                         }
                     }
-                }, _callee6, this);
+                }, _callee8, this);
             }));
         }
         /**
@@ -2150,19 +2318,19 @@ var Client = function (_events_1$EventEmitte) {
     }, {
         key: "getUserDescriptor",
         value: function getUserDescriptor(identity) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee7() {
-                return _regenerator2.default.wrap(function _callee7$(_context7) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee9() {
+                return _regenerator2.default.wrap(function _callee9$(_context9) {
                     while (1) {
-                        switch (_context7.prev = _context7.next) {
+                        switch (_context9.prev = _context9.next) {
                             case 0:
-                                return _context7.abrupt("return", this.services.users.getUserDescriptor(identity));
+                                return _context9.abrupt("return", this.services.users.getUserDescriptor(identity));
 
                             case 1:
                             case "end":
-                                return _context7.stop();
+                                return _context9.stop();
                         }
                     }
-                }, _callee7, this);
+                }, _callee9, this);
             }));
         }
         /**
@@ -2172,19 +2340,19 @@ var Client = function (_events_1$EventEmitte) {
     }, {
         key: "getSubscribedUsers",
         value: function getSubscribedUsers() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee8() {
-                return _regenerator2.default.wrap(function _callee8$(_context8) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee10() {
+                return _regenerator2.default.wrap(function _callee10$(_context10) {
                     while (1) {
-                        switch (_context8.prev = _context8.next) {
+                        switch (_context10.prev = _context10.next) {
                             case 0:
-                                return _context8.abrupt("return", this.services.users.getSubscribedUsers());
+                                return _context10.abrupt("return", this.services.users.getSubscribedUsers());
 
                             case 1:
                             case "end":
-                                return _context8.stop();
+                                return _context10.stop();
                         }
                     }
-                }, _callee8, this);
+                }, _callee10, this);
             }));
         }
     }, {
@@ -2216,26 +2384,63 @@ var Client = function (_events_1$EventEmitte) {
     }], [{
         key: "create",
         value: function create(token, options) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee9() {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee11() {
                 var client;
-                return _regenerator2.default.wrap(function _callee9$(_context9) {
+                return _regenerator2.default.wrap(function _callee11$(_context11) {
                     while (1) {
-                        switch (_context9.prev = _context9.next) {
+                        switch (_context11.prev = _context11.next) {
                             case 0:
                                 client = new Client(token, options);
-                                _context9.next = 3;
+                                _context11.next = 3;
                                 return client.initialize();
 
                             case 3:
-                                return _context9.abrupt("return", client);
+                                return _context11.abrupt("return", client);
 
                             case 4:
                             case "end":
-                                return _context9.stop();
+                                return _context11.stop();
                         }
                     }
-                }, _callee9, this);
+                }, _callee11, this);
             }));
+        }
+    }, {
+        key: "compareChannelsByLastMessage",
+        value: function compareChannelsByLastMessage(a, b, order) {
+            if (a.lastMessage && b.lastMessage) {
+                if (a.lastMessage.timestamp && b.lastMessage.timestamp) {
+                    if (a.lastMessage.timestamp.getTime() < b.lastMessage.timestamp.getTime()) {
+                        return order === 'ascending' ? -1 : 1;
+                    } else {
+                        return order === 'ascending' ? 1 : -1;
+                    }
+                } else {
+                    if (a.lastMessage.timestamp) {
+                        return -1;
+                    } else if (b.lastMessage.timestamp) {
+                        return 1;
+                    }
+                }
+            }
+            if (a.lastMessage) {
+                return -1;
+            } else if (b.lastMessage) {
+                return 1;
+            }
+            return 0;
+        }
+    }, {
+        key: "compareChannelsByStringProperty",
+        value: function compareChannelsByStringProperty(str1, str2, order) {
+            if (str1 && str2) {
+                return order === 'ascending' ? str1.localeCompare(str2) : -1 * str1.localeCompare(str2);
+            } else if (str1) {
+                return -1;
+            } else if (str2) {
+                return 1;
+            }
+            return 0;
         }
     }, {
         key: "parsePushNotificationChatData",
@@ -7840,6 +8045,8 @@ for (var i = 0, len = code.length; i < len; ++i) {
   revLookup[code.charCodeAt(i)] = i
 }
 
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
 revLookup['-'.charCodeAt(0)] = 62
 revLookup['_'.charCodeAt(0)] = 63
 
@@ -7901,7 +8108,7 @@ function encodeChunk (uint8, start, end) {
   var tmp
   var output = []
   for (var i = start; i < end; i += 3) {
-    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+    tmp = ((uint8[i] << 16) & 0xFF0000) + ((uint8[i + 1] << 8) & 0xFF00) + (uint8[i + 2] & 0xFF)
     output.push(tripletToBase64(tmp))
   }
   return output.join('')
@@ -13407,6 +13614,24 @@ function typedArraySupport () {
   }
 }
 
+Object.defineProperty(Buffer.prototype, 'parent', {
+  get: function () {
+    if (!(this instanceof Buffer)) {
+      return undefined
+    }
+    return this.buffer
+  }
+})
+
+Object.defineProperty(Buffer.prototype, 'offset', {
+  get: function () {
+    if (!(this instanceof Buffer)) {
+      return undefined
+    }
+    return this.byteOffset
+  }
+})
+
 function createBuffer (length) {
   if (length > K_MAX_LENGTH) {
     throw new RangeError('Invalid typed array length')
@@ -13458,7 +13683,7 @@ function from (value, encodingOrOffset, length) {
     throw new TypeError('"value" argument must not be a number')
   }
 
-  if (isArrayBuffer(value)) {
+  if (isArrayBuffer(value) || (value && isArrayBuffer(value.buffer))) {
     return fromArrayBuffer(value, encodingOrOffset, length)
   }
 
@@ -13488,7 +13713,7 @@ Buffer.__proto__ = Uint8Array
 
 function assertSize (size) {
   if (typeof size !== 'number') {
-    throw new TypeError('"size" argument must be a number')
+    throw new TypeError('"size" argument must be of type number')
   } else if (size < 0) {
     throw new RangeError('"size" argument must not be negative')
   }
@@ -13542,7 +13767,7 @@ function fromString (string, encoding) {
   }
 
   if (!Buffer.isEncoding(encoding)) {
-    throw new TypeError('"encoding" must be a valid string encoding')
+    throw new TypeError('Unknown encoding: ' + encoding)
   }
 
   var length = byteLength(string, encoding) | 0
@@ -13571,11 +13796,11 @@ function fromArrayLike (array) {
 
 function fromArrayBuffer (array, byteOffset, length) {
   if (byteOffset < 0 || array.byteLength < byteOffset) {
-    throw new RangeError('\'offset\' is out of bounds')
+    throw new RangeError('"offset" is outside of buffer bounds')
   }
 
   if (array.byteLength < byteOffset + (length || 0)) {
-    throw new RangeError('\'length\' is out of bounds')
+    throw new RangeError('"length" is outside of buffer bounds')
   }
 
   var buf
@@ -13606,7 +13831,7 @@ function fromObject (obj) {
   }
 
   if (obj) {
-    if (isArrayBufferView(obj) || 'length' in obj) {
+    if (ArrayBuffer.isView(obj) || 'length' in obj) {
       if (typeof obj.length !== 'number' || numberIsNaN(obj.length)) {
         return createBuffer(0)
       }
@@ -13618,7 +13843,7 @@ function fromObject (obj) {
     }
   }
 
-  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+  throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object.')
 }
 
 function checked (length) {
@@ -13705,6 +13930,9 @@ Buffer.concat = function concat (list, length) {
   var pos = 0
   for (i = 0; i < list.length; ++i) {
     var buf = list[i]
+    if (ArrayBuffer.isView(buf)) {
+      buf = Buffer.from(buf)
+    }
     if (!Buffer.isBuffer(buf)) {
       throw new TypeError('"list" argument must be an Array of Buffers')
     }
@@ -13718,7 +13946,7 @@ function byteLength (string, encoding) {
   if (Buffer.isBuffer(string)) {
     return string.length
   }
-  if (isArrayBufferView(string) || isArrayBuffer(string)) {
+  if (ArrayBuffer.isView(string) || isArrayBuffer(string)) {
     return string.byteLength
   }
   if (typeof string !== 'string') {
@@ -13885,6 +14113,8 @@ Buffer.prototype.toString = function toString () {
   if (arguments.length === 0) return utf8Slice(this, 0, length)
   return slowToString.apply(this, arguments)
 }
+
+Buffer.prototype.toLocaleString = Buffer.prototype.toString
 
 Buffer.prototype.equals = function equals (b) {
   if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
@@ -14106,9 +14336,7 @@ function hexWrite (buf, string, offset, length) {
     }
   }
 
-  // must be an even number of digits
   var strLen = string.length
-  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
 
   if (length > strLen / 2) {
     length = strLen / 2
@@ -14801,6 +15029,7 @@ Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert
 
 // copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
 Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!Buffer.isBuffer(target)) throw new TypeError('argument should be a Buffer')
   if (!start) start = 0
   if (!end && end !== 0) end = this.length
   if (targetStart >= target.length) targetStart = target.length
@@ -14815,7 +15044,7 @@ Buffer.prototype.copy = function copy (target, targetStart, start, end) {
   if (targetStart < 0) {
     throw new RangeError('targetStart out of bounds')
   }
-  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (start < 0 || start >= this.length) throw new RangeError('Index out of range')
   if (end < 0) throw new RangeError('sourceEnd out of bounds')
 
   // Are we oob?
@@ -14825,22 +15054,19 @@ Buffer.prototype.copy = function copy (target, targetStart, start, end) {
   }
 
   var len = end - start
-  var i
 
-  if (this === target && start < targetStart && targetStart < end) {
+  if (this === target && typeof Uint8Array.prototype.copyWithin === 'function') {
+    // Use built-in when available, missing from IE11
+    this.copyWithin(targetStart, start, end)
+  } else if (this === target && start < targetStart && targetStart < end) {
     // descending copy from end
-    for (i = len - 1; i >= 0; --i) {
-      target[i + targetStart] = this[i + start]
-    }
-  } else if (len < 1000) {
-    // ascending copy from start
-    for (i = 0; i < len; ++i) {
+    for (var i = len - 1; i >= 0; --i) {
       target[i + targetStart] = this[i + start]
     }
   } else {
     Uint8Array.prototype.set.call(
       target,
-      this.subarray(start, start + len),
+      this.subarray(start, end),
       targetStart
     )
   }
@@ -14863,17 +15089,19 @@ Buffer.prototype.fill = function fill (val, start, end, encoding) {
       encoding = end
       end = this.length
     }
-    if (val.length === 1) {
-      var code = val.charCodeAt(0)
-      if (code < 256) {
-        val = code
-      }
-    }
     if (encoding !== undefined && typeof encoding !== 'string') {
       throw new TypeError('encoding must be a string')
     }
     if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
       throw new TypeError('Unknown encoding: ' + encoding)
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0)
+      if ((encoding === 'utf8' && code < 128) ||
+          encoding === 'latin1') {
+        // Fast path: If `val` fits into a single byte, use that numeric value.
+        val = code
+      }
     }
   } else if (typeof val === 'number') {
     val = val & 255
@@ -14903,6 +15131,10 @@ Buffer.prototype.fill = function fill (val, start, end, encoding) {
       ? val
       : new Buffer(val, encoding)
     var len = bytes.length
+    if (len === 0) {
+      throw new TypeError('The value "' + val +
+        '" is invalid for argument "value"')
+    }
     for (i = 0; i < end - start; ++i) {
       this[i + start] = bytes[i % len]
     }
@@ -14917,6 +15149,8 @@ Buffer.prototype.fill = function fill (val, start, end, encoding) {
 var INVALID_BASE64_RE = /[^+/0-9A-Za-z-_]/g
 
 function base64clean (str) {
+  // Node takes equal signs as end of the Base64 encoding
+  str = str.split('=')[0]
   // Node strips out invalid characters like \n and \t from the string, base64-js does not
   str = str.trim().replace(INVALID_BASE64_RE, '')
   // Node converts strings with length < 2 to ''
@@ -15056,11 +15290,6 @@ function isArrayBuffer (obj) {
   return obj instanceof ArrayBuffer ||
     (obj != null && obj.constructor != null && obj.constructor.name === 'ArrayBuffer' &&
       typeof obj.byteLength === 'number')
-}
-
-// Node 0.10 supports `ArrayBuffer` but lacks `ArrayBuffer.isView`
-function isArrayBufferView (obj) {
-  return (typeof ArrayBuffer.isView === 'function') && ArrayBuffer.isView(obj)
 }
 
 function numberIsNaN (obj) {
@@ -20490,7 +20719,7 @@ exports.default = Retrier;
 (function (global){
 /*!
  * Platform.js <https://mths.be/platform>
- * Copyright 2014-2016 Benjamin Tan <https://demoneaux.github.io/>
+ * Copyright 2014-2018 Benjamin Tan <https://bnjmnt4n.now.sh/>
  * Copyright 2011-2013 John-David Dalton <http://allyoucanleet.com/>
  * Available under MIT license <https://mths.be/mit>
  */
@@ -21232,16 +21461,18 @@ exports.default = Retrier;
           arch = data.getProperty('os.arch');
           os = os || data.getProperty('os.name') + ' ' + data.getProperty('os.version');
         }
-        if (isModuleScope && isHostType(context, 'system') && (data = [context.system])[0]) {
-          os || (os = data[0].os || null);
+        if (rhino) {
           try {
-            data[1] = context.require('ringo/engine').version;
-            version = data[1].join('.');
+            version = context.require('ringo/engine').version.join('.');
             name = 'RingoJS';
           } catch(e) {
-            if (data[0].global.system == context.system) {
+            if ((data = context.system) && data.global.system == context.system) {
               name = 'Narwhal';
+              os || (os = data[0].os || null);
             }
+          }
+          if (!name) {
+            name = 'Rhino';
           }
         }
         else if (
@@ -21258,16 +21489,14 @@ exports.default = Retrier;
               name = 'NW.js';
               version = data.versions.nw;
             }
-          } else {
+          }
+          if (!name) {
             name = 'Node.js';
             arch = data.arch;
             os = data.platform;
-            version = /[\d.]+/.exec(data.version)
-            version = version ? version[0] : 'unknown';
+            version = /[\d.]+/.exec(data.version);
+            version = version ? version[0] : null;
           }
-        }
-        else if (rhino) {
-          name = 'Rhino';
         }
       }
       // Detect Adobe AIR.
@@ -27751,6 +27980,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @property {Number} index The index, within the containing List, of this item. This index is stable;
  * even if lower-indexed Items are removed, this index will remain as is.
  * @property {Object} value The contents of the item.
+ * @property {Date} dateUpdated Date when the List Item was last updated.
  */
 
 var ListItem = function () {
@@ -27772,16 +28002,13 @@ var ListItem = function () {
     key: "update",
 
     /**
-     * Update item data
-     * @param {Number} EventId Update event id
-     * @param {String} Revision Updated item revision
-     * @param {Object} Value Updated item data
      * @private
      */
-    value: function update(eventId, revision, value) {
+    value: function update(eventId, revision, value, dateUpdated) {
       this.data.lastEventId = eventId;
       this.data.revision = revision;
       this.data.value = value;
+      this.data.dateUpdated = dateUpdated;
       return this;
     }
     /**
@@ -27807,6 +28034,11 @@ var ListItem = function () {
     key: "lastEventId",
     get: function get() {
       return this.data.lastEventId;
+    }
+  }, {
+    key: "dateUpdated",
+    get: function get() {
+      return this.data.dateUpdated;
     }
   }, {
     key: "dateExpires",
@@ -27903,16 +28135,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @alias MapItem
  * @property {String} key The identifier that maps to this item within the containing Map.
  * @property {Object} value The contents of the item.
+ * @property {Date} dateUpdated Date when the Map Item was last updated, given in UTC ISO 8601 format (e.g., '2018-04-26T15:23:19.732Z')
  */
 
 var MapItem = function () {
   /**
    * @private
    * @constructor
-   * @param {Object} data Item descriptor
-   * @param {String} data.key Item identifier
-   * @param {String} data.uri Item URI
-   * @param {Object} data.value Item data
    */
   function MapItem(descriptor) {
     (0, _classCallCheck3.default)(this, MapItem);
@@ -27924,16 +28153,13 @@ var MapItem = function () {
     key: "update",
 
     /**
-     * Update item data
-     * @param {Number} EventId Update event id
-     * @param {String} Revision Updated item revision
-     * @param {Object} Value Updated item data
      * @private
      */
-    value: function update(eventId, revision, value) {
+    value: function update(eventId, revision, value, dateUpdated) {
       this.descriptor.last_event_id = eventId;
       this.descriptor.revision = revision;
       this.descriptor.data = value;
+      this.descriptor.date_updated = dateUpdated;
       return this;
     }
     /**
@@ -27974,6 +28200,11 @@ var MapItem = function () {
     key: "value",
     get: function get() {
       return this.descriptor.data;
+    }
+  }, {
+    key: "dateUpdated",
+    get: function get() {
+      return this.descriptor.date_updated;
     }
   }]);
   return MapItem;
@@ -30081,6 +30312,7 @@ var syncerror_1 = _dereq_("./syncerror");
  * @property {String} sid The immutable identifier of this document, assigned by the system.
  * @property {String} [uniqueName=null] An optional immutable identifier that may be assigned by the programmer
  * to this document during creation. Globally unique among other Documents.
+ * @property {Date} dateUpdated Date when the Document was last updated.
  * @property {Object} value The contents of this document.
  *
  * @fires Document#removed
@@ -30105,6 +30337,7 @@ var SyncDocument = function (_entity_1$SyncEntity) {
         _this.updateMergingQueue = new mergingqueue_1.MergingQueue(updateRequestReducer);
         _this.descriptor = descriptor;
         _this.descriptor.data = _this.descriptor.data || {};
+        _this.descriptor.date_updated = new Date(_this.descriptor.date_updated);
         return _this;
     }
     // private props
@@ -30118,15 +30351,21 @@ var SyncDocument = function (_entity_1$SyncEntity) {
          * @private
          */
         value: function _update(update) {
+            update.date_created = new Date(update.date_created);
             switch (update.type) {
                 case 'document_updated':
                     if (update.id > this.lastEventId) {
-                        var originalData = this.descriptor.data;
                         this.descriptor.last_event_id = update.id;
                         this.descriptor.revision = update.document_revision;
+                        this.descriptor.date_updated = update.date_created;
                         this.descriptor.data = update.document_data;
                         this.emit('updated', { value: update.document_data, isLocal: false });
-                        this.services.storage.update(this.type, this.sid, this.uniqueName, { last_event_id: update.id, revision: update.document_revision, data: update.document_data });
+                        this.services.storage.update(this.type, this.sid, this.uniqueName, {
+                            last_event_id: update.id,
+                            revision: update.document_revision,
+                            date_updated: update.date_created,
+                            data: update.document_data
+                        });
                     } else {
                         logger_1.default.trace('Document update skipped, current:', this.lastEventId, ', remote:', update.id);
                     }
@@ -30422,7 +30661,13 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                 this.descriptor.data = result.data;
                 this.descriptor.last_event_id = result.last_event_id;
                 this.descriptor.date_expires = result.date_expires;
-                this.services.storage.update(this.type, this.sid, this.uniqueName, { last_event_id: result.last_event_id, revision: result.revision, data: result.data });
+                this.descriptor.date_updated = new Date(result.date_updated);
+                this.services.storage.update(this.type, this.sid, this.uniqueName, {
+                    last_event_id: result.last_event_id,
+                    revision: result.revision,
+                    date_updated: result.date_updated,
+                    data: result.data
+                });
                 this.emit('updated', { value: this.value, isLocal: true });
             }
         }
@@ -30462,6 +30707,7 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                                     revision: response.body.revision,
                                     data: request.data,
                                     last_event_id: response.body.last_event_id,
+                                    date_updated: response.body.date_updated,
                                     date_expires: response.body.date_expires
                                 });
 
@@ -30505,10 +30751,14 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                         switch (_context8.prev = _context8.next) {
                             case 0:
                                 return _context8.abrupt("return", this.services.network.get(this.uri).then(function (response) {
-                                    _this4._update({ type: 'document_updated',
+                                    var event = {
+                                        type: 'document_updated',
                                         id: response.body.last_event_id,
                                         document_revision: response.body.revision,
-                                        document_data: response.body.data }); // eslint-disable-line camelcase
+                                        document_data: response.body.data,
+                                        date_created: response.body.date_updated // eslint-disable-line camelcase
+                                    };
+                                    _this4._update(event);
                                     return _this4;
                                 }).catch(function (err) {
                                     if (err.status === 404) {
@@ -30620,6 +30870,11 @@ var SyncDocument = function (_entity_1$SyncEntity) {
         key: "value",
         get: function get() {
             return this.descriptor.data;
+        }
+    }, {
+        key: "dateUpdated",
+        get: function get() {
+            return this.descriptor.date_updated;
         }
     }, {
         key: "uniqueName",
@@ -30798,6 +31053,7 @@ var syncerror_1 = _dereq_("./syncerror");
  * Use the {@link Client#list} method to obtain a reference to a Sync List.
  * @property {String} sid - List unique id, immutable identifier assigned by the system.
  * @property {String} [uniqueName=null] - List unique name, immutable identifier that can be assigned to list during creation.
+ * @property {Date} dateUpdated Date when the List was last updated.
  *
  * @fires List#removed
  * @fires List#itemAdded
@@ -30822,6 +31078,7 @@ var SyncList = function (_entity_1$SyncEntity) {
         _this.updateMergingQueue = new mergingqueue_1.NamespacedMergingQueue(updateRequestReducer);
         _this.cache = new cache_1.Cache();
         _this.descriptor = descriptor;
+        _this.descriptor.date_updated = new Date(_this.descriptor.date_updated);
         return _this;
     }
     // private props
@@ -30848,9 +31105,10 @@ var SyncList = function (_entity_1$SyncEntity) {
                                 response = _context.sent;
 
                                 response.body.data = data;
+                                response.body.date_updated = new Date(response.body.date_updated);
                                 return _context.abrupt("return", response.body);
 
-                            case 7:
+                            case 8:
                             case "end":
                                 return _context.stop();
                         }
@@ -30893,7 +31151,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                                 item = _context2.sent;
                                 index = Number(item.index);
 
-                                this._handleItemMutated(index, item.url, item.last_event_id, item.revision, value, item.date_expires, true, false);
+                                this._handleItemMutated(index, item.url, item.last_event_id, item.revision, value, item.date_updated, item.date_expires, true, false);
                                 return _context2.abrupt("return", this.cache.get(index));
 
                             case 8:
@@ -30953,7 +31211,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                             case 5:
                                 itemDescriptor = _context3.sent;
 
-                                this._handleItemMutated(index, itemDescriptor.url, itemDescriptor.last_event_id, itemDescriptor.revision, itemDescriptor.data, itemDescriptor.date_expires, false, false);
+                                this._handleItemMutated(index, itemDescriptor.url, itemDescriptor.last_event_id, itemDescriptor.revision, itemDescriptor.data, itemDescriptor.date_updated, itemDescriptor.date_expires, false, false);
                                 return _context3.abrupt("return", this.cache.get(index));
 
                             case 8:
@@ -30993,7 +31251,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                             case 9:
                                 itemDescriptor = _context4.sent;
 
-                                this._handleItemMutated(index, itemDescriptor.url, itemDescriptor.last_event_id, itemDescriptor.revision, itemDescriptor.data, itemDescriptor.date_expires, false, false);
+                                this._handleItemMutated(index, itemDescriptor.url, itemDescriptor.last_event_id, itemDescriptor.revision, itemDescriptor.data, itemDescriptor.date_updated, itemDescriptor.date_expires, false, false);
                                 return _context4.abrupt("return", this.cache.get(index));
 
                             case 14:
@@ -31160,7 +31418,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                             case 5:
                                 response = _context7.sent;
 
-                                this._handleItemRemoved(index, response.body.last_event_id, undefined, false);
+                                this._handleItemRemoved(index, response.body.last_event_id, undefined, new Date(response.body.date_updated), false);
 
                             case 7:
                             case "end":
@@ -31272,14 +31530,16 @@ var SyncList = function (_entity_1$SyncEntity) {
                             case 4:
                                 response = _context10.sent;
                                 items = response.body.items.map(function (el) {
+                                    el.date_updated = new Date(el.date_updated);
                                     var itemInCache = _this4.cache.get(el.index);
                                     if (itemInCache) {
-                                        _this4._handleItemMutated(el.index, el.url, el.last_event_id, el.revision, el.data, el.date_expires, false, true);
+                                        _this4._handleItemMutated(el.index, el.url, el.last_event_id, el.revision, el.data, el.date_updated, el.date_expires, false, true);
                                     } else {
                                         _this4.cache.store(Number(el.index), new listitem_1.ListItem({ index: Number(el.index),
                                             uri: el.url,
                                             revision: el.revision,
                                             lastEventId: el.last_event_id,
+                                            dateUpdated: el.date_updated,
                                             dateExpires: el.date_expires,
                                             value: el.data }), el.last_event_id);
                                     }
@@ -31542,22 +31802,23 @@ var SyncList = function (_entity_1$SyncEntity) {
         key: "_update",
         value: function _update(update, isStrictlyOrdered) {
             var itemIndex = Number(update.item_index);
+            update.date_created = new Date(update.date_created);
             switch (update.type) {
                 case 'list_item_added':
                 case 'list_item_updated':
                     {
-                        this._handleItemMutated(itemIndex, update.item_url, update.id, update.item_revision, update.item_data, undefined, // orchestration does not include date_expires
+                        this._handleItemMutated(itemIndex, update.item_url, update.id, update.item_revision, update.item_data, update.date_created, undefined, // orchestration does not include date_expires
                         update.type === 'list_item_added', true);
                     }
                     break;
                 case 'list_item_removed':
                     {
-                        this._handleItemRemoved(itemIndex, update.id, update.item_data, true);
+                        this._handleItemRemoved(itemIndex, update.id, update.item_data, update.date_created, true);
                     }
                     break;
                 case 'list_context_updated':
                     {
-                        this._handleContextUpdate(update.context_data, update.id);
+                        this._handleContextUpdate(update.context_data, update.id, update.date_created);
                     }
                     break;
                 case 'list_removed':
@@ -31581,19 +31842,28 @@ var SyncList = function (_entity_1$SyncEntity) {
             }
         }
     }, {
+        key: "_updateRootDateUpdated",
+        value: function _updateRootDateUpdated(dateUpdated) {
+            if (!this.descriptor.date_updated || dateUpdated.getTime() > this.descriptor.date_updated.getTime()) {
+                this.descriptor.date_updated = dateUpdated;
+                this.services.storage.update(this.type, this.sid, this.uniqueName, { date_updated: dateUpdated });
+            }
+        }
+    }, {
         key: "_handleItemMutated",
-        value: function _handleItemMutated(index, uri, lastEventId, revision, value, dateExpires, added, remote) {
+        value: function _handleItemMutated(index, uri, lastEventId, revision, value, dateUpdated, dateExpires, added, remote) {
             if (this.shouldIgnoreEvent(index, lastEventId)) {
                 logger_1.default.trace('Item ', index, ' update skipped, current:', this.lastEventId, ', remote:', lastEventId);
                 return;
             } else {
+                this._updateRootDateUpdated(dateUpdated);
                 var item = this.cache.get(index);
                 if (!item) {
-                    var _item = new listitem_1.ListItem({ index: index, uri: uri, lastEventId: lastEventId, revision: revision, value: value, dateExpires: dateExpires });
+                    var _item = new listitem_1.ListItem({ index: index, uri: uri, lastEventId: lastEventId, revision: revision, value: value, dateUpdated: dateUpdated, dateExpires: dateExpires });
                     this.cache.store(index, _item, lastEventId);
                     this.emitItemMutationEvent(_item, remote, added);
                 } else if (item.lastEventId <= lastEventId) {
-                    item.update(lastEventId, revision, value);
+                    item.update(lastEventId, revision, value, dateUpdated);
                     if (dateExpires !== undefined) {
                         item.updateDateExpires(dateExpires);
                     }
@@ -31617,7 +31887,8 @@ var SyncList = function (_entity_1$SyncEntity) {
 
     }, {
         key: "_handleItemRemoved",
-        value: function _handleItemRemoved(index, eventId, oldData, remote) {
+        value: function _handleItemRemoved(index, eventId, oldData, dateUpdated, remote) {
+            this._updateRootDateUpdated(dateUpdated);
             this.cache.delete(index, eventId);
             this.emit('itemRemoved', { index: index, isLocal: !remote, value: oldData });
         }
@@ -31627,7 +31898,8 @@ var SyncList = function (_entity_1$SyncEntity) {
 
     }, {
         key: "_handleContextUpdate",
-        value: function _handleContextUpdate(data, eventId) {
+        value: function _handleContextUpdate(data, eventId, dateUpdated) {
+            this._updateRootDateUpdated(dateUpdated);
             if (this._updateContextIfRequired(data, eventId)) {
                 this.emit('contextUpdated', { context: data, isLocal: false });
             }
@@ -31689,6 +31961,11 @@ var SyncList = function (_entity_1$SyncEntity) {
         key: "uniqueName",
         get: function get() {
             return this.descriptor.unique_name || null;
+        }
+    }, {
+        key: "dateUpdated",
+        get: function get() {
+            return this.descriptor.date_updated;
         }
     }], [{
         key: "type",
@@ -31843,7 +32120,7 @@ var syncerror_1 = _dereq_("./syncerror");
  * @property {String} sid An immutable identifier (a SID) assigned by the system on creation.
  * @property {String} [uniqueName=null] - An optional immutable identifier that may be assigned by the
  * programmer to this map on creation. Unique among other Maps.
- *
+ * @property {Date} dateUpdated Date when the Map was last updated.
  *
  * @fires Map#removed
  * @fires Map#itemAdded
@@ -31868,8 +32145,10 @@ var SyncMap = function (_entity_1$SyncEntity) {
         _this.updateMergingQueue = new mergingqueue_1.NamespacedMergingQueue(updateRequestReducer);
         _this.cache = new cache_1.Cache();
         _this.descriptor = descriptor;
+        _this.descriptor.date_updated = new Date(_this.descriptor.date_updated);
         if (descriptor.items) {
             descriptor.items.forEach(function (itemDescriptor) {
+                itemDescriptor.date_updated = new Date(itemDescriptor.date_updated);
                 _this.cache.store(itemDescriptor.key, new mapitem_1.MapItem(itemDescriptor), itemDescriptor.last_event_id);
             });
         }
@@ -32111,7 +32390,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                                 result = _context6.sent;
                                 item = result.item;
 
-                                this._handleItemMutated(item.key, item.url, item.last_event_id, item.revision, item.data, item.date_expires, result.added, false);
+                                this._handleItemMutated(item.key, item.url, item.last_event_id, item.revision, item.data, item.date_updated, item.date_expires, result.added, false);
                                 return _context6.abrupt("return", this.cache.get(item.key));
 
                             case 6:
@@ -32135,7 +32414,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                                 return this.get(key).catch(function (error) {
                                     if (error.status === 404) {
                                         // PUT /Items/myKey with `If-Match: -1` acts as "put if not exists"
-                                        return new mapitem_1.MapItem({ key: key, data: {}, last_event_id: -1, revision: '-1', url: null, date_expires: null });
+                                        return new mapitem_1.MapItem({ key: key, data: {}, last_event_id: -1, revision: '-1', url: null, date_updated: null, date_expires: null });
                                     } else {
                                         throw error;
                                     }
@@ -32159,7 +32438,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                                 result = _context7.sent;
                                 item = result.item;
 
-                                this._handleItemMutated(item.key, item.url, item.last_event_id, item.revision, item.data, item.date_expires, result.added, false);
+                                this._handleItemMutated(item.key, item.url, item.last_event_id, item.revision, item.data, item.date_updated, item.date_expires, result.added, false);
                                 return _context7.abrupt("return", this.cache.get(item.key));
 
                             case 15:
@@ -32219,11 +32498,12 @@ var SyncMap = function (_entity_1$SyncEntity) {
                                 mapItemDescriptor = response.body;
 
                                 mapItemDescriptor.data = data; // The server does not return the data in the response
+                                mapItemDescriptor.date_updated = new Date(mapItemDescriptor.date_updated);
                                 added = response.status.code === 201;
                                 return _context8.abrupt("return", { added: added, item: mapItemDescriptor });
 
-                            case 13:
-                                _context8.prev = 13;
+                            case 14:
+                                _context8.prev = 14;
                                 _context8.t0 = _context8["catch"](3);
 
                                 if (_context8.t0.status === 404) {
@@ -32231,12 +32511,12 @@ var SyncMap = function (_entity_1$SyncEntity) {
                                 }
                                 throw _context8.t0;
 
-                            case 17:
+                            case 18:
                             case "end":
                                 return _context8.stop();
                         }
                     }
-                }, _callee8, this, [[3, 13]]);
+                }, _callee8, this, [[3, 14]]);
             }));
         }
         /**
@@ -32283,7 +32563,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                             case 7:
                                 response = _context9.sent;
 
-                                this._handleItemRemoved(key, response.body.last_event_id, undefined, false);
+                                this._handleItemRemoved(key, response.body.last_event_id, undefined, new Date(response.body.date_updated), false);
 
                             case 9:
                             case "end":
@@ -32316,9 +32596,10 @@ var SyncMap = function (_entity_1$SyncEntity) {
                             case 4:
                                 response = _context10.sent;
                                 items = response.body.items.map(function (el) {
+                                    el.date_updated = new Date(el.date_updated);
                                     var itemInCache = _this4.cache.get(el.key);
                                     if (itemInCache) {
-                                        _this4._handleItemMutated(el.key, el.url, el.last_event_id, el.revision, el.data, el.date_expires, false, true);
+                                        _this4._handleItemMutated(el.key, el.url, el.last_event_id, el.revision, el.data, el.date_updated, el.date_expires, false, true);
                                     } else {
                                         _this4.cache.store(el.key, new mapitem_1.MapItem(el), el.last_event_id);
                                     }
@@ -32422,17 +32703,18 @@ var SyncMap = function (_entity_1$SyncEntity) {
     }, {
         key: "_update",
         value: function _update(update, isStrictlyOrdered) {
+            update.date_created = new Date(update.date_created);
             switch (update.type) {
                 case 'map_item_added':
                 case 'map_item_updated':
                     {
-                        this._handleItemMutated(update.item_key, update.item_url, update.id, update.item_revision, update.item_data, undefined, // orchestration events do not include date_expires
+                        this._handleItemMutated(update.item_key, update.item_url, update.id, update.item_revision, update.item_data, update.date_created, undefined, // orchestration events do not include date_expires
                         update.type === 'map_item_added', true);
                     }
                     break;
                 case 'map_item_removed':
                     {
-                        this._handleItemRemoved(update.item_key, update.id, update.item_data, true);
+                        this._handleItemRemoved(update.item_key, update.id, update.item_data, update.date_created, true);
                     }
                     break;
                 case 'map_removed':
@@ -32456,19 +32738,28 @@ var SyncMap = function (_entity_1$SyncEntity) {
             }
         }
     }, {
+        key: "_updateRootDateUpdated",
+        value: function _updateRootDateUpdated(dateUpdated) {
+            if (!this.descriptor.date_updated || dateUpdated.getTime() > this.descriptor.date_updated.getTime()) {
+                this.descriptor.date_updated = dateUpdated;
+                this.services.storage.update(this.type, this.sid, this.uniqueName, { date_updated: dateUpdated });
+            }
+        }
+    }, {
         key: "_handleItemMutated",
-        value: function _handleItemMutated(key, url, lastEventId, revision, value, dateExpires, added, remote) {
+        value: function _handleItemMutated(key, url, lastEventId, revision, value, dateUpdated, dateExpires, added, remote) {
             if (this.shouldIgnoreEvent(key, lastEventId)) {
                 logger_1.default.trace('Item ', key, ' update skipped, current:', this.lastEventId, ', remote:', lastEventId);
                 return;
             } else {
+                this._updateRootDateUpdated(dateUpdated);
                 var item = this.cache.get(key);
                 if (!item) {
-                    item = new mapitem_1.MapItem({ key: key, url: url, last_event_id: lastEventId, revision: revision, data: value, date_expires: dateExpires });
+                    item = new mapitem_1.MapItem({ key: key, url: url, last_event_id: lastEventId, revision: revision, data: value, date_updated: dateUpdated, date_expires: dateExpires });
                     this.cache.store(key, item, lastEventId);
                     this.emitItemMutationEvent(item, remote, added);
                 } else if (item.lastEventId <= lastEventId) {
-                    item.update(lastEventId, revision, value);
+                    item.update(lastEventId, revision, value, dateUpdated);
                     if (dateExpires !== undefined) {
                         item.updateDateExpires(dateExpires);
                     }
@@ -32488,7 +32779,8 @@ var SyncMap = function (_entity_1$SyncEntity) {
 
     }, {
         key: "_handleItemRemoved",
-        value: function _handleItemRemoved(key, eventId, oldData, remote) {
+        value: function _handleItemRemoved(key, eventId, oldData, dateUpdated, remote) {
+            this._updateRootDateUpdated(dateUpdated);
             this.cache.delete(key, eventId);
             this.emit('itemRemoved', { key: key, isLocal: !remote, value: oldData });
         }
@@ -32681,6 +32973,11 @@ var SyncMap = function (_entity_1$SyncEntity) {
         get: function get() {
             return this.descriptor.unique_name || null;
         }
+    }, {
+        key: "dateUpdated",
+        get: function get() {
+            return this.descriptor.date_updated;
+        }
     }], [{
         key: "type",
         get: function get() {
@@ -32866,25 +33163,25 @@ module.exports={
   "_args": [
     [
       {
-        "raw": "twilio-sync@^0.7.2",
+        "raw": "twilio-sync@^0.7.4",
         "scope": null,
         "escapedName": "twilio-sync",
         "name": "twilio-sync",
-        "rawSpec": "^0.7.2",
-        "spec": ">=0.7.2 <0.8.0",
+        "rawSpec": "^0.7.4",
+        "spec": ">=0.7.4 <0.8.0",
         "type": "range"
       },
       "/var/lib/jenkins/jobs/twilio-chat.js/workspace"
     ]
   ],
-  "_from": "twilio-sync@>=0.7.2 <0.8.0",
-  "_id": "twilio-sync@0.7.2",
+  "_from": "twilio-sync@>=0.7.4 <0.8.0",
+  "_id": "twilio-sync@0.7.4",
   "_inCache": true,
   "_location": "/twilio-sync",
   "_nodeVersion": "7.7.1",
   "_npmOperationalInternal": {
     "host": "s3://npm-registry-packages",
-    "tmp": "tmp/twilio-sync-0.7.2.tgz_1515505444930_0.14996938686817884"
+    "tmp": "tmp/twilio-sync-0.7.4.tgz_1516105521077_0.08853570837527514"
   },
   "_npmUser": {
     "name": "twilio-ci",
@@ -32893,21 +33190,21 @@ module.exports={
   "_npmVersion": "4.1.2",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "twilio-sync@^0.7.2",
+    "raw": "twilio-sync@^0.7.4",
     "scope": null,
     "escapedName": "twilio-sync",
     "name": "twilio-sync",
-    "rawSpec": "^0.7.2",
-    "spec": ">=0.7.2 <0.8.0",
+    "rawSpec": "^0.7.4",
+    "spec": ">=0.7.4 <0.8.0",
     "type": "range"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.7.2.tgz",
-  "_shasum": "c30ecaa81b3e91202dce45fba06e18d2a8e9ed4a",
+  "_resolved": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.7.4.tgz",
+  "_shasum": "f890954bfd8b6d73d0ff0309d982cce9d212eee1",
   "_shrinkwrap": null,
-  "_spec": "twilio-sync@^0.7.2",
+  "_spec": "twilio-sync@^0.7.4",
   "_where": "/var/lib/jenkins/jobs/twilio-chat.js/workspace",
   "author": {
     "name": "Twilio"
@@ -32987,13 +33284,13 @@ module.exports={
   },
   "directories": {},
   "dist": {
-    "shasum": "c30ecaa81b3e91202dce45fba06e18d2a8e9ed4a",
-    "tarball": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.7.2.tgz"
+    "shasum": "f890954bfd8b6d73d0ff0309d982cce9d212eee1",
+    "tarball": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.7.4.tgz"
   },
   "engines": {
     "node": ">=6"
   },
-  "gitHead": "184a0e4f16f6b568bac846b32f9cdf47c0f35371",
+  "gitHead": "29cc7329e06175be1c71a1c8f1a00144ec336881",
   "license": "MIT",
   "main": "lib/index.js",
   "maintainers": [
@@ -33013,7 +33310,7 @@ module.exports={
     "prepare": "gulp build",
     "test": "gulp unit-test"
   },
-  "version": "0.7.2"
+  "version": "0.7.4"
 }
 
 },{}],272:[function(_dereq_,module,exports){
@@ -35914,30 +36211,30 @@ function bytesToUuid(buf, offset) {
 module.exports = bytesToUuid;
 
 },{}],285:[function(_dereq_,module,exports){
-(function (global){
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
 // and inconsistent support for the `crypto` API.  We do the best we can via
 // feature-detection
-var rng;
 
-var crypto = global.crypto || global.msCrypto; // for IE 11
-if (crypto && crypto.getRandomValues) {
+// getRandomValues needs to be invoked in a context where "this" is a Crypto implementation.
+var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues.bind(crypto)) ||
+                      (typeof(msCrypto) != 'undefined' && msCrypto.getRandomValues.bind(msCrypto));
+if (getRandomValues) {
   // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
   var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
-  rng = function whatwgRNG() {
-    crypto.getRandomValues(rnds8);
+
+  module.exports = function whatwgRNG() {
+    getRandomValues(rnds8);
     return rnds8;
   };
-}
-
-if (!rng) {
+} else {
   // Math.random()-based (RNG)
   //
   // If all else fails, use Math.random().  It's fast, but is of unspecified
   // quality.
   var rnds = new Array(16);
-  rng = function() {
+
+  module.exports = function mathRNG() {
     for (var i = 0, r; i < 16; i++) {
       if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
       rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
@@ -35947,9 +36244,6 @@ if (!rng) {
   };
 }
 
-module.exports = rng;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],286:[function(_dereq_,module,exports){
 var rng = _dereq_('./lib/rng');
 var bytesToUuid = _dereq_('./lib/bytesToUuid');
@@ -35959,20 +36253,12 @@ var bytesToUuid = _dereq_('./lib/bytesToUuid');
 // Inspired by https://github.com/LiosK/UUID.js
 // and http://docs.python.org/library/uuid.html
 
-// random #'s we need to init node and clockseq
-var _seedBytes = rng();
-
-// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
-var _nodeId = [
-  _seedBytes[0] | 0x01,
-  _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]
-];
-
-// Per 4.2.2, randomize (14 bit) clockseq
-var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
+var _nodeId;
+var _clockseq;
 
 // Previous uuid creation time
-var _lastMSecs = 0, _lastNSecs = 0;
+var _lastMSecs = 0;
+var _lastNSecs = 0;
 
 // See https://github.com/broofa/node-uuid for API details
 function v1(options, buf, offset) {
@@ -35980,8 +36266,26 @@ function v1(options, buf, offset) {
   var b = buf || [];
 
   options = options || {};
-
+  var node = options.node || _nodeId;
   var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+  if (node == null || clockseq == null) {
+    var seedBytes = rng();
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [
+        seedBytes[0] | 0x01,
+        seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]
+      ];
+    }
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  }
 
   // UUID timestamps are 100 nano-second units since the Gregorian epoch,
   // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
@@ -36042,7 +36346,6 @@ function v1(options, buf, offset) {
   b[i++] = clockseq & 0xff;
 
   // `node`
-  var node = options.node || _nodeId;
   for (var n = 0; n < 6; ++n) {
     b[i + n] = node[n];
   }
@@ -36060,7 +36363,7 @@ function v4(options, buf, offset) {
   var i = buf && offset || 0;
 
   if (typeof(options) == 'string') {
-    buf = options == 'binary' ? new Array(16) : null;
+    buf = options === 'binary' ? new Array(16) : null;
     options = null;
   }
   options = options || {};
@@ -36933,7 +37236,7 @@ module.exports = XXH64
 },{"buffer":71,"cuint":209}],291:[function(_dereq_,module,exports){
 module.exports={
   "name": "twilio-chat",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Twilio Chat service client library",
   "main": "lib/index.js",
   "browser": "browser/index.js",
@@ -36944,22 +37247,22 @@ module.exports={
     "twilio-mcs-client": "^0.0.4",
     "durational": "^1.1.0",
     "isomorphic-form-data": "^1.0.0",
-    "loglevel": "^1.6.0",
+    "loglevel": "^1.6.1",
     "operation-retrier": "^1.3.2",
     "platform": "^1.3.4",
     "rfc6902": "^1.3.0",
     "twilio-ems-client": "^0.2.6",
     "twilio-notifications": "^0.4.4",
-    "twilio-sync": "^0.7.2",
+    "twilio-sync": "^0.7.4",
     "twilio-transport": "^0.1.4",
     "twilsock": "^0.3.6",
-    "uuid": "^3.1.0"
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "@types/chai": "^3.4.35",
     "@types/chai-as-promised": "0.0.31",
     "@types/chai-string": "^1.1.30",
-    "@types/core-js": "^0.9.44",
+    "@types/core-js": "^0.9.45",
     "@types/mocha": "^2.2.46",
     "@types/node": "^7.0.52",
     "@types/sinon": "^2.3.7",
@@ -37002,14 +37305,14 @@ module.exports={
     "jsdoc": "^3.5.5",
     "jsdoc-strip-async-await": "^0.1.0",
     "loglevel-message-prefix": "^2.0.1",
-    "mocha.parallel": "0.15.3",
+    "mocha.parallel": "^0.15.5",
     "nyc": "^11.4.1",
     "path": "^0.12.7",
     "sinon": "^2.3.2",
     "sinon-chai": "^2.14.0",
     "source-map-explorer": "^1.5.0",
     "ts-node": "^3.0.4",
-    "tslint": "^5.8.0",
+    "tslint": "^5.9.1",
     "twilio": "^3.11.0",
     "typescript": "^2.6.2",
     "uglify-save-license": "^0.4.1",
