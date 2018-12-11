@@ -1,4 +1,4 @@
-/* twilio-chat.js 3.1.0
+/* twilio-chat.js 3.2.0
 The following license applies to all parts of this software except as
 documented below.
 
@@ -4944,6 +4944,10 @@ exports.Media = Media;
 },{"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],16:[function(_dereq_,module,exports){
 "use strict";
 
+var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _regenerator = _dereq_("babel-runtime/regenerator");
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -5004,9 +5008,15 @@ var __awaiter = undefined && undefined.__awaiter || function (thisArg, _argument
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = _dereq_("events");
+var util_1 = _dereq_("./util");
+var logger_1 = _dereq_("./logger");
+var log = logger_1.Logger.scope('Member');
 /**
  * @classdesc A Member represents a remote Client in a Channel.
+ * @property {Object} attributes - Object with custom attributes for Member
  * @property {Channel} channel - The Channel the remote Client is a Member of
+ * @property {Date} dateCreated - The Date this Member was created
+ * @property {Date} dateUpdated - The Date this Member was last updated
  * @property {String} identity - The identity of the remote Client
  * @property {Boolean} isTyping - Whether or not this Member is currently typing
  * @property {Number} lastConsumedMessageIndex - Latest consumed Message index by this Member.
@@ -5015,6 +5025,7 @@ var events_1 = _dereq_("events");
  * to find out how to mark messages as consumed.
  * @property {Date} lastConsumptionTimestamp - Date when Member has updated his consumption horizon
  * @property {String} sid - The server-assigned unique identifier for the Member
+ * @property {Member#Type} type - The type of Member
  * @fires Member#typingEnded
  * @fires Member#typingStarted
  * @fires Member#updated
@@ -5026,6 +5037,21 @@ var Member = function (_events_1$EventEmitte) {
         key: "sid",
         get: function get() {
             return this.state.sid;
+        }
+    }, {
+        key: "attributes",
+        get: function get() {
+            return this.state.attributes;
+        }
+    }, {
+        key: "dateCreated",
+        get: function get() {
+            return this.state.dateCreated;
+        }
+    }, {
+        key: "dateUpdated",
+        get: function get() {
+            return this.state.dateUpdated;
         }
     }, {
         key: "identity",
@@ -5052,9 +5078,19 @@ var Member = function (_events_1$EventEmitte) {
         get: function get() {
             return this.state.roleSid;
         }
+    }, {
+        key: "type",
+        get: function get() {
+            return this.state.type;
+        }
         /**
          * The update reason for <code>updated</code> event emitted on Member
-         * @typedef {('roleSid' | 'lastConsumedMessageIndex' | 'lastConsumptionTimestamp')} Member#UpdateReason
+         * @typedef {('attributes' | 'dateCreated' | 'dateUpdated' | 'roleSid' |
+          'lastConsumedMessageIndex' | 'lastConsumptionTimestamp')} Member#UpdateReason
+         */
+        /**
+         * The type of Member
+         * @typedef {('chat' | 'sms')} Member#Type
          */
 
     }]);
@@ -5067,17 +5103,21 @@ var Member = function (_events_1$EventEmitte) {
         _this.channel = channel;
         _this.services = services;
         _this.state = {
+            attributes: util_1.parseAttributes(data.attributes, 'Retrieved malformed attributes from the server for member: ' + sid, log),
+            dateCreated: data.dateCreated ? util_1.parseTime(data.dateCreated) : null,
+            dateUpdated: data.dateCreated ? util_1.parseTime(data.dateUpdated) : null,
             sid: sid,
             typingTimeout: null,
             isTyping: false,
-            identity: data.identity,
+            identity: data.identity || null,
             roleSid: data.roleSid || null,
             lastConsumedMessageIndex: (0, _isInteger2.default)(data.lastConsumedMessageIndex) ? data.lastConsumedMessageIndex : null,
-            lastConsumptionTimestamp: data.lastConsumptionTimestamp ? new Date(data.lastConsumptionTimestamp) : null,
+            lastConsumptionTimestamp: data.lastConsumptionTimestamp ? util_1.parseTime(data.lastConsumptionTimestamp) : null,
+            type: data.type || 'chat',
             userInfo: data.userInfo
         };
-        if (!data.identity) {
-            throw new Error('Received invalid Member object from server: Missing identity.');
+        if (!data.identity && !data.type) {
+            throw new Error('Received invalid Member object from server: Missing identity or type of Member.');
         }
         return _this;
     }
@@ -5127,6 +5167,21 @@ var Member = function (_events_1$EventEmitte) {
         key: "_update",
         value: function _update(data) {
             var updateReasons = [];
+            var updateAttributes = util_1.parseAttributes(data.attributes, 'Retrieved malformed attributes from the server for member: ' + this.state.sid, log);
+            if (data.attributes && !util_1.isDeepEqual(this.state.attributes, updateAttributes)) {
+                this.state.attributes = updateAttributes;
+                updateReasons.push('attributes');
+            }
+            var updatedDateUpdated = util_1.parseTime(data.dateUpdated);
+            if (data.dateUpdated && updatedDateUpdated.getTime() !== (this.state.dateUpdated && this.state.dateUpdated.getTime())) {
+                this.state.dateUpdated = updatedDateUpdated;
+                updateReasons.push('dateUpdated');
+            }
+            var updatedDateCreated = util_1.parseTime(data.dateCreated);
+            if (data.dateCreated && updatedDateCreated.getTime() !== (this.state.dateCreated && this.state.dateCreated.getTime())) {
+                this.state.dateCreated = updatedDateCreated;
+                updateReasons.push('dateCreated');
+            }
             if (data.roleSid && this.state.roleSid !== data.roleSid) {
                 this.state.roleSid = data.roleSid;
                 updateReasons.push('roleSid');
@@ -5148,8 +5203,8 @@ var Member = function (_events_1$EventEmitte) {
             return this;
         }
         /**
-         * Gets User Descriptor for this member.
-         * @returns {Promise<UserDescriptor>}
+         * Gets User Descriptor for this member. Supported only for <code>chat</code> type of Members
+         * @returns {Promise<UserDescriptor|Error>}
          */
 
     }, {
@@ -5160,9 +5215,17 @@ var Member = function (_events_1$EventEmitte) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
+                                if (!(this.type != 'chat')) {
+                                    _context.next = 2;
+                                    break;
+                                }
+
+                                throw new Error('Getting User Descriptor is not supported for this Member type: ' + this.type);
+
+                            case 2:
                                 return _context.abrupt("return", this.services.users.getUserDescriptor(this.state.identity));
 
-                            case 1:
+                            case 3:
                             case "end":
                                 return _context.stop();
                         }
@@ -5171,8 +5234,8 @@ var Member = function (_events_1$EventEmitte) {
             }));
         }
         /**
-         * Gets User for this member and subscribes to it.
-         * @returns {Promise<User>}
+         * Gets User for this member and subscribes to it. Supported only for <code>chat</code> type of Members
+         * @returns {Promise<User|Error>}
          */
 
     }, {
@@ -5183,9 +5246,17 @@ var Member = function (_events_1$EventEmitte) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
+                                if (!(this.type != 'chat')) {
+                                    _context2.next = 2;
+                                    break;
+                                }
+
+                                throw new Error('Getting User is not supported for this Member type: ' + this.type);
+
+                            case 2:
                                 return _context2.abrupt("return", this.services.users.getUser(this.state.identity, this.state.userInfo));
 
-                            case 1:
+                            case 3:
                             case "end":
                                 return _context2.stop();
                         }
@@ -5194,14 +5265,83 @@ var Member = function (_events_1$EventEmitte) {
             }));
         }
         /**
-         * Remove Member from the Channel.
-         * @returns {Promise<void>}
+         * Remove Member from the Channel. Supported only for <code>chat</code> type of Members
+         * @returns {Promise<void|Error|SessionError>}
          */
 
     }, {
         key: "remove",
         value: function remove() {
-            return this.channel.removeMember(this);
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                if (!(this.type != 'chat')) {
+                                    _context3.next = 2;
+                                    break;
+                                }
+
+                                throw new Error('Removing this member is not supported for this Member type: ' + this.type);
+
+                            case 2:
+                                return _context3.abrupt("return", this.channel.removeMember(this));
+
+                            case 3:
+                            case "end":
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+        }
+        /**
+         * Edit member attributes.
+         * @param {Object} attributes new attributes for Member.
+         * @returns {Promise<Member|Error|SessionError>}
+         */
+
+    }, {
+        key: "updateAttributes",
+        value: function updateAttributes(attributes) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee4() {
+                return _regenerator2.default.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                if (attributes) {
+                                    _context4.next = 4;
+                                    break;
+                                }
+
+                                throw new Error('Attributes can\'t be null');
+
+                            case 4:
+                                if (!(attributes.constructor !== Object)) {
+                                    _context4.next = 6;
+                                    break;
+                                }
+
+                                throw new Error('Attributes must be a valid JSON object');
+
+                            case 6:
+                                _context4.next = 8;
+                                return this.services.session.addCommand('editMemberAttributes', {
+                                    channelSid: this.channel.sid,
+                                    memberSid: this.sid,
+                                    attributes: (0, _stringify2.default)(attributes)
+                                });
+
+                            case 8:
+                                return _context4.abrupt("return", this);
+
+                            case 9:
+                            case "end":
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
+            }));
         }
     }]);
     return Member;
@@ -5225,7 +5365,7 @@ exports.Member = Member;
  * @property {Member} member - Updated Member
  * @property {Member#UpdateReason[]} updateReasons - Array of Member's updated event reasons
  */
-},{"babel-runtime/core-js/number/is-integer":36,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199}],17:[function(_dereq_,module,exports){
+},{"./logger":14,"./util":30,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/number/is-integer":36,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199}],17:[function(_dereq_,module,exports){
 "use strict";
 
 var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
@@ -7468,6 +7608,26 @@ function parseToNumber(value) {
     return null;
 }
 exports.parseToNumber = parseToNumber;
+function parseTime(timeString) {
+    try {
+        return new Date(timeString);
+    } catch (e) {
+        return null;
+    }
+}
+exports.parseTime = parseTime;
+function parseAttributes(rawAttributes, warningMessage, log) {
+    var attributes = {};
+    if (rawAttributes) {
+        try {
+            attributes = JSON.parse(rawAttributes);
+        } catch (e) {
+            log.warn(warningMessage);
+        }
+    }
+    return attributes;
+}
+exports.parseAttributes = parseAttributes;
 /**
  * Construct URI with query parameters
  */
@@ -8774,7 +8934,7 @@ module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
 };
 
 },{"./_an-instance":84,"./_array-methods":88,"./_descriptors":101,"./_export":105,"./_fails":106,"./_for-of":107,"./_global":108,"./_hide":110,"./_is-object":118,"./_meta":126,"./_object-dp":131,"./_redefine-all":145,"./_set-to-string-tag":151}],97:[function(_dereq_,module,exports){
-var core = module.exports = { version: '2.5.7' };
+var core = module.exports = { version: '2.6.0' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 },{}],98:[function(_dereq_,module,exports){
@@ -17232,7 +17392,8 @@ var Client = function (_events_1$EventEmitte) {
         _this.services.twilsock.on('disconnected', function () {
             _this._onTransportStateChange(false);
         });
-        _this.updateToken(token);
+        _this.services.config.updateToken(token);
+        _this.registrar.updateToken(token);
         return _this;
     }
 
@@ -17359,11 +17520,14 @@ var Client = function (_events_1$EventEmitte) {
                                 return _context.abrupt("return");
 
                             case 3:
-                                this.services.twilsock.updateToken(token);
+                                _context.next = 5;
+                                return this.services.twilsock.updateToken(token);
+
+                            case 5:
                                 this.services.config.updateToken(token);
                                 this.registrar.updateToken(token);
 
-                            case 6:
+                            case 7:
                             case "end":
                                 return _context.stop();
                         }
@@ -18571,6 +18735,7 @@ var clientInfo_1 = _dereq_("./clientInfo");
 var entitiesCache_1 = _dereq_("./entitiesCache");
 var storage_1 = _dereq_("./services/storage");
 var utils_2 = _dereq_("./utils");
+var syncerror_1 = _dereq_("./syncerror");
 var syncstream_1 = _dereq_("./streams/syncstream");
 var SYNC_PRODUCT_ID = 'data_sync';
 var SDK_VERSION = _dereq_('../package.json').version;
@@ -18757,7 +18922,7 @@ var Client = function (_events_1$EventEmitte) {
                                     break;
                                 }
 
-                                return _context2.abrupt("return", null);
+                                throw new syncerror_1.default("Cannot get entity without id", 404);
 
                             case 2:
                                 uri = new utils_1.UriBuilder(baseUri).pathSegment(id).queryParam('Include', optimistic ? 'items' : undefined).build();
@@ -19650,7 +19815,7 @@ exports.default = Client;
  * @type {void}
  */
 
-},{"../package.json":258,"./clientInfo":237,"./configuration":238,"./entitiesCache":239,"./logger":243,"./network":246,"./router":248,"./services/storage":249,"./streams/syncstream":250,"./subscriptions":251,"./syncdocument":253,"./synclist":255,"./syncmap":256,"./utils":257,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199,"twilio-notifications":230,"twilsock":269}],237:[function(_dereq_,module,exports){
+},{"../package.json":258,"./clientInfo":237,"./configuration":238,"./entitiesCache":239,"./logger":243,"./network":246,"./router":248,"./services/storage":249,"./streams/syncstream":250,"./subscriptions":251,"./syncdocument":253,"./syncerror":254,"./synclist":255,"./syncmap":256,"./utils":257,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199,"twilio-notifications":230,"twilsock":269}],237:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -23204,39 +23369,23 @@ var SyncList = function (_entity_1$SyncEntity) {
 
     }, {
         key: "set",
-        value: function set(index, value, itemMetadataUpdates) {
-            var _this2 = this;
-
-            var input = itemMetadataUpdates || {};
-            utils_1.validateOptionalTtl(input.ttl);
-            return this.updateMergingQueue.squashAndAdd(index, input, function (input) {
-                return _this2._updateItemUnconditionally(index, value, input.ttl);
-            });
-        }
-    }, {
-        key: "_updateItemUnconditionally",
         value: function () {
-            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(index, data, ttl) {
-                var existingItem, itemDescriptor;
+            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(index, value, itemMetadataUpdates) {
+                var _this2 = this;
+
+                var input;
                 return _regenerator2.default.wrap(function _callee3$(_context3) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
-                                _context3.next = 2;
-                                return this.get(index);
+                                input = itemMetadataUpdates || {};
 
-                            case 2:
-                                existingItem = _context3.sent;
-                                _context3.next = 5;
-                                return this._addOrUpdateItemOnServer(existingItem.uri, data, undefined, ttl);
+                                utils_1.validateOptionalTtl(input.ttl);
+                                return _context3.abrupt("return", this.updateMergingQueue.squashAndAdd(index, input, function (input) {
+                                    return _this2._updateItemUnconditionally(index, value, input.ttl);
+                                }));
 
-                            case 5:
-                                itemDescriptor = _context3.sent;
-
-                                this._handleItemMutated(index, itemDescriptor.url, itemDescriptor.last_event_id, itemDescriptor.revision, itemDescriptor.data, itemDescriptor.date_updated, itemDescriptor.date_expires, false, false);
-                                return _context3.abrupt("return", this.cache.get(index));
-
-                            case 8:
+                            case 3:
                             case "end":
                                 return _context3.stop();
                         }
@@ -23244,17 +23393,17 @@ var SyncList = function (_entity_1$SyncEntity) {
                 }, _callee3, this);
             }));
 
-            function _updateItemUnconditionally(_x7, _x8, _x9) {
+            function set(_x7, _x8, _x9) {
                 return _ref3.apply(this, arguments);
             }
 
-            return _updateItemUnconditionally;
+            return set;
         }()
     }, {
-        key: "_updateItemWithIfMatch",
+        key: "_updateItemUnconditionally",
         value: function () {
-            var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(index, mutatorFunction, ttl) {
-                var existingItem, data, ifMatch, itemDescriptor;
+            var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(index, data, ttl) {
+                var existingItem, itemDescriptor;
                 return _regenerator2.default.wrap(function _callee4$(_context4) {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
@@ -23264,59 +23413,96 @@ var SyncList = function (_entity_1$SyncEntity) {
 
                             case 2:
                                 existingItem = _context4.sent;
-                                data = mutatorFunction(utils_1.deepClone(existingItem.value));
+                                _context4.next = 5;
+                                return this._addOrUpdateItemOnServer(existingItem.uri, data, undefined, ttl);
 
-                                if (!data) {
-                                    _context4.next = 25;
-                                    break;
-                                }
-
-                                ifMatch = existingItem.revision;
-                                _context4.prev = 6;
-                                _context4.next = 9;
-                                return this._addOrUpdateItemOnServer(existingItem.uri, data, ifMatch, ttl);
-
-                            case 9:
+                            case 5:
                                 itemDescriptor = _context4.sent;
 
                                 this._handleItemMutated(index, itemDescriptor.url, itemDescriptor.last_event_id, itemDescriptor.revision, itemDescriptor.data, itemDescriptor.date_updated, itemDescriptor.date_expires, false, false);
                                 return _context4.abrupt("return", this.cache.get(index));
 
-                            case 14:
-                                _context4.prev = 14;
-                                _context4.t0 = _context4["catch"](6);
-
-                                if (!(_context4.t0.status === 412)) {
-                                    _context4.next = 22;
-                                    break;
-                                }
-
-                                _context4.next = 19;
-                                return this._getItemFromServer(index);
-
-                            case 19:
-                                return _context4.abrupt("return", this._updateItemWithIfMatch(index, mutatorFunction, ttl));
-
-                            case 22:
-                                throw _context4.t0;
-
-                            case 23:
-                                _context4.next = 26;
-                                break;
-
-                            case 25:
-                                return _context4.abrupt("return", existingItem);
-
-                            case 26:
+                            case 8:
                             case "end":
                                 return _context4.stop();
                         }
                     }
-                }, _callee4, this, [[6, 14]]);
+                }, _callee4, this);
             }));
 
-            function _updateItemWithIfMatch(_x10, _x11, _x12) {
+            function _updateItemUnconditionally(_x10, _x11, _x12) {
                 return _ref4.apply(this, arguments);
+            }
+
+            return _updateItemUnconditionally;
+        }()
+    }, {
+        key: "_updateItemWithIfMatch",
+        value: function () {
+            var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(index, mutatorFunction, ttl) {
+                var existingItem, data, ifMatch, itemDescriptor;
+                return _regenerator2.default.wrap(function _callee5$(_context5) {
+                    while (1) {
+                        switch (_context5.prev = _context5.next) {
+                            case 0:
+                                _context5.next = 2;
+                                return this.get(index);
+
+                            case 2:
+                                existingItem = _context5.sent;
+                                data = mutatorFunction(utils_1.deepClone(existingItem.value));
+
+                                if (!data) {
+                                    _context5.next = 25;
+                                    break;
+                                }
+
+                                ifMatch = existingItem.revision;
+                                _context5.prev = 6;
+                                _context5.next = 9;
+                                return this._addOrUpdateItemOnServer(existingItem.uri, data, ifMatch, ttl);
+
+                            case 9:
+                                itemDescriptor = _context5.sent;
+
+                                this._handleItemMutated(index, itemDescriptor.url, itemDescriptor.last_event_id, itemDescriptor.revision, itemDescriptor.data, itemDescriptor.date_updated, itemDescriptor.date_expires, false, false);
+                                return _context5.abrupt("return", this.cache.get(index));
+
+                            case 14:
+                                _context5.prev = 14;
+                                _context5.t0 = _context5["catch"](6);
+
+                                if (!(_context5.t0.status === 412)) {
+                                    _context5.next = 22;
+                                    break;
+                                }
+
+                                _context5.next = 19;
+                                return this._getItemFromServer(index);
+
+                            case 19:
+                                return _context5.abrupt("return", this._updateItemWithIfMatch(index, mutatorFunction, ttl));
+
+                            case 22:
+                                throw _context5.t0;
+
+                            case 23:
+                                _context5.next = 26;
+                                break;
+
+                            case 25:
+                                return _context5.abrupt("return", existingItem);
+
+                            case 26:
+                            case "end":
+                                return _context5.stop();
+                        }
+                    }
+                }, _callee5, this, [[6, 14]]);
+            }));
+
+            function _updateItemWithIfMatch(_x13, _x14, _x15) {
+                return _ref5.apply(this, arguments);
             }
 
             return _updateItemWithIfMatch;
@@ -23347,31 +23533,31 @@ var SyncList = function (_entity_1$SyncEntity) {
     }, {
         key: "mutate",
         value: function () {
-            var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(index, mutator, itemMetadataUpdates) {
+            var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(index, mutator, itemMetadataUpdates) {
                 var _this3 = this;
 
                 var input;
-                return _regenerator2.default.wrap(function _callee5$(_context5) {
+                return _regenerator2.default.wrap(function _callee6$(_context6) {
                     while (1) {
-                        switch (_context5.prev = _context5.next) {
+                        switch (_context6.prev = _context6.next) {
                             case 0:
                                 input = itemMetadataUpdates || {};
 
                                 utils_1.validateOptionalTtl(input.ttl);
-                                return _context5.abrupt("return", this.updateMergingQueue.add(index, input, function (input) {
+                                return _context6.abrupt("return", this.updateMergingQueue.add(index, input, function (input) {
                                     return _this3._updateItemWithIfMatch(index, mutator, input.ttl);
                                 }));
 
                             case 3:
                             case "end":
-                                return _context5.stop();
+                                return _context6.stop();
                         }
                     }
-                }, _callee5, this);
+                }, _callee6, this);
             }));
 
-            function mutate(_x13, _x14, _x15) {
-                return _ref5.apply(this, arguments);
+            function mutate(_x16, _x17, _x18) {
+                return _ref6.apply(this, arguments);
             }
 
             return mutate;
@@ -23405,25 +23591,25 @@ var SyncList = function (_entity_1$SyncEntity) {
     }, {
         key: "update",
         value: function () {
-            var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(index, obj, itemMetadataUpdates) {
-                return _regenerator2.default.wrap(function _callee6$(_context6) {
+            var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(index, obj, itemMetadataUpdates) {
+                return _regenerator2.default.wrap(function _callee7$(_context7) {
                     while (1) {
-                        switch (_context6.prev = _context6.next) {
+                        switch (_context7.prev = _context7.next) {
                             case 0:
-                                return _context6.abrupt("return", this.mutate(index, function (remote) {
+                                return _context7.abrupt("return", this.mutate(index, function (remote) {
                                     return (0, _assign2.default)(remote, obj);
                                 }, itemMetadataUpdates));
 
                             case 1:
                             case "end":
-                                return _context6.stop();
+                                return _context7.stop();
                         }
                     }
-                }, _callee6, this);
+                }, _callee7, this);
             }));
 
-            function update(_x16, _x17, _x18) {
-                return _ref6.apply(this, arguments);
+            function update(_x19, _x20, _x21) {
+                return _ref7.apply(this, arguments);
             }
 
             return update;
@@ -23447,35 +23633,35 @@ var SyncList = function (_entity_1$SyncEntity) {
     }, {
         key: "remove",
         value: function () {
-            var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(index) {
+            var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(index) {
                 var item, response;
-                return _regenerator2.default.wrap(function _callee7$(_context7) {
+                return _regenerator2.default.wrap(function _callee8$(_context8) {
                     while (1) {
-                        switch (_context7.prev = _context7.next) {
+                        switch (_context8.prev = _context8.next) {
                             case 0:
-                                _context7.next = 2;
+                                _context8.next = 2;
                                 return this.get(index);
 
                             case 2:
-                                item = _context7.sent;
-                                _context7.next = 5;
+                                item = _context8.sent;
+                                _context8.next = 5;
                                 return this.services.network.delete(item.uri);
 
                             case 5:
-                                response = _context7.sent;
+                                response = _context8.sent;
 
                                 this._handleItemRemoved(index, response.body.last_event_id, undefined, new Date(response.body.date_updated), false);
 
                             case 7:
                             case "end":
-                                return _context7.stop();
+                                return _context8.stop();
                         }
                     }
-                }, _callee7, this);
+                }, _callee8, this);
             }));
 
-            function remove(_x19) {
-                return _ref7.apply(this, arguments);
+            function remove(_x22) {
+                return _ref8.apply(this, arguments);
             }
 
             return remove;
@@ -23499,64 +23685,25 @@ var SyncList = function (_entity_1$SyncEntity) {
     }, {
         key: "get",
         value: function () {
-            var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(index) {
-                var cachedItem;
-                return _regenerator2.default.wrap(function _callee8$(_context8) {
-                    while (1) {
-                        switch (_context8.prev = _context8.next) {
-                            case 0:
-                                cachedItem = this.cache.get(index);
-
-                                if (!cachedItem) {
-                                    _context8.next = 5;
-                                    break;
-                                }
-
-                                return _context8.abrupt("return", cachedItem);
-
-                            case 5:
-                                return _context8.abrupt("return", this._getItemFromServer(index));
-
-                            case 6:
-                            case "end":
-                                return _context8.stop();
-                        }
-                    }
-                }, _callee8, this);
-            }));
-
-            function get(_x20) {
-                return _ref8.apply(this, arguments);
-            }
-
-            return get;
-        }()
-    }, {
-        key: "_getItemFromServer",
-        value: function () {
             var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(index) {
-                var result;
+                var cachedItem;
                 return _regenerator2.default.wrap(function _callee9$(_context9) {
                     while (1) {
                         switch (_context9.prev = _context9.next) {
                             case 0:
-                                _context9.next = 2;
-                                return this.queryItems({ index: index });
+                                cachedItem = this.cache.get(index);
 
-                            case 2:
-                                result = _context9.sent;
-
-                                if (!(result.items.length < 1)) {
-                                    _context9.next = 7;
+                                if (!cachedItem) {
+                                    _context9.next = 5;
                                     break;
                                 }
 
-                                throw new syncerror_1.SyncError("No item with index " + index + " found", 404, 54151);
+                                return _context9.abrupt("return", cachedItem);
 
-                            case 7:
-                                return _context9.abrupt("return", result.items[0]);
+                            case 5:
+                                return _context9.abrupt("return", this._getItemFromServer(index));
 
-                            case 8:
+                            case 6:
                             case "end":
                                 return _context9.stop();
                         }
@@ -23564,8 +23711,47 @@ var SyncList = function (_entity_1$SyncEntity) {
                 }, _callee9, this);
             }));
 
-            function _getItemFromServer(_x21) {
+            function get(_x23) {
                 return _ref9.apply(this, arguments);
+            }
+
+            return get;
+        }()
+    }, {
+        key: "_getItemFromServer",
+        value: function () {
+            var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(index) {
+                var result;
+                return _regenerator2.default.wrap(function _callee10$(_context10) {
+                    while (1) {
+                        switch (_context10.prev = _context10.next) {
+                            case 0:
+                                _context10.next = 2;
+                                return this.queryItems({ index: index });
+
+                            case 2:
+                                result = _context10.sent;
+
+                                if (!(result.items.length < 1)) {
+                                    _context10.next = 7;
+                                    break;
+                                }
+
+                                throw new syncerror_1.SyncError("No item with index " + index + " found", 404, 54151);
+
+                            case 7:
+                                return _context10.abrupt("return", result.items[0]);
+
+                            case 8:
+                            case "end":
+                                return _context10.stop();
+                        }
+                    }
+                }, _callee10, this);
+            }));
+
+            function _getItemFromServer(_x24) {
+                return _ref10.apply(this, arguments);
             }
 
             return _getItemFromServer;
@@ -23578,21 +23764,21 @@ var SyncList = function (_entity_1$SyncEntity) {
     }, {
         key: "queryItems",
         value: function () {
-            var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(arg) {
+            var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(arg) {
                 var _this4 = this;
 
                 var url, response, items, meta;
-                return _regenerator2.default.wrap(function _callee10$(_context10) {
+                return _regenerator2.default.wrap(function _callee11$(_context11) {
                     while (1) {
-                        switch (_context10.prev = _context10.next) {
+                        switch (_context11.prev = _context11.next) {
                             case 0:
                                 arg = arg || {};
                                 url = new utils_1.UriBuilder(this.links.items).queryParam('From', arg.from).queryParam('PageSize', arg.limit).queryParam('Index', arg.index).queryParam('PageToken', arg.pageToken).queryParam('Order', arg.order).build();
-                                _context10.next = 4;
+                                _context11.next = 4;
                                 return this.services.network.get(url);
 
                             case 4:
-                                response = _context10.sent;
+                                response = _context11.sent;
                                 items = response.body.items.map(function (el) {
                                     el.date_updated = new Date(el.date_updated);
                                     var itemInCache = _this4.cache.get(el.index);
@@ -23610,20 +23796,20 @@ var SyncList = function (_entity_1$SyncEntity) {
                                     return _this4.cache.get(el.index);
                                 });
                                 meta = response.body.meta;
-                                return _context10.abrupt("return", new paginator_1.Paginator(items, function (pageToken) {
+                                return _context11.abrupt("return", new paginator_1.Paginator(items, function (pageToken) {
                                     return _this4.queryItems({ pageToken: pageToken });
                                 }, meta.previous_token, meta.next_token));
 
                             case 8:
                             case "end":
-                                return _context10.stop();
+                                return _context11.stop();
                         }
                     }
-                }, _callee10, this);
+                }, _callee11, this);
             }));
 
-            function queryItems(_x22) {
-                return _ref10.apply(this, arguments);
+            function queryItems(_x25) {
+                return _ref11.apply(this, arguments);
             }
 
             return queryItems;
@@ -23655,27 +23841,27 @@ var SyncList = function (_entity_1$SyncEntity) {
     }, {
         key: "getItems",
         value: function () {
-            var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(args) {
-                return _regenerator2.default.wrap(function _callee11$(_context11) {
+            var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(args) {
+                return _regenerator2.default.wrap(function _callee12$(_context12) {
                     while (1) {
-                        switch (_context11.prev = _context11.next) {
+                        switch (_context12.prev = _context12.next) {
                             case 0:
                                 args = args || {};
                                 utils_1.validatePageSize(args.pageSize);
                                 args.limit = args.pageSize || args.limit || 50;
                                 args.order = args.order || 'asc';
-                                return _context11.abrupt("return", this.queryItems(args));
+                                return _context12.abrupt("return", this.queryItems(args));
 
                             case 5:
                             case "end":
-                                return _context11.stop();
+                                return _context12.stop();
                         }
                     }
-                }, _callee11, this);
+                }, _callee12, this);
             }));
 
-            function getItems(_x23) {
-                return _ref11.apply(this, arguments);
+            function getItems(_x26) {
+                return _ref12.apply(this, arguments);
             }
 
             return getItems;
@@ -23688,39 +23874,39 @@ var SyncList = function (_entity_1$SyncEntity) {
     }, {
         key: "getContext",
         value: function () {
-            var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12() {
+            var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13() {
                 var response;
-                return _regenerator2.default.wrap(function _callee12$(_context12) {
+                return _regenerator2.default.wrap(function _callee13$(_context13) {
                     while (1) {
-                        switch (_context12.prev = _context12.next) {
+                        switch (_context13.prev = _context13.next) {
                             case 0:
                                 if (this.context) {
-                                    _context12.next = 5;
+                                    _context13.next = 5;
                                     break;
                                 }
 
-                                _context12.next = 3;
+                                _context13.next = 3;
                                 return this.services.network.get(this.links.context);
 
                             case 3:
-                                response = _context12.sent;
+                                response = _context13.sent;
 
                                 // store fetched context if we have't received any newer update
                                 this._updateContextIfRequired(response.body.data, response.body.last_event_id);
 
                             case 5:
-                                return _context12.abrupt("return", this.context);
+                                return _context13.abrupt("return", this.context);
 
                             case 6:
                             case "end":
-                                return _context12.stop();
+                                return _context13.stop();
                         }
                     }
-                }, _callee12, this);
+                }, _callee13, this);
             }));
 
             function getContext() {
-                return _ref12.apply(this, arguments);
+                return _ref13.apply(this, arguments);
             }
 
             return getContext;
@@ -23743,44 +23929,44 @@ var SyncList = function (_entity_1$SyncEntity) {
     }, {
         key: "setTtl",
         value: function () {
-            var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13(ttl) {
+            var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee14(ttl) {
                 var requestBody, response;
-                return _regenerator2.default.wrap(function _callee13$(_context13) {
+                return _regenerator2.default.wrap(function _callee14$(_context14) {
                     while (1) {
-                        switch (_context13.prev = _context13.next) {
+                        switch (_context14.prev = _context14.next) {
                             case 0:
                                 utils_1.validateMandatoryTtl(ttl);
-                                _context13.prev = 1;
+                                _context14.prev = 1;
                                 requestBody = { ttl: ttl };
-                                _context13.next = 5;
+                                _context14.next = 5;
                                 return this.services.network.post(this.uri, requestBody);
 
                             case 5:
-                                response = _context13.sent;
+                                response = _context14.sent;
 
                                 this.descriptor.date_expires = response.body.date_expires;
-                                _context13.next = 13;
+                                _context14.next = 13;
                                 break;
 
                             case 9:
-                                _context13.prev = 9;
-                                _context13.t0 = _context13["catch"](1);
+                                _context14.prev = 9;
+                                _context14.t0 = _context14["catch"](1);
 
-                                if (_context13.t0.status === 404) {
+                                if (_context14.t0.status === 404) {
                                     this.onRemoved(false);
                                 }
-                                throw _context13.t0;
+                                throw _context14.t0;
 
                             case 13:
                             case "end":
-                                return _context13.stop();
+                                return _context14.stop();
                         }
                     }
-                }, _callee13, this, [[1, 9]]);
+                }, _callee14, this, [[1, 9]]);
             }));
 
-            function setTtl(_x24) {
-                return _ref13.apply(this, arguments);
+            function setTtl(_x27) {
+                return _ref14.apply(this, arguments);
             }
 
             return setTtl;
@@ -23804,37 +23990,37 @@ var SyncList = function (_entity_1$SyncEntity) {
     }, {
         key: "setItemTtl",
         value: function () {
-            var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee14(index, ttl) {
+            var _ref15 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee15(index, ttl) {
                 var existingItem, requestBody, response;
-                return _regenerator2.default.wrap(function _callee14$(_context14) {
+                return _regenerator2.default.wrap(function _callee15$(_context15) {
                     while (1) {
-                        switch (_context14.prev = _context14.next) {
+                        switch (_context15.prev = _context15.next) {
                             case 0:
                                 utils_1.validateMandatoryTtl(ttl);
-                                _context14.next = 3;
+                                _context15.next = 3;
                                 return this.get(index);
 
                             case 3:
-                                existingItem = _context14.sent;
+                                existingItem = _context15.sent;
                                 requestBody = { ttl: ttl };
-                                _context14.next = 7;
+                                _context15.next = 7;
                                 return this.services.network.post(existingItem.uri, requestBody);
 
                             case 7:
-                                response = _context14.sent;
+                                response = _context15.sent;
 
                                 existingItem.updateDateExpires(response.body.date_expires);
 
                             case 9:
                             case "end":
-                                return _context14.stop();
+                                return _context15.stop();
                         }
                     }
-                }, _callee14, this);
+                }, _callee15, this);
             }));
 
-            function setItemTtl(_x25, _x26) {
-                return _ref14.apply(this, arguments);
+            function setItemTtl(_x28, _x29) {
+                return _ref15.apply(this, arguments);
             }
 
             return setItemTtl;
@@ -23856,12 +24042,12 @@ var SyncList = function (_entity_1$SyncEntity) {
     }, {
         key: "removeList",
         value: function () {
-            var _ref15 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee15() {
-                return _regenerator2.default.wrap(function _callee15$(_context15) {
+            var _ref16 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee16() {
+                return _regenerator2.default.wrap(function _callee16$(_context16) {
                     while (1) {
-                        switch (_context15.prev = _context15.next) {
+                        switch (_context16.prev = _context16.next) {
                             case 0:
-                                _context15.next = 2;
+                                _context16.next = 2;
                                 return this.services.network.delete(this.uri);
 
                             case 2:
@@ -23869,14 +24055,14 @@ var SyncList = function (_entity_1$SyncEntity) {
 
                             case 3:
                             case "end":
-                                return _context15.stop();
+                                return _context16.stop();
                         }
                     }
-                }, _callee15, this);
+                }, _callee16, this);
             }));
 
             function removeList() {
-                return _ref15.apply(this, arguments);
+                return _ref16.apply(this, arguments);
             }
 
             return removeList;
@@ -25325,28 +25511,28 @@ exports.UriBuilder = UriBuilder;
 
 },{"./syncerror":254,"babel-runtime/core-js/json/stringify":34,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],258:[function(_dereq_,module,exports){
 module.exports={
-  "_from": "twilio-sync@^0.8.5",
-  "_id": "twilio-sync@0.8.5",
+  "_from": "twilio-sync@^0.8.6",
+  "_id": "twilio-sync@0.8.6",
   "_inBundle": false,
-  "_integrity": "sha512-QlxlpedBxDWYZ3lAaZMV6FbD9IvTRC3jjga4QOnDUzToHZ9kHGZL8O8J3Ighc1/vEq60M7CBZsZc0u0UGnrIGQ==",
+  "_integrity": "sha512-aArH5T6v1QSgdajIMeUi40SzexmAktxxgcpJzHzsipwXHZKETudjyszh9tnPHiKqGaNDur9wT9dxSRlLsNC+XQ==",
   "_location": "/twilio-sync",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "twilio-sync@^0.8.5",
+    "raw": "twilio-sync@^0.8.6",
     "name": "twilio-sync",
     "escapedName": "twilio-sync",
-    "rawSpec": "^0.8.5",
+    "rawSpec": "^0.8.6",
     "saveSpec": null,
-    "fetchSpec": "^0.8.5"
+    "fetchSpec": "^0.8.6"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.8.5.tgz",
-  "_shasum": "174ab54f92d400cec25b61d1144500364cbcbf6e",
-  "_spec": "twilio-sync@^0.8.5",
+  "_resolved": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.8.6.tgz",
+  "_shasum": "9b3a819db09abec4df3d0dd51c954e905c10fe9a",
+  "_spec": "twilio-sync@^0.8.6",
   "_where": "/home/travis/build/twilio/twilio-chat.js",
   "author": {
     "name": "Twilio"
@@ -25364,7 +25550,7 @@ module.exports={
     "operation-retrier": "^2.0.0",
     "platform": "^1.3.5",
     "rfc6902": "^2.2.2",
-    "twilio-notifications": "^0.5.2",
+    "twilio-notifications": "^0.5.3",
     "twilsock": "^0.5.6",
     "update": "^0.7.4",
     "uuid": "^3.2.1"
@@ -25439,7 +25625,7 @@ module.exports={
     "test": "gulp unit-test"
   },
   "types": "./lib/index.d.ts",
-  "version": "0.8.5"
+  "version": "0.8.6"
 }
 
 },{}],259:[function(_dereq_,module,exports){
@@ -29485,7 +29671,7 @@ module.exports = v4;
 },{"./lib/bytesToUuid":291,"./lib/rng":292}],295:[function(_dereq_,module,exports){
 module.exports={
   "name": "twilio-chat",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Twilio Chat service client library",
   "main": "lib/index.js",
   "browser": "browser/index.js",
@@ -29494,8 +29680,8 @@ module.exports={
   "license": "MIT",
   "dependencies": {
     "twilio-mcs-client": "^0.2.2",
-    "twilio-notifications": "^0.5.2",
-    "twilio-sync": "^0.8.5",
+    "twilio-notifications": "^0.5.3",
+    "twilio-sync": "^0.8.6",
     "twilsock": "^0.5.6",
     "iso8601-duration": "^1.1.1",
     "isomorphic-form-data": "^1.0.0",
