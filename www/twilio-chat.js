@@ -1,4 +1,4 @@
-/* twilio-chat.js 3.2.0
+/* twilio-chat.js 3.3.0
 The following license applies to all parts of this software except as
 documented below.
 
@@ -888,6 +888,70 @@ var Channel = function (_events_1$EventEmitte) {
             }));
         }
         /**
+         * Get a Member by its SID.
+         * @param {String} memberSid - Member sid
+         * @returns {Promise<Member>}
+         */
+
+    }, {
+        key: "getMemberBySid",
+        value: function getMemberBySid(memberSid) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee11() {
+                return _regenerator2.default.wrap(function _callee11$(_context11) {
+                    while (1) {
+                        switch (_context11.prev = _context11.next) {
+                            case 0:
+                                if (!(!memberSid || typeof memberSid !== 'string')) {
+                                    _context11.next = 2;
+                                    break;
+                                }
+
+                                throw new Error('Channel.getMemberBySid requires a <String>memberSid parameter');
+
+                            case 2:
+                                return _context11.abrupt("return", this.membersEntity.getMemberBySid(memberSid));
+
+                            case 3:
+                            case "end":
+                                return _context11.stop();
+                        }
+                    }
+                }, _callee11, this);
+            }));
+        }
+        /**
+         * Get a Member by its identity.
+         * @param {String} identity - Member identity
+         * @returns {Promise<Member>}
+         */
+
+    }, {
+        key: "getMemberByIdentity",
+        value: function getMemberByIdentity(identity) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee12() {
+                return _regenerator2.default.wrap(function _callee12$(_context12) {
+                    while (1) {
+                        switch (_context12.prev = _context12.next) {
+                            case 0:
+                                if (!(!identity || typeof identity !== 'string')) {
+                                    _context12.next = 2;
+                                    break;
+                                }
+
+                                throw new Error('Channel.getMemberByIdentity requires a <String>identity parameter');
+
+                            case 2:
+                                return _context12.abrupt("return", this.membersEntity.getMemberByIdentity(identity));
+
+                            case 3:
+                            case "end":
+                                return _context12.stop();
+                        }
+                    }
+                }, _callee12, this);
+            }));
+        }
+        /**
          * Get total message count in a channel.
          * @returns {Promise<number|Error>}
          */
@@ -895,31 +959,31 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "getMessagesCount",
         value: function getMessagesCount() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee11() {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee13() {
                 var links, url, response;
-                return _regenerator2.default.wrap(function _callee11$(_context11) {
+                return _regenerator2.default.wrap(function _callee13$(_context13) {
                     while (1) {
-                        switch (_context11.prev = _context11.next) {
+                        switch (_context13.prev = _context13.next) {
                             case 0:
-                                _context11.next = 2;
+                                _context13.next = 2;
                                 return this.services.session.getSessionLinks();
 
                             case 2:
-                                links = _context11.sent;
+                                links = _context13.sent;
                                 url = new util_1.UriBuilder(links.publicChannelsUrl).path(this.sid).build();
-                                _context11.next = 6;
+                                _context13.next = 6;
                                 return this.services.network.get(url);
 
                             case 6:
-                                response = _context11.sent;
-                                return _context11.abrupt("return", response.body.messages_count);
+                                response = _context13.sent;
+                                return _context13.abrupt("return", response.body.messages_count);
 
                             case 8:
                             case "end":
-                                return _context11.stop();
+                                return _context13.stop();
                         }
                     }
-                }, _callee11, this);
+                }, _callee13, this);
             }));
         }
         /**
@@ -931,48 +995,48 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "getUnconsumedMessagesCount",
         value: function getUnconsumedMessagesCount() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee12() {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee14() {
                 var links, url, response;
-                return _regenerator2.default.wrap(function _callee12$(_context12) {
+                return _regenerator2.default.wrap(function _callee14$(_context14) {
                     while (1) {
-                        switch (_context12.prev = _context12.next) {
+                        switch (_context14.prev = _context14.next) {
                             case 0:
-                                _context12.next = 2;
+                                _context14.next = 2;
                                 return this.services.session.getSessionLinks();
 
                             case 2:
-                                links = _context12.sent;
+                                links = _context14.sent;
                                 url = new util_1.UriBuilder(links.myChannelsUrl).arg('ChannelSid', this.sid).build();
-                                _context12.next = 6;
+                                _context14.next = 6;
                                 return this.services.network.get(url);
 
                             case 6:
-                                response = _context12.sent;
+                                response = _context14.sent;
 
                                 if (!(response.body.channels.length && response.body.channels[0].channel_sid == this.sid)) {
-                                    _context12.next = 11;
+                                    _context14.next = 11;
                                     break;
                                 }
 
                                 if (!(typeof response.body.channels[0].unread_messages_count !== 'undefined' && response.body.channels[0].unread_messages_count != null)) {
-                                    _context12.next = 10;
+                                    _context14.next = 10;
                                     break;
                                 }
 
-                                return _context12.abrupt("return", response.body.channels[0].unread_messages_count);
+                                return _context14.abrupt("return", response.body.channels[0].unread_messages_count);
 
                             case 10:
-                                return _context12.abrupt("return", null);
+                                return _context14.abrupt("return", null);
 
                             case 11:
                                 throw new Error('Channel is not in user channels list');
 
                             case 12:
                             case "end":
-                                return _context12.stop();
+                                return _context14.stop();
                         }
                     }
-                }, _callee12, this);
+                }, _callee14, this);
             }));
         }
         /**
@@ -984,27 +1048,28 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "invite",
         value: function invite(identity) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee13() {
-                return _regenerator2.default.wrap(function _callee13$(_context13) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee15() {
+                return _regenerator2.default.wrap(function _callee15$(_context15) {
                     while (1) {
-                        switch (_context13.prev = _context13.next) {
+                        switch (_context15.prev = _context15.next) {
                             case 0:
                                 if (!(typeof identity !== 'string' || !identity.length)) {
-                                    _context13.next = 2;
+                                    _context15.next = 2;
                                     break;
                                 }
 
                                 throw new Error('Channel.invite requires an <String>identity parameter');
 
                             case 2:
-                                return _context13.abrupt("return", this.membersEntity.invite(identity));
+                                _context15.next = 4;
+                                return this.membersEntity.invite(identity);
 
-                            case 3:
+                            case 4:
                             case "end":
-                                return _context13.stop();
+                                return _context15.stop();
                         }
                     }
-                }, _callee13, this);
+                }, _callee15, this);
             }));
         }
         /**
@@ -1015,23 +1080,23 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "join",
         value: function join() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee14() {
-                return _regenerator2.default.wrap(function _callee14$(_context14) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee16() {
+                return _regenerator2.default.wrap(function _callee16$(_context16) {
                     while (1) {
-                        switch (_context14.prev = _context14.next) {
+                        switch (_context16.prev = _context16.next) {
                             case 0:
-                                _context14.next = 2;
+                                _context16.next = 2;
                                 return this.services.session.addCommand('joinChannelV2', { channelSid: this.sid });
 
                             case 2:
-                                return _context14.abrupt("return", this);
+                                return _context16.abrupt("return", this);
 
                             case 3:
                             case "end":
-                                return _context14.stop();
+                                return _context16.stop();
                         }
                     }
-                }, _callee14, this);
+                }, _callee16, this);
             }));
         }
         /**
@@ -1042,28 +1107,28 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "leave",
         value: function leave() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee15() {
-                return _regenerator2.default.wrap(function _callee15$(_context15) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee17() {
+                return _regenerator2.default.wrap(function _callee17$(_context17) {
                     while (1) {
-                        switch (_context15.prev = _context15.next) {
+                        switch (_context17.prev = _context17.next) {
                             case 0:
                                 if (!(this.state.status === 'joined')) {
-                                    _context15.next = 3;
+                                    _context17.next = 3;
                                     break;
                                 }
 
-                                _context15.next = 3;
+                                _context17.next = 3;
                                 return this.services.session.addCommand('leaveChannel', { channelSid: this.sid });
 
                             case 3:
-                                return _context15.abrupt("return", this);
+                                return _context17.abrupt("return", this);
 
                             case 4:
                             case "end":
-                                return _context15.stop();
+                                return _context17.stop();
                         }
                     }
-                }, _callee15, this);
+                }, _callee17, this);
             }));
         }
         /**
@@ -1075,27 +1140,28 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "removeMember",
         value: function removeMember(member) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee16() {
-                return _regenerator2.default.wrap(function _callee16$(_context16) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee18() {
+                return _regenerator2.default.wrap(function _callee18$(_context18) {
                     while (1) {
-                        switch (_context16.prev = _context16.next) {
+                        switch (_context18.prev = _context18.next) {
                             case 0:
                                 if (!(!member || typeof member !== 'string' && !(member instanceof member_1.Member))) {
-                                    _context16.next = 2;
+                                    _context18.next = 2;
                                     break;
                                 }
 
                                 throw new Error('Channel.removeMember requires a <String|Member>member parameter.');
 
                             case 2:
-                                return _context16.abrupt("return", this.membersEntity.remove(typeof member === 'string' ? member : member.identity));
+                                _context18.next = 4;
+                                return this.membersEntity.remove(typeof member === 'string' ? member : member.identity);
 
-                            case 3:
+                            case 4:
                             case "end":
-                                return _context16.stop();
+                                return _context18.stop();
                         }
                     }
-                }, _callee16, this);
+                }, _callee18, this);
             }));
         }
         /**
@@ -1109,39 +1175,47 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "sendMessage",
         value: function sendMessage(message, messageAttributes) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee17() {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee19() {
                 var response, _response;
 
-                return _regenerator2.default.wrap(function _callee17$(_context17) {
+                return _regenerator2.default.wrap(function _callee19$(_context19) {
                     while (1) {
-                        switch (_context17.prev = _context17.next) {
+                        switch (_context19.prev = _context19.next) {
                             case 0:
-                                if (!(typeof message === 'string')) {
-                                    _context17.next = 7;
+                                if (!(typeof message === 'undefined')) {
+                                    _context19.next = 2;
                                     break;
                                 }
 
-                                _context17.next = 3;
+                                throw new Error('Message is required parameter');
+
+                            case 2:
+                                if (!(typeof message === 'string' || message === null)) {
+                                    _context19.next = 9;
+                                    break;
+                                }
+
+                                _context19.next = 5;
                                 return this.messagesEntity.send(message, messageAttributes);
 
-                            case 3:
-                                response = _context17.sent;
-                                return _context17.abrupt("return", util_1.parseToNumber(response.messageId));
-
-                            case 7:
-                                _context17.next = 9;
-                                return this.messagesEntity.sendMedia(message, messageAttributes);
+                            case 5:
+                                response = _context19.sent;
+                                return _context19.abrupt("return", util_1.parseToNumber(response.messageId));
 
                             case 9:
-                                _response = _context17.sent;
-                                return _context17.abrupt("return", util_1.parseToNumber(_response.messageId));
+                                _context19.next = 11;
+                                return this.messagesEntity.sendMedia(message, messageAttributes);
 
                             case 11:
+                                _response = _context19.sent;
+                                return _context19.abrupt("return", util_1.parseToNumber(_response.messageId));
+
+                            case 13:
                             case "end":
-                                return _context17.stop();
+                                return _context19.stop();
                         }
                     }
-                }, _callee17, this);
+                }, _callee19, this);
             }));
         }
         /**
@@ -1152,38 +1226,38 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "setAllMessagesConsumed",
         value: function setAllMessagesConsumed() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee18() {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee20() {
                 var messagesPage;
-                return _regenerator2.default.wrap(function _callee18$(_context18) {
+                return _regenerator2.default.wrap(function _callee20$(_context20) {
                     while (1) {
-                        switch (_context18.prev = _context18.next) {
+                        switch (_context20.prev = _context20.next) {
                             case 0:
-                                _context18.next = 2;
+                                _context20.next = 2;
                                 return this._subscribeStreams();
 
                             case 2:
-                                _context18.next = 4;
+                                _context20.next = 4;
                                 return this.getMessages(1);
 
                             case 4:
-                                messagesPage = _context18.sent;
+                                messagesPage = _context20.sent;
 
                                 if (!(messagesPage.items.length > 0)) {
-                                    _context18.next = 7;
+                                    _context20.next = 7;
                                     break;
                                 }
 
-                                return _context18.abrupt("return", this.advanceLastConsumedMessageIndex(messagesPage.items[0].index));
+                                return _context20.abrupt("return", this.advanceLastConsumedMessageIndex(messagesPage.items[0].index));
 
                             case 7:
-                                return _context18.abrupt("return", _promise2.default.resolve(0));
+                                return _context20.abrupt("return", _promise2.default.resolve(0));
 
                             case 8:
                             case "end":
-                                return _context18.stop();
+                                return _context20.stop();
                         }
                     }
-                }, _callee18, this);
+                }, _callee20, this);
             }));
         }
         /**
@@ -1194,23 +1268,23 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "setNoMessagesConsumed",
         value: function setNoMessagesConsumed() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee19() {
-                return _regenerator2.default.wrap(function _callee19$(_context19) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee21() {
+                return _regenerator2.default.wrap(function _callee21$(_context21) {
                     while (1) {
-                        switch (_context19.prev = _context19.next) {
+                        switch (_context21.prev = _context21.next) {
                             case 0:
-                                _context19.next = 2;
+                                _context21.next = 2;
                                 return this._subscribeStreams();
 
                             case 2:
-                                return _context19.abrupt("return", this.services.consumptionHorizon.updateLastConsumedMessageIndexForChannel(this.sid, null));
+                                return _context21.abrupt("return", this.services.consumptionHorizon.updateLastConsumedMessageIndexForChannel(this.sid, null));
 
                             case 3:
                             case "end":
-                                return _context19.stop();
+                                return _context21.stop();
                         }
                     }
-                }, _callee19, this);
+                }, _callee21, this);
             }));
         }
         /**
@@ -1222,28 +1296,28 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "setUserNotificationLevel",
         value: function setUserNotificationLevel(notificationLevel) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee20() {
-                return _regenerator2.default.wrap(function _callee20$(_context20) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee22() {
+                return _regenerator2.default.wrap(function _callee22$(_context22) {
                     while (1) {
-                        switch (_context20.prev = _context20.next) {
+                        switch (_context22.prev = _context22.next) {
                             case 0:
                                 if (notificationLevel) {
-                                    _context20.next = 2;
+                                    _context22.next = 2;
                                     break;
                                 }
 
                                 throw new Error('notificationLevel can\'t be null');
 
                             case 2:
-                                _context20.next = 4;
+                                _context22.next = 4;
                                 return this.services.session.addCommand('editNotificationLevel', { channelSid: this.sid, notificationLevel: notificationLevel });
 
                             case 4:
                             case "end":
-                                return _context20.stop();
+                                return _context22.stop();
                         }
                     }
-                }, _callee20, this);
+                }, _callee22, this);
             }));
         }
         /**
@@ -1266,42 +1340,50 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "updateAttributes",
         value: function updateAttributes(attributes) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee21() {
-                return _regenerator2.default.wrap(function _callee21$(_context21) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee23() {
+                return _regenerator2.default.wrap(function _callee23$(_context23) {
                     while (1) {
-                        switch (_context21.prev = _context21.next) {
+                        switch (_context23.prev = _context23.next) {
                             case 0:
-                                if (attributes) {
-                                    _context21.next = 4;
+                                if (!(typeof attributes === 'undefined')) {
+                                    _context23.next = 4;
+                                    break;
+                                }
+
+                                throw new Error('Attributes is required parameter');
+
+                            case 4:
+                                if (!(attributes === null)) {
+                                    _context23.next = 8;
                                     break;
                                 }
 
                                 throw new Error('Attributes can\'t be null');
 
-                            case 4:
+                            case 8:
                                 if (!(attributes.constructor !== Object)) {
-                                    _context21.next = 6;
+                                    _context23.next = 10;
                                     break;
                                 }
 
                                 throw new Error('Attributes must be a valid JSON object.');
 
-                            case 6:
-                                _context21.next = 8;
+                            case 10:
+                                _context23.next = 12;
                                 return this.services.session.addCommand('editAttributes', {
                                     channelSid: this.sid,
                                     attributes: (0, _stringify2.default)(attributes)
                                 });
 
-                            case 8:
-                                return _context21.abrupt("return", this);
+                            case 12:
+                                return _context23.abrupt("return", this);
 
-                            case 9:
+                            case 13:
                             case "end":
-                                return _context21.stop();
+                                return _context23.stop();
                         }
                     }
-                }, _callee21, this);
+                }, _callee23, this);
             }));
         }
         /**
@@ -1313,93 +1395,20 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "updateFriendlyName",
         value: function updateFriendlyName(name) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee22() {
-                return _regenerator2.default.wrap(function _callee22$(_context22) {
-                    while (1) {
-                        switch (_context22.prev = _context22.next) {
-                            case 0:
-                                if (!(this.state.friendlyName !== name)) {
-                                    _context22.next = 3;
-                                    break;
-                                }
-
-                                _context22.next = 3;
-                                return this.services.session.addCommand('editFriendlyName', {
-                                    channelSid: this.sid,
-                                    friendlyName: name
-                                });
-
-                            case 3:
-                                return _context22.abrupt("return", this);
-
-                            case 4:
-                            case "end":
-                                return _context22.stop();
-                        }
-                    }
-                }, _callee22, this);
-            }));
-        }
-        /**
-         * Set last consumed Channel's Message index to current consumption horizon.
-         * @param {Number|null} index - Message index to set as last read.
-         * If null provided, then the behavior is identical to {@link Channel#setNoMessagesConsumed}
-         * @returns {Promise<number|Error|SessionError>} resulting unread messages count in the channel
-         */
-
-    }, {
-        key: "updateLastConsumedMessageIndex",
-        value: function updateLastConsumedMessageIndex(index) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee23() {
-                return _regenerator2.default.wrap(function _callee23$(_context23) {
-                    while (1) {
-                        switch (_context23.prev = _context23.next) {
-                            case 0:
-                                if ((0, _isInteger2.default)(index) || index === null) {
-                                    _context23.next = 2;
-                                    break;
-                                }
-
-                                throw new Error('Incorrect argument "index": integer number or null expected');
-
-                            case 2:
-                                _context23.next = 4;
-                                return this._subscribeStreams();
-
-                            case 4:
-                                return _context23.abrupt("return", this.services.consumptionHorizon.updateLastConsumedMessageIndexForChannel(this.sid, index));
-
-                            case 5:
-                            case "end":
-                                return _context23.stop();
-                        }
-                    }
-                }, _callee23, this);
-            }));
-        }
-        /**
-         * Update the Channel's unique name.
-         * @param {String} uniqueName - The new Channel uniqueName
-         * @returns {Promise<Channel|SessionError>}
-         */
-
-    }, {
-        key: "updateUniqueName",
-        value: function updateUniqueName(uniqueName) {
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee24() {
                 return _regenerator2.default.wrap(function _callee24$(_context24) {
                     while (1) {
                         switch (_context24.prev = _context24.next) {
                             case 0:
-                                if (!(this.state.uniqueName !== uniqueName)) {
+                                if (!(this.state.friendlyName !== name)) {
                                     _context24.next = 3;
                                     break;
                                 }
 
                                 _context24.next = 3;
-                                return this.services.session.addCommand('editUniqueName', {
+                                return this.services.session.addCommand('editFriendlyName', {
                                     channelSid: this.sid,
-                                    uniqueName: uniqueName
+                                    friendlyName: name
                                 });
 
                             case 3:
@@ -1414,6 +1423,82 @@ var Channel = function (_events_1$EventEmitte) {
             }));
         }
         /**
+         * Set last consumed Channel's Message index to current consumption horizon.
+         * @param {Number|null} index - Message index to set as last read.
+         * If null provided, then the behavior is identical to {@link Channel#setNoMessagesConsumed}
+         * @returns {Promise<number|Error|SessionError>} resulting unread messages count in the channel
+         */
+
+    }, {
+        key: "updateLastConsumedMessageIndex",
+        value: function updateLastConsumedMessageIndex(index) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee25() {
+                return _regenerator2.default.wrap(function _callee25$(_context25) {
+                    while (1) {
+                        switch (_context25.prev = _context25.next) {
+                            case 0:
+                                if ((0, _isInteger2.default)(index) || index === null) {
+                                    _context25.next = 2;
+                                    break;
+                                }
+
+                                throw new Error('Incorrect argument "index": integer number or null expected');
+
+                            case 2:
+                                _context25.next = 4;
+                                return this._subscribeStreams();
+
+                            case 4:
+                                return _context25.abrupt("return", this.services.consumptionHorizon.updateLastConsumedMessageIndexForChannel(this.sid, index));
+
+                            case 5:
+                            case "end":
+                                return _context25.stop();
+                        }
+                    }
+                }, _callee25, this);
+            }));
+        }
+        /**
+         * Update the Channel's unique name.
+         * @param {String} uniqueName - The new Channel uniqueName
+         * @returns {Promise<Channel|SessionError>}
+         */
+
+    }, {
+        key: "updateUniqueName",
+        value: function updateUniqueName(uniqueName) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee26() {
+                return _regenerator2.default.wrap(function _callee26$(_context26) {
+                    while (1) {
+                        switch (_context26.prev = _context26.next) {
+                            case 0:
+                                if (!(this.state.uniqueName !== uniqueName)) {
+                                    _context26.next = 4;
+                                    break;
+                                }
+
+                                if (!uniqueName) {
+                                    uniqueName = '';
+                                }
+                                _context26.next = 4;
+                                return this.services.session.addCommand('editUniqueName', {
+                                    channelSid: this.sid,
+                                    uniqueName: uniqueName
+                                });
+
+                            case 4:
+                                return _context26.abrupt("return", this);
+
+                            case 5:
+                            case "end":
+                                return _context26.stop();
+                        }
+                    }
+                }, _callee26, this);
+            }));
+        }
+        /**
          * Gets User Descriptors for this channel.
          * @returns {Promise<Paginator<UserDescriptor>>}
          */
@@ -1421,19 +1506,19 @@ var Channel = function (_events_1$EventEmitte) {
     }, {
         key: "getUserDescriptors",
         value: function getUserDescriptors() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee25() {
-                return _regenerator2.default.wrap(function _callee25$(_context25) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee27() {
+                return _regenerator2.default.wrap(function _callee27$(_context27) {
                     while (1) {
-                        switch (_context25.prev = _context25.next) {
+                        switch (_context27.prev = _context27.next) {
                             case 0:
-                                return _context25.abrupt("return", this.services.users.getChannelUserDescriptors(this.sid));
+                                return _context27.abrupt("return", this.services.users.getChannelUserDescriptors(this.sid));
 
                             case 1:
                             case "end":
-                                return _context25.stop();
+                                return _context27.stop();
                         }
                     }
-                }, _callee25, this);
+                }, _callee27, this);
             }));
         }
     }, {
@@ -1592,7 +1677,7 @@ exports.Channel = Channel;
  * @property {Channel} channel - Updated Channel
  * @property {Channel#UpdateReason[]} updateReasons - Array of Channel's updated event reasons
  */
-},{"./data/members":6,"./data/messages":7,"./logger":14,"./member":16,"./util":30,"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/number/is-integer":36,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199}],2:[function(_dereq_,module,exports){
+},{"./data/members":6,"./data/messages":7,"./logger":14,"./member":16,"./util":30,"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/number/is-integer":36,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196}],2:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -1698,7 +1783,7 @@ var ChannelDescriptor = function () {
 }();
 
 exports.ChannelDescriptor = ChannelDescriptor;
-},{"./channel":1,"./logger":14,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],3:[function(_dereq_,module,exports){
+},{"./channel":1,"./logger":14,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],3:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -1797,6 +1882,7 @@ var ClientServices = function ClientServices() {
  * @property {User} user - Information for logged in user
  * @property {String} version - Current version of Chat client
  *
+ * @fires Client#connectionError
  * @fires Client#connectionStateChanged
  * @fires Client#channelAdded
  * @fires Client#channelInvited
@@ -1908,6 +1994,9 @@ var Client = function (_events_1$EventEmitte) {
         });
         _this.services.twilsockClient.on('tokenExpired', function () {
             return _this.emit('tokenExpired');
+        });
+        _this.services.twilsockClient.on('connectionError', function (error) {
+            return _this.emit('connectionError', error);
         });
         _this.services.consumptionHorizon = new consumptionhorizon_1.ConsumptionHorizon(_this.services);
         _this.services.typingIndicator = new typingindicator_1.TypingIndicator(_this.config, {
@@ -2723,7 +2812,16 @@ exports.default = Client;
  * @property {User} user - Updated User
  * @property {User#UpdateReason[]} updateReasons - Array of User's updated event reasons
  */
-},{"./../package.json":295,"./configuration":4,"./data/channels":5,"./data/publicchannels":8,"./data/userchannels":9,"./data/users":11,"./interfaces/notificationtypes":12,"./logger":14,"./pushnotification":18,"./services/consumptionhorizon":20,"./services/network":21,"./services/typingindicator":22,"./session":23,"./synclist":25,"./user":27,"./util":30,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199,"twilio-mcs-client":222,"twilio-notifications":230,"twilio-sync":241,"twilsock":269}],4:[function(_dereq_,module,exports){
+/**
+ * Fired when connection is interrupted by unexpected reason
+ * @event Client#connectionError
+ * @type {Object}
+ * @property {Boolean} terminal - twilsock will stop connection attempts
+ * @property {String} message - root cause
+ * @property {Number} [httpStatusCode] - http status code if available
+ * @property {Number} [errorCode] - Twilio public error code if available
+ */
+},{"./../package.json":290,"./configuration":4,"./data/channels":5,"./data/publicchannels":8,"./data/userchannels":9,"./data/users":11,"./interfaces/notificationtypes":12,"./logger":14,"./pushnotification":18,"./services/consumptionhorizon":20,"./services/network":21,"./services/typingindicator":22,"./session":23,"./synclist":25,"./user":27,"./util":30,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196,"twilio-mcs-client":215,"twilio-notifications":224,"twilio-sync":236,"twilsock":266}],4:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -2803,7 +2901,7 @@ var Configuration = function () {
 }();
 
 exports.Configuration = Configuration;
-},{"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],5:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],5:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -2920,37 +3018,61 @@ var Channels = function (_events_1$EventEmitte) {
         key: "addChannel",
         value: function addChannel(options) {
             return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                var response, channelSid, channelDocument, existingChannel, channel;
+                var attributes, response, channelSid, channelDocument, existingChannel, channel;
                 return _regenerator2.default.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                _context.next = 2;
+                                attributes = void 0;
+
+                                if (typeof options.attributes === 'undefined') {
+                                    attributes = {};
+                                } else {
+                                    attributes = options.attributes;
+                                }
+
+                                if (!(attributes === null)) {
+                                    _context.next = 4;
+                                    break;
+                                }
+
+                                throw new Error('Attributes can\'t be null');
+
+                            case 4:
+                                if (!(attributes.constructor !== Object)) {
+                                    _context.next = 6;
+                                    break;
+                                }
+
+                                throw new Error('Attributes must be a valid JSON object');
+
+                            case 6:
+                                _context.next = 8;
                                 return this.services.session.addCommand('createChannel', {
                                     friendlyName: options.friendlyName,
                                     uniqueName: options.uniqueName,
                                     type: options.isPrivate ? 'private' : 'public',
-                                    attributes: (0, _stringify2.default)(options.attributes)
+                                    attributes: (0, _stringify2.default)(attributes)
                                 });
 
-                            case 2:
+                            case 8:
                                 response = _context.sent;
                                 channelSid = 'channelSid' in response ? response['channelSid'] : null;
                                 channelDocument = 'channel' in response ? response['channel'] : null;
                                 existingChannel = this.channels.get(channelSid);
 
                                 if (!existingChannel) {
-                                    _context.next = 10;
+                                    _context.next = 16;
                                     break;
                                 }
 
-                                _context.next = 9;
+                                _context.next = 15;
                                 return existingChannel._subscribe();
 
-                            case 9:
+                            case 15:
                                 return _context.abrupt("return", existingChannel);
 
-                            case 10:
+                            case 16:
                                 channel = new channel_1.Channel(this.services, {
                                     channel: channelDocument,
                                     name: null,
@@ -2967,14 +3089,14 @@ var Channels = function (_events_1$EventEmitte) {
 
                                 this.channels.set(channel.sid, channel);
                                 this.registerForEvents(channel);
-                                _context.next = 15;
+                                _context.next = 21;
                                 return channel._subscribe();
 
-                            case 15:
+                            case 21:
                                 this.emit('channelAdded', channel);
                                 return _context.abrupt("return", channel);
 
-                            case 17:
+                            case 23:
                             case "end":
                                 return _context.stop();
                         }
@@ -3001,9 +3123,11 @@ var Channels = function (_events_1$EventEmitte) {
                             switch (_context2.prev = _context2.next) {
                                 case 0:
                                     map.on('itemAdded', function (args) {
+                                        log.debug('itemAdded: ' + args.item.key);
                                         _this4.upsertChannel('sync', args.item.key, args.item.value);
                                     });
                                     map.on('itemRemoved', function (args) {
+                                        log.debug('itemRemoved: ' + args.key);
                                         var sid = args.key;
                                         if (!_this4.syncListFetched) {
                                             _this4.thumbstones.add(sid);
@@ -3021,6 +3145,7 @@ var Channels = function (_events_1$EventEmitte) {
                                         }
                                     });
                                     map.on('itemUpdated', function (args) {
+                                        log.debug('itemUpdated: ' + args.item.key);
                                         _this4.upsertChannel('sync', args.item.key, args.item.value);
                                     });
                                     upserts = [];
@@ -3276,7 +3401,7 @@ var Channels = function (_events_1$EventEmitte) {
 }(events_1.EventEmitter);
 
 exports.Channels = Channels;
-},{"../channel":1,"../logger":14,"../util":30,"../util/deferred":29,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/core-js/set":45,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199}],6:[function(_dereq_,module,exports){
+},{"../channel":1,"../logger":14,"../util":30,"../util/deferred":29,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/core-js/set":46,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196}],6:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -3397,11 +3522,13 @@ var Members = function (_events_1$EventEmitte) {
 
             return this.rosterEntityPromise = this.rosterEntityPromise || this.services.syncClient.map({ id: rosterObjectName, mode: 'open_existing' }).then(function (rosterMap) {
                 rosterMap.on('itemAdded', function (args) {
+                    log.debug(_this2.channel.sid + ' itemAdded: ' + args.item.key);
                     _this2.upsertMember(args.item.key, args.item.value).then(function (member) {
                         _this2.emit('memberJoined', member);
                     });
                 });
                 rosterMap.on('itemRemoved', function (args) {
+                    log.debug(_this2.channel.sid + ' itemRemoved: ' + args.key);
                     var memberSid = args.key;
                     if (!_this2.members.has(memberSid)) {
                         return;
@@ -3411,12 +3538,18 @@ var Members = function (_events_1$EventEmitte) {
                     _this2.emit('memberLeft', leftMember);
                 });
                 rosterMap.on('itemUpdated', function (args) {
+                    log.debug(_this2.channel.sid + ' itemUpdated: ' + args.item.key);
                     _this2.upsertMember(args.item.key, args.item.value);
                 });
                 var membersPromises = [];
-                return rosterMap.forEach(function (item) {
-                    membersPromises.push(_this2.upsertMember(item.key, item.value));
-                }).then(function () {
+                var that = _this2;
+                var rosterMapHandler = function rosterMapHandler(paginator) {
+                    paginator.items.forEach(function (item) {
+                        membersPromises.push(that.upsertMember(item.key, item.value));
+                    });
+                    return paginator.hasNextPage ? paginator.nextPage().then(rosterMapHandler) : null;
+                };
+                return rosterMap.getItems().then(rosterMapHandler).then(function () {
                     return _promise2.default.all(membersPromises);
                 }).then(function () {
                     return rosterMap;
@@ -3484,16 +3617,84 @@ var Members = function (_events_1$EventEmitte) {
             });
         }
         /**
+         * Get member by SID from channel
+         * @returns {Promise<|Error>}
+         */
+
+    }, {
+        key: "getMemberBySid",
+        value: function getMemberBySid(memberSid) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+                var _this5 = this;
+
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                return _context3.abrupt("return", this.rosterEntityPromise.then(function () {
+                                    var member = _this5.members.get(memberSid);
+                                    if (!member) {
+                                        throw new Error('Member with SID ' + memberSid + ' was not found');
+                                    }
+                                    return member;
+                                }));
+
+                            case 1:
+                            case "end":
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+        }
+        /**
+         * Get member by identity from channel
+         * @returns {Promise<|Error>}
+         */
+
+    }, {
+        key: "getMemberByIdentity",
+        value: function getMemberByIdentity(identity) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee4() {
+                var _this6 = this;
+
+                var foundMember;
+                return _regenerator2.default.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                foundMember = null;
+                                return _context4.abrupt("return", this.rosterEntityPromise.then(function () {
+                                    _this6.members.forEach(function (member) {
+                                        if (member.identity === identity) {
+                                            foundMember = member;
+                                        }
+                                    });
+                                    if (!foundMember) {
+                                        throw new Error('Member with identity ' + identity + ' was not found');
+                                    }
+                                    return foundMember;
+                                }));
+
+                            case 2:
+                            case "end":
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
+            }));
+        }
+        /**
          * Add user to the channel
          * @returns {Promise<void|SessionError>}
          */
 
     }, {
         key: "add",
-        value: function add(username) {
+        value: function add(identity) {
             return this.services.session.addCommand('addMemberV2', {
                 channelSid: this.channel.sid,
-                username: username
+                username: identity
             });
         }
         /**
@@ -3504,23 +3705,23 @@ var Members = function (_events_1$EventEmitte) {
 
     }, {
         key: "invite",
-        value: function invite(username) {
+        value: function invite(identity) {
             return this.services.session.addCommand('inviteMember', {
                 channelSid: this.channel.sid,
-                username: username
+                username: identity
             });
         }
         /**
-         * Remove user from channel
+         * Remove member from channel
          * @returns {Promise<|SessionError>}
          */
 
     }, {
         key: "remove",
-        value: function remove(username) {
+        value: function remove(identity) {
             return this.services.session.addCommand('removeMember', {
                 channelSid: this.channel.sid,
-                username: username
+                username: identity
             });
         }
     }]);
@@ -3545,7 +3746,7 @@ exports.Members = Members;
  * @property {Member} member - Updated Member
  * @property {Member#UpdateReason[]} updateReasons - Array of Member's updated event reasons
  */
-},{"../logger":14,"../member":16,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199}],7:[function(_dereq_,module,exports){
+},{"../logger":14,"../member":16,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196}],7:[function(_dereq_,module,exports){
 "use strict";
 
 var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
@@ -3648,6 +3849,7 @@ var Messages = function (_events_1$EventEmitte) {
 
             return this.messagesListPromise = this.messagesListPromise || this.services.syncClient.list({ id: name, mode: 'open_existing' }).then(function (list) {
                 list.on('itemAdded', function (args) {
+                    log.debug(_this2.channel.sid + ' itemAdded: ' + args.item.index);
                     var message = new message_1.Message(_this2.channel, _this2.services, args.item.index, args.item.value);
                     if (_this2.messagesByIndex.has(message.index)) {
                         log.debug('Message arrived, but already known and ignored', _this2.channel.sid, message.index);
@@ -3660,6 +3862,7 @@ var Messages = function (_events_1$EventEmitte) {
                     _this2.emit('messageAdded', message);
                 });
                 list.on('itemRemoved', function (args) {
+                    log.debug(_this2.channel.sid + ' itemRemoved: ' + args.index);
                     var index = args.index;
                     if (_this2.messagesByIndex.has(index)) {
                         var message = _this2.messagesByIndex.get(index);
@@ -3669,6 +3872,7 @@ var Messages = function (_events_1$EventEmitte) {
                     }
                 });
                 list.on('itemUpdated', function (args) {
+                    log.debug(_this2.channel.sid + ' itemUpdated: ' + args.item.index);
                     var message = _this2.messagesByIndex.get(args.item.index);
                     if (message) {
                         message._update(args.item.value);
@@ -3734,21 +3938,29 @@ var Messages = function (_events_1$EventEmitte) {
                             case 0:
                                 log.debug('Sending text message', message, attributes);
 
-                                if (!(attributes.constructor !== Object)) {
+                                if (!(attributes === null)) {
                                     _context2.next = 3;
+                                    break;
+                                }
+
+                                throw new Error('Attributes can\'t be null');
+
+                            case 3:
+                                if (!(attributes.constructor !== Object)) {
+                                    _context2.next = 5;
                                     break;
                                 }
 
                                 throw new Error('Attributes must be a valid JSON object');
 
-                            case 3:
+                            case 5:
                                 return _context2.abrupt("return", this.services.session.addCommand('sendMessage', {
                                     channelSid: this.channel.sid,
                                     text: message,
                                     attributes: (0, _stringify2.default)(attributes)
                                 }));
 
-                            case 4:
+                            case 6:
                             case "end":
                                 return _context2.stop();
                         }
@@ -3929,7 +4141,7 @@ var Messages = function (_events_1$EventEmitte) {
 }(events_1.EventEmitter);
 
 exports.Messages = Messages;
-},{"../logger":14,"../message":17,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199,"isomorphic-form-data":202}],8:[function(_dereq_,module,exports){
+},{"../logger":14,"../message":17,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196,"isomorphic-form-data":198}],8:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -4080,7 +4292,7 @@ var PublicChannels = function () {
 }();
 
 exports.PublicChannels = PublicChannels;
-},{"../channeldescriptor":2,"../restpaginator":19,"../util/index":30,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],9:[function(_dereq_,module,exports){
+},{"../channeldescriptor":2,"../restpaginator":19,"../util/index":30,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58}],9:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -4181,7 +4393,7 @@ var UserChannels = function () {
 }();
 
 exports.UserChannels = UserChannels;
-},{"../channeldescriptor":2,"../restpaginator":19,"../util/index":30,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],10:[function(_dereq_,module,exports){
+},{"../channeldescriptor":2,"../restpaginator":19,"../util/index":30,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58}],10:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -4302,7 +4514,7 @@ var UserDescriptors = function () {
 }();
 
 exports.UserDescriptors = UserDescriptors;
-},{"../restpaginator":19,"../userdescriptor":28,"../util/index":30,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],11:[function(_dereq_,module,exports){
+},{"../restpaginator":19,"../userdescriptor":28,"../util/index":30,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58}],11:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -4619,7 +4831,7 @@ var Users = function (_events_1$EventEmitte) {
 }(events_1.EventEmitter);
 
 exports.Users = Users;
-},{"../user":27,"./userdescriptors":10,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199}],12:[function(_dereq_,module,exports){
+},{"../user":27,"./userdescriptors":10,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196}],12:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -4641,7 +4853,7 @@ NotificationTypes.INVITED_TO_CHANNEL = 'twilio.channel.invited_to_channel';
 NotificationTypes.REMOVED_FROM_CHANNEL = 'twilio.channel.removed_from_channel';
 NotificationTypes.CONSUMPTION_UPDATE = 'twilio.channel.consumption_update';
 exports.NotificationTypes = NotificationTypes;
-},{"babel-runtime/helpers/classCallCheck":49}],13:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50}],13:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -4662,7 +4874,7 @@ ResponseCodes.HTTP_404_NOT_FOUND = 404;
 ResponseCodes.ACCESS_FORBIDDEN_FOR_IDENTITY = 54007;
 ResponseCodes.LIST_NOT_FOUND = 54150;
 exports.ResponseCodes = ResponseCodes;
-},{"babel-runtime/helpers/classCallCheck":49}],14:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50}],14:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -4803,7 +5015,7 @@ var Logger = function () {
 }();
 
 exports.Logger = Logger;
-},{"babel-runtime/core-js/array/from":31,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"loglevel":205}],15:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/array/from":31,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"loglevel":200}],15:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -4941,7 +5153,7 @@ var Media = function () {
 }();
 
 exports.Media = Media;
-},{"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],16:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58}],16:[function(_dereq_,module,exports){
 "use strict";
 
 var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
@@ -5309,33 +5521,41 @@ var Member = function (_events_1$EventEmitte) {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
-                                if (attributes) {
+                                if (!(typeof attributes === 'undefined')) {
                                     _context4.next = 4;
+                                    break;
+                                }
+
+                                throw new Error('Attributes is required parameter');
+
+                            case 4:
+                                if (!(attributes === null)) {
+                                    _context4.next = 8;
                                     break;
                                 }
 
                                 throw new Error('Attributes can\'t be null');
 
-                            case 4:
+                            case 8:
                                 if (!(attributes.constructor !== Object)) {
-                                    _context4.next = 6;
+                                    _context4.next = 10;
                                     break;
                                 }
 
                                 throw new Error('Attributes must be a valid JSON object');
 
-                            case 6:
-                                _context4.next = 8;
+                            case 10:
+                                _context4.next = 12;
                                 return this.services.session.addCommand('editMemberAttributes', {
                                     channelSid: this.channel.sid,
                                     memberSid: this.sid,
                                     attributes: (0, _stringify2.default)(attributes)
                                 });
 
-                            case 8:
+                            case 12:
                                 return _context4.abrupt("return", this);
 
-                            case 9:
+                            case 13:
                             case "end":
                                 return _context4.stop();
                         }
@@ -5365,7 +5585,7 @@ exports.Member = Member;
  * @property {Member} member - Updated Member
  * @property {Member#UpdateReason[]} updateReasons - Array of Member's updated event reasons
  */
-},{"./logger":14,"./util":30,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/number/is-integer":36,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199}],17:[function(_dereq_,module,exports){
+},{"./logger":14,"./util":30,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/number/is-integer":36,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196}],17:[function(_dereq_,module,exports){
 "use strict";
 
 var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
@@ -5450,6 +5670,7 @@ function parseAttributes(msgSid, attributes) {
  * @property {Number} index - Index of Message in the Channel's messages list
  * @property {String} lastUpdatedBy - Identity of the last user that updated Message
  * @property {Media} media - Contains Media information (if present)
+ * @property {String} memberSid - Authoring Member's server-assigned unique identifier
  * @property {String} sid - The server-assigned unique identifier for Message
  * @property {Date} timestamp - When Message was created
  * @property {'text' | 'media' } type - Type of message: 'text' or 'media'
@@ -5473,14 +5694,15 @@ var Message = function (_events_1$EventEmitte) {
         _this.state = {
             sid: data.sid,
             index: index,
-            author: data.author,
+            author: data.author == null ? null : data.author,
             body: data.text,
             timestamp: data.timestamp ? new Date(data.timestamp) : null,
             dateUpdated: data.dateUpdated ? new Date(data.dateUpdated) : null,
             lastUpdatedBy: data.lastUpdatedBy ? data.lastUpdatedBy : null,
             attributes: parseAttributes(data.sid, data.attributes),
             type: data.type ? data.type : 'text',
-            media: data.type && data.type === 'media' && data.media ? new media_1.Media(data.media, _this.services) : null
+            media: data.type && data.type === 'media' && data.media ? new media_1.Media(data.media, _this.services) : null,
+            memberSid: data.memberSid == null ? null : data.memberSid
         };
         return _this;
     }
@@ -5519,6 +5741,87 @@ var Message = function (_events_1$EventEmitte) {
             }
         }
         /**
+         * Get Member who is author of the Message
+         * @returns {Promise<Member>}
+         */
+
+    }, {
+        key: "getMember",
+        value: function getMember() {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+                var _this2 = this;
+
+                var member, errorMesage;
+                return _regenerator2.default.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                member = null;
+
+                                if (!this.state.memberSid) {
+                                    _context.next = 5;
+                                    break;
+                                }
+
+                                _context.next = 4;
+                                return this.channel.getMemberBySid(this.memberSid).catch(function () {
+                                    log.debug('Member with sid "' + _this2.memberSid + '" not found for message ' + _this2.sid);
+                                    return null;
+                                });
+
+                            case 4:
+                                member = _context.sent;
+
+                            case 5:
+                                if (!(!member && this.state.author)) {
+                                    _context.next = 9;
+                                    break;
+                                }
+
+                                _context.next = 8;
+                                return this.channel.getMemberByIdentity(this.state.author).catch(function () {
+                                    log.debug('Member with identity "' + _this2.author + '" not found for message ' + _this2.sid);
+                                    return null;
+                                });
+
+                            case 8:
+                                member = _context.sent;
+
+                            case 9:
+                                if (!member) {
+                                    _context.next = 11;
+                                    break;
+                                }
+
+                                return _context.abrupt("return", member);
+
+                            case 11:
+                                errorMesage = 'Member with ';
+
+                                if (this.state.memberSid) {
+                                    errorMesage += 'SID \'' + this.state.memberSid + '\' ';
+                                }
+                                if (this.state.author) {
+                                    if (this.state.memberSid) {
+                                        errorMesage += 'or ';
+                                    }
+                                    errorMesage += 'identity \'' + this.state.author + '\' ';
+                                }
+                                if (errorMesage === 'Member with ') {
+                                    errorMesage = 'Member ';
+                                }
+                                errorMesage += 'was not found';
+                                throw new Error(errorMesage);
+
+                            case 17:
+                            case "end":
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
+        }
+        /**
          * Remove the Message.
          * @returns {Promise<Message|SessionError>}
          */
@@ -5526,26 +5829,26 @@ var Message = function (_events_1$EventEmitte) {
     }, {
         key: "remove",
         value: function remove() {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                return _regenerator2.default.wrap(function _callee$(_context) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
+                return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
-                        switch (_context.prev = _context.next) {
+                        switch (_context2.prev = _context2.next) {
                             case 0:
-                                _context.next = 2;
+                                _context2.next = 2;
                                 return this.services.session.addCommand('deleteMessage', {
                                     channelSid: this.channel.sid,
                                     messageIdx: this.index.toString()
                                 });
 
                             case 2:
-                                return _context.abrupt("return", this);
+                                return _context2.abrupt("return", this);
 
                             case 3:
                             case "end":
-                                return _context.stop();
+                                return _context2.stop();
                         }
                     }
-                }, _callee, this);
+                }, _callee2, this);
             }));
         }
         /**
@@ -5557,20 +5860,20 @@ var Message = function (_events_1$EventEmitte) {
     }, {
         key: "updateBody",
         value: function updateBody(body) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-                return _regenerator2.default.wrap(function _callee2$(_context2) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
                     while (1) {
-                        switch (_context2.prev = _context2.next) {
+                        switch (_context3.prev = _context3.next) {
                             case 0:
                                 if (!(typeof body !== 'string')) {
-                                    _context2.next = 2;
+                                    _context3.next = 2;
                                     break;
                                 }
 
                                 throw new Error('Body <String> is a required parameter for updateBody');
 
                             case 2:
-                                _context2.next = 4;
+                                _context3.next = 4;
                                 return this.services.session.addCommand('editMessage', {
                                     channelSid: this.channel.sid,
                                     messageIdx: this.index.toString(),
@@ -5578,14 +5881,14 @@ var Message = function (_events_1$EventEmitte) {
                                 });
 
                             case 4:
-                                return _context2.abrupt("return", this);
+                                return _context3.abrupt("return", this);
 
                             case 5:
                             case "end":
-                                return _context2.stop();
+                                return _context3.stop();
                         }
                     }
-                }, _callee2, this);
+                }, _callee3, this);
             }));
         }
         /**
@@ -5597,43 +5900,51 @@ var Message = function (_events_1$EventEmitte) {
     }, {
         key: "updateAttributes",
         value: function updateAttributes(attributes) {
-            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
-                return _regenerator2.default.wrap(function _callee3$(_context3) {
+            return __awaiter(this, void 0, void 0, /*#__PURE__*/_regenerator2.default.mark(function _callee4() {
+                return _regenerator2.default.wrap(function _callee4$(_context4) {
                     while (1) {
-                        switch (_context3.prev = _context3.next) {
+                        switch (_context4.prev = _context4.next) {
                             case 0:
                                 if (!(typeof attributes === 'undefined')) {
-                                    _context3.next = 4;
+                                    _context4.next = 4;
                                     break;
                                 }
 
-                                throw new Error('Attributes is a required parameter for updateAttributes');
+                                throw new Error('Attributes is required parameter');
 
                             case 4:
+                                if (!(attributes === null)) {
+                                    _context4.next = 8;
+                                    break;
+                                }
+
+                                throw new Error('Attributes can\'t be null');
+
+                            case 8:
                                 if (!(attributes.constructor !== Object)) {
-                                    _context3.next = 6;
+                                    _context4.next = 10;
                                     break;
                                 }
 
                                 throw new Error('Attributes must be a valid JSON object');
 
-                            case 6:
-                                _context3.next = 8;
+                            case 10:
+                                _context4.next = 12;
                                 return this.services.session.addCommand('editMessageAttributes', {
                                     channelSid: this.channel.sid,
                                     messageIdx: this.index,
                                     attributes: (0, _stringify2.default)(attributes)
                                 });
 
-                            case 8:
-                                return _context3.abrupt("return", this);
+                            case 12:
+                                return _context4.abrupt("return", this);
 
-                            case 9:
+                            case 13:
                             case "end":
-                                return _context3.stop();
+                                return _context4.stop();
                         }
                     }
-                }, _callee3, this);
+                }, _callee4, this);
             }));
         }
     }, {
@@ -5689,6 +6000,11 @@ var Message = function (_events_1$EventEmitte) {
         get: function get() {
             return this.state.media;
         }
+    }, {
+        key: "memberSid",
+        get: function get() {
+            return this.state.memberSid;
+        }
     }]);
     return Message;
 }(events_1.EventEmitter);
@@ -5701,7 +6017,7 @@ exports.Message = Message;
  * @property {Message} message - Updated Message
  * @property {Message#UpdateReason[]} updateReasons - Array of Message's updated event reasons
  */
-},{"./logger":14,"./media":15,"./util/index":30,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199}],18:[function(_dereq_,module,exports){
+},{"./logger":14,"./media":15,"./util/index":30,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196}],18:[function(_dereq_,module,exports){
 'use strict';
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -5751,7 +6067,7 @@ function PushNotification(data) {
 };
 
 exports.PushNotification = PushNotification;
-},{"babel-runtime/helpers/classCallCheck":49}],19:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50}],19:[function(_dereq_,module,exports){
 'use strict';
 
 var _promise = _dereq_('babel-runtime/core-js/promise');
@@ -5826,7 +6142,7 @@ var RestPaginator = function () {
 }();
 
 exports.RestPaginator = RestPaginator;
-},{"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],20:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],20:[function(_dereq_,module,exports){
 "use strict";
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
@@ -6008,7 +6324,7 @@ var ConsumptionHorizon = function () {
 }();
 
 exports.ConsumptionHorizon = ConsumptionHorizon;
-},{"../sessionerror":24,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],21:[function(_dereq_,module,exports){
+},{"../sessionerror":24,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],21:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -6169,7 +6485,7 @@ var Network = function () {
                 if (retryWhenThrottled) {
                     codesToRetryOn.push(429);
                 }
-                var retrier = new operation_retrier_1.default(_this3.backoffConfig());
+                var retrier = new operation_retrier_1.Retrier(_this3.backoffConfig());
                 retrier.on('attempt', function () {
                     request().then(function (result) {
                         return retrier.succeeded(result);
@@ -6246,7 +6562,7 @@ var Network = function () {
 }();
 
 exports.Network = Network;
-},{"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/slicedToArray":54,"babel-runtime/regenerator":57,"operation-retrier":206}],22:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/slicedToArray":55,"babel-runtime/regenerator":58,"operation-retrier":202}],22:[function(_dereq_,module,exports){
 "use strict";
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
@@ -6376,7 +6692,7 @@ var TypingIndicator = function () {
 }();
 
 exports.TypingIndicator = TypingIndicator;
-},{"../interfaces/notificationtypes":12,"../logger":14,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],23:[function(_dereq_,module,exports){
+},{"../interfaces/notificationtypes":12,"../logger":14,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],23:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -6778,7 +7094,7 @@ var Session = function () {
 }();
 
 exports.Session = Session;
-},{"./../package.json":295,"./interfaces/responsecodes":13,"./logger":14,"./sessionerror":24,"./util/deferred":29,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57,"iso8601-duration":201,"platform":207,"uuid":290}],24:[function(_dereq_,module,exports){
+},{"./../package.json":290,"./interfaces/responsecodes":13,"./logger":14,"./sessionerror":24,"./util/deferred":29,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58,"iso8601-duration":197,"platform":204,"uuid":285}],24:[function(_dereq_,module,exports){
 "use strict";
 
 var _create = _dereq_("babel-runtime/core-js/object/create");
@@ -6872,7 +7188,7 @@ var SessionError = function (_extendableBuiltin2) {
 }(_extendableBuiltin(Error));
 
 exports.SessionError = SessionError;
-},{"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/create":38,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/object/set-prototype-of":42,"babel-runtime/core-js/reflect/construct":44,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],25:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/create":38,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/object/set-prototype-of":43,"babel-runtime/core-js/reflect/construct":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],25:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -6981,7 +7297,7 @@ var SyncList = function () {
 }();
 
 exports.SyncList = SyncList;
-},{"./restpaginator":19,"./synclistdescriptor":26,"./util/index":30,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],26:[function(_dereq_,module,exports){
+},{"./restpaginator":19,"./synclistdescriptor":26,"./util/index":30,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58}],26:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -7012,7 +7328,7 @@ function SyncListDescriptor(descriptor) {
 };
 
 exports.SyncListDescriptor = SyncListDescriptor;
-},{"babel-runtime/helpers/classCallCheck":49}],27:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50}],27:[function(_dereq_,module,exports){
 "use strict";
 
 var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
@@ -7207,6 +7523,7 @@ var User = function (_events_1$EventEmitte) {
                                 this.promiseToFetch = this.services.syncClient.map({ id: this.state.entityName, mode: 'open_existing', includeItems: true }).then(function (map) {
                                     _this3.entity = map;
                                     map.on('itemUpdated', function (args) {
+                                        log.debug(_this3.state.entityName + ' (' + _this3.state.identity + ') itemUpdated: ' + args.item.key);
                                         return _this3._update(args.item.key, args.item.value);
                                     });
                                     return _promise2.default.all([map.get('friendlyName').then(function (item) {
@@ -7254,32 +7571,48 @@ var User = function (_events_1$EventEmitte) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
-                                if (!(!attributes || attributes.constructor !== Object)) {
-                                    _context2.next = 2;
+                                if (!(typeof attributes === 'undefined')) {
+                                    _context2.next = 4;
                                     break;
                                 }
 
-                                throw new Error('Attributes must be an object');
+                                throw new Error('Attributes is required parameter');
 
-                            case 2:
+                            case 4:
+                                if (!(attributes === null)) {
+                                    _context2.next = 8;
+                                    break;
+                                }
+
+                                throw new Error('Attributes can\'t be null');
+
+                            case 8:
+                                if (!(attributes.constructor !== Object)) {
+                                    _context2.next = 10;
+                                    break;
+                                }
+
+                                throw new Error('Attributes must be a valid JSON object');
+
+                            case 10:
                                 if (!(this.subscribed == 'unsubscribed')) {
-                                    _context2.next = 4;
+                                    _context2.next = 12;
                                     break;
                                 }
 
                                 throw new Error('Can\'t modify unsubscribed object');
 
-                            case 4:
-                                _context2.next = 6;
+                            case 12:
+                                _context2.next = 14;
                                 return this.services.session.addCommand('editUserAttributes', {
                                     username: this.state.identity,
                                     attributes: (0, _stringify2.default)(attributes)
                                 });
 
-                            case 6:
+                            case 14:
                                 return _context2.abrupt("return", this);
 
-                            case 7:
+                            case 15:
                             case "end":
                                 return _context2.stop();
                         }
@@ -7429,7 +7762,7 @@ exports.User = User;
  * @event User#userUnsubscribed
  * @type {User}
  */
-},{"./logger":14,"./util":30,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199}],28:[function(_dereq_,module,exports){
+},{"./logger":14,"./util":30,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196}],28:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -7508,7 +7841,7 @@ var UserDescriptor = function () {
 }();
 
 exports.UserDescriptor = UserDescriptor;
-},{"./logger":14,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],29:[function(_dereq_,module,exports){
+},{"./logger":14,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],29:[function(_dereq_,module,exports){
 "use strict";
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
@@ -7565,7 +7898,7 @@ var Deferred = function () {
 }();
 
 exports.Deferred = Deferred;
-},{"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],30:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],30:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -7672,41 +8005,43 @@ var UriBuilder = function () {
 }();
 
 exports.UriBuilder = UriBuilder;
-},{"babel-runtime/core-js/json/stringify":34,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"rfc6902":217}],31:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/json/stringify":34,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"rfc6902":209}],31:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/array/from"), __esModule: true };
-},{"core-js/library/fn/array/from":65}],32:[function(_dereq_,module,exports){
+},{"core-js/library/fn/array/from":60}],32:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/get-iterator"), __esModule: true };
-},{"core-js/library/fn/get-iterator":66}],33:[function(_dereq_,module,exports){
+},{"core-js/library/fn/get-iterator":61}],33:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/is-iterable"), __esModule: true };
-},{"core-js/library/fn/is-iterable":67}],34:[function(_dereq_,module,exports){
+},{"core-js/library/fn/is-iterable":62}],34:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/json/stringify"), __esModule: true };
-},{"core-js/library/fn/json/stringify":68}],35:[function(_dereq_,module,exports){
+},{"core-js/library/fn/json/stringify":63}],35:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/map"), __esModule: true };
-},{"core-js/library/fn/map":69}],36:[function(_dereq_,module,exports){
+},{"core-js/library/fn/map":64}],36:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/number/is-integer"), __esModule: true };
-},{"core-js/library/fn/number/is-integer":70}],37:[function(_dereq_,module,exports){
+},{"core-js/library/fn/number/is-integer":65}],37:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/object/assign"), __esModule: true };
-},{"core-js/library/fn/object/assign":71}],38:[function(_dereq_,module,exports){
+},{"core-js/library/fn/object/assign":66}],38:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/object/create"), __esModule: true };
-},{"core-js/library/fn/object/create":72}],39:[function(_dereq_,module,exports){
+},{"core-js/library/fn/object/create":67}],39:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/object/define-property"), __esModule: true };
-},{"core-js/library/fn/object/define-property":73}],40:[function(_dereq_,module,exports){
+},{"core-js/library/fn/object/define-property":68}],40:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/object/get-own-property-descriptor"), __esModule: true };
-},{"core-js/library/fn/object/get-own-property-descriptor":74}],41:[function(_dereq_,module,exports){
+},{"core-js/library/fn/object/get-own-property-descriptor":69}],41:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/object/get-prototype-of"), __esModule: true };
-},{"core-js/library/fn/object/get-prototype-of":75}],42:[function(_dereq_,module,exports){
+},{"core-js/library/fn/object/get-prototype-of":70}],42:[function(_dereq_,module,exports){
+module.exports = { "default": _dereq_("core-js/library/fn/object/keys"), __esModule: true };
+},{"core-js/library/fn/object/keys":71}],43:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/object/set-prototype-of"), __esModule: true };
-},{"core-js/library/fn/object/set-prototype-of":76}],43:[function(_dereq_,module,exports){
+},{"core-js/library/fn/object/set-prototype-of":72}],44:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/promise"), __esModule: true };
-},{"core-js/library/fn/promise":77}],44:[function(_dereq_,module,exports){
+},{"core-js/library/fn/promise":73}],45:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/reflect/construct"), __esModule: true };
-},{"core-js/library/fn/reflect/construct":78}],45:[function(_dereq_,module,exports){
+},{"core-js/library/fn/reflect/construct":74}],46:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/set"), __esModule: true };
-},{"core-js/library/fn/set":79}],46:[function(_dereq_,module,exports){
+},{"core-js/library/fn/set":75}],47:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/symbol"), __esModule: true };
-},{"core-js/library/fn/symbol":80}],47:[function(_dereq_,module,exports){
+},{"core-js/library/fn/symbol":76}],48:[function(_dereq_,module,exports){
 module.exports = { "default": _dereq_("core-js/library/fn/symbol/iterator"), __esModule: true };
-},{"core-js/library/fn/symbol/iterator":81}],48:[function(_dereq_,module,exports){
+},{"core-js/library/fn/symbol/iterator":77}],49:[function(_dereq_,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7745,7 +8080,7 @@ exports.default = function (fn) {
     });
   };
 };
-},{"../core-js/promise":43}],49:[function(_dereq_,module,exports){
+},{"../core-js/promise":44}],50:[function(_dereq_,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7755,7 +8090,7 @@ exports.default = function (instance, Constructor) {
     throw new TypeError("Cannot call a class as a function");
   }
 };
-},{}],50:[function(_dereq_,module,exports){
+},{}],51:[function(_dereq_,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7783,7 +8118,7 @@ exports.default = function () {
     return Constructor;
   };
 }();
-},{"../core-js/object/define-property":39}],51:[function(_dereq_,module,exports){
+},{"../core-js/object/define-property":39}],52:[function(_dereq_,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7822,7 +8157,7 @@ exports.default = function get(object, property, receiver) {
     return getter.call(receiver);
   }
 };
-},{"../core-js/object/get-own-property-descriptor":40,"../core-js/object/get-prototype-of":41}],52:[function(_dereq_,module,exports){
+},{"../core-js/object/get-own-property-descriptor":40,"../core-js/object/get-prototype-of":41}],53:[function(_dereq_,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7856,7 +8191,7 @@ exports.default = function (subClass, superClass) {
   });
   if (superClass) _setPrototypeOf2.default ? (0, _setPrototypeOf2.default)(subClass, superClass) : subClass.__proto__ = superClass;
 };
-},{"../core-js/object/create":38,"../core-js/object/set-prototype-of":42,"../helpers/typeof":56}],53:[function(_dereq_,module,exports){
+},{"../core-js/object/create":38,"../core-js/object/set-prototype-of":43,"../helpers/typeof":57}],54:[function(_dereq_,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7874,7 +8209,7 @@ exports.default = function (self, call) {
 
   return call && ((typeof call === "undefined" ? "undefined" : (0, _typeof3.default)(call)) === "object" || typeof call === "function") ? call : self;
 };
-},{"../helpers/typeof":56}],54:[function(_dereq_,module,exports){
+},{"../helpers/typeof":57}],55:[function(_dereq_,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7926,7 +8261,7 @@ exports.default = function () {
     }
   };
 }();
-},{"../core-js/get-iterator":32,"../core-js/is-iterable":33}],55:[function(_dereq_,module,exports){
+},{"../core-js/get-iterator":32,"../core-js/is-iterable":33}],56:[function(_dereq_,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7948,7 +8283,7 @@ exports.default = function (arr) {
     return (0, _from2.default)(arr);
   }
 };
-},{"../core-js/array/from":31}],56:[function(_dereq_,module,exports){
+},{"../core-js/array/from":31}],57:[function(_dereq_,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7970,482 +8305,35 @@ exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.d
 } : function (obj) {
   return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
 };
-},{"../core-js/symbol":46,"../core-js/symbol/iterator":47}],57:[function(_dereq_,module,exports){
+},{"../core-js/symbol":47,"../core-js/symbol/iterator":48}],58:[function(_dereq_,module,exports){
 module.exports = _dereq_("regenerator-runtime");
 
-},{"regenerator-runtime":212}],58:[function(_dereq_,module,exports){
-//      Copyright (c) 2012 Mathieu Turcotte
-//      Licensed under the MIT license.
-
-var Backoff = _dereq_('./lib/backoff');
-var ExponentialBackoffStrategy = _dereq_('./lib/strategy/exponential');
-var FibonacciBackoffStrategy = _dereq_('./lib/strategy/fibonacci');
-var FunctionCall = _dereq_('./lib/function_call.js');
-
-module.exports.Backoff = Backoff;
-module.exports.FunctionCall = FunctionCall;
-module.exports.FibonacciStrategy = FibonacciBackoffStrategy;
-module.exports.ExponentialStrategy = ExponentialBackoffStrategy;
-
-// Constructs a Fibonacci backoff.
-module.exports.fibonacci = function(options) {
-    return new Backoff(new FibonacciBackoffStrategy(options));
-};
-
-// Constructs an exponential backoff.
-module.exports.exponential = function(options) {
-    return new Backoff(new ExponentialBackoffStrategy(options));
-};
-
-// Constructs a FunctionCall for the given function and arguments.
-module.exports.call = function(fn, vargs, callback) {
-    var args = Array.prototype.slice.call(arguments);
-    fn = args[0];
-    vargs = args.slice(1, args.length - 1);
-    callback = args[args.length - 1];
-    return new FunctionCall(fn, vargs, callback);
-};
-
-},{"./lib/backoff":59,"./lib/function_call.js":60,"./lib/strategy/exponential":61,"./lib/strategy/fibonacci":62}],59:[function(_dereq_,module,exports){
-//      Copyright (c) 2012 Mathieu Turcotte
-//      Licensed under the MIT license.
-
-var events = _dereq_('events');
-var precond = _dereq_('precond');
-var util = _dereq_('util');
-
-// A class to hold the state of a backoff operation. Accepts a backoff strategy
-// to generate the backoff delays.
-function Backoff(backoffStrategy) {
-    events.EventEmitter.call(this);
-
-    this.backoffStrategy_ = backoffStrategy;
-    this.maxNumberOfRetry_ = -1;
-    this.backoffNumber_ = 0;
-    this.backoffDelay_ = 0;
-    this.timeoutID_ = -1;
-
-    this.handlers = {
-        backoff: this.onBackoff_.bind(this)
-    };
-}
-util.inherits(Backoff, events.EventEmitter);
-
-// Sets a limit, greater than 0, on the maximum number of backoffs. A 'fail'
-// event will be emitted when the limit is reached.
-Backoff.prototype.failAfter = function(maxNumberOfRetry) {
-    precond.checkArgument(maxNumberOfRetry > 0,
-        'Expected a maximum number of retry greater than 0 but got %s.',
-        maxNumberOfRetry);
-
-    this.maxNumberOfRetry_ = maxNumberOfRetry;
-};
-
-// Starts a backoff operation. Accepts an optional parameter to let the
-// listeners know why the backoff operation was started.
-Backoff.prototype.backoff = function(err) {
-    precond.checkState(this.timeoutID_ === -1, 'Backoff in progress.');
-
-    if (this.backoffNumber_ === this.maxNumberOfRetry_) {
-        this.emit('fail', err);
-        this.reset();
-    } else {
-        this.backoffDelay_ = this.backoffStrategy_.next();
-        this.timeoutID_ = setTimeout(this.handlers.backoff, this.backoffDelay_);
-        this.emit('backoff', this.backoffNumber_, this.backoffDelay_, err);
-    }
-};
-
-// Handles the backoff timeout completion.
-Backoff.prototype.onBackoff_ = function() {
-    this.timeoutID_ = -1;
-    this.emit('ready', this.backoffNumber_, this.backoffDelay_);
-    this.backoffNumber_++;
-};
-
-// Stops any backoff operation and resets the backoff delay to its inital value.
-Backoff.prototype.reset = function() {
-    this.backoffNumber_ = 0;
-    this.backoffStrategy_.reset();
-    clearTimeout(this.timeoutID_);
-    this.timeoutID_ = -1;
-};
-
-module.exports = Backoff;
-
-},{"events":199,"precond":208,"util":289}],60:[function(_dereq_,module,exports){
-//      Copyright (c) 2012 Mathieu Turcotte
-//      Licensed under the MIT license.
-
-var events = _dereq_('events');
-var precond = _dereq_('precond');
-var util = _dereq_('util');
-
-var Backoff = _dereq_('./backoff');
-var FibonacciBackoffStrategy = _dereq_('./strategy/fibonacci');
-
-// Wraps a function to be called in a backoff loop.
-function FunctionCall(fn, args, callback) {
-    events.EventEmitter.call(this);
-
-    precond.checkIsFunction(fn, 'Expected fn to be a function.');
-    precond.checkIsArray(args, 'Expected args to be an array.');
-    precond.checkIsFunction(callback, 'Expected callback to be a function.');
-
-    this.function_ = fn;
-    this.arguments_ = args;
-    this.callback_ = callback;
-    this.lastResult_ = [];
-    this.numRetries_ = 0;
-
-    this.backoff_ = null;
-    this.strategy_ = null;
-    this.failAfter_ = -1;
-    this.retryPredicate_ = FunctionCall.DEFAULT_RETRY_PREDICATE_;
-
-    this.state_ = FunctionCall.State_.PENDING;
-}
-util.inherits(FunctionCall, events.EventEmitter);
-
-// States in which the call can be.
-FunctionCall.State_ = {
-    // Call isn't started yet.
-    PENDING: 0,
-    // Call is in progress.
-    RUNNING: 1,
-    // Call completed successfully which means that either the wrapped function
-    // returned successfully or the maximal number of backoffs was reached.
-    COMPLETED: 2,
-    // The call was aborted.
-    ABORTED: 3
-};
-
-// The default retry predicate which considers any error as retriable.
-FunctionCall.DEFAULT_RETRY_PREDICATE_ = function(err) {
-  return true;
-};
-
-// Checks whether the call is pending.
-FunctionCall.prototype.isPending = function() {
-    return this.state_ == FunctionCall.State_.PENDING;
-};
-
-// Checks whether the call is in progress.
-FunctionCall.prototype.isRunning = function() {
-    return this.state_ == FunctionCall.State_.RUNNING;
-};
-
-// Checks whether the call is completed.
-FunctionCall.prototype.isCompleted = function() {
-    return this.state_ == FunctionCall.State_.COMPLETED;
-};
-
-// Checks whether the call is aborted.
-FunctionCall.prototype.isAborted = function() {
-    return this.state_ == FunctionCall.State_.ABORTED;
-};
-
-// Sets the backoff strategy to use. Can only be called before the call is
-// started otherwise an exception will be thrown.
-FunctionCall.prototype.setStrategy = function(strategy) {
-    precond.checkState(this.isPending(), 'FunctionCall in progress.');
-    this.strategy_ = strategy;
-    return this; // Return this for chaining.
-};
-
-// Sets the predicate which will be used to determine whether the errors
-// returned from the wrapped function should be retried or not, e.g. a
-// network error would be retriable while a type error would stop the
-// function call.
-FunctionCall.prototype.retryIf = function(retryPredicate) {
-    precond.checkState(this.isPending(), 'FunctionCall in progress.');
-    this.retryPredicate_ = retryPredicate;
-    return this;
-};
-
-// Returns all intermediary results returned by the wrapped function since
-// the initial call.
-FunctionCall.prototype.getLastResult = function() {
-    return this.lastResult_.concat();
-};
-
-// Returns the number of times the wrapped function call was retried.
-FunctionCall.prototype.getNumRetries = function() {
-    return this.numRetries_;
-};
-
-// Sets the backoff limit.
-FunctionCall.prototype.failAfter = function(maxNumberOfRetry) {
-    precond.checkState(this.isPending(), 'FunctionCall in progress.');
-    this.failAfter_ = maxNumberOfRetry;
-    return this; // Return this for chaining.
-};
-
-// Aborts the call.
-FunctionCall.prototype.abort = function() {
-    if (this.isCompleted() || this.isAborted()) {
-      return;
-    }
-
-    if (this.isRunning()) {
-        this.backoff_.reset();
-    }
-
-    this.state_ = FunctionCall.State_.ABORTED;
-    this.lastResult_ = [new Error('Backoff aborted.')];
-    this.emit('abort');
-    this.doCallback_();
-};
-
-// Initiates the call to the wrapped function. Accepts an optional factory
-// function used to create the backoff instance; used when testing.
-FunctionCall.prototype.start = function(backoffFactory) {
-    precond.checkState(!this.isAborted(), 'FunctionCall is aborted.');
-    precond.checkState(this.isPending(), 'FunctionCall already started.');
-
-    var strategy = this.strategy_ || new FibonacciBackoffStrategy();
-
-    this.backoff_ = backoffFactory ?
-        backoffFactory(strategy) :
-        new Backoff(strategy);
-
-    this.backoff_.on('ready', this.doCall_.bind(this, true /* isRetry */));
-    this.backoff_.on('fail', this.doCallback_.bind(this));
-    this.backoff_.on('backoff', this.handleBackoff_.bind(this));
-
-    if (this.failAfter_ > 0) {
-        this.backoff_.failAfter(this.failAfter_);
-    }
-
-    this.state_ = FunctionCall.State_.RUNNING;
-    this.doCall_(false /* isRetry */);
-};
-
-// Calls the wrapped function.
-FunctionCall.prototype.doCall_ = function(isRetry) {
-    if (isRetry) {
-        this.numRetries_++;
-    }
-    var eventArgs = ['call'].concat(this.arguments_);
-    events.EventEmitter.prototype.emit.apply(this, eventArgs);
-    var callback = this.handleFunctionCallback_.bind(this);
-    this.function_.apply(null, this.arguments_.concat(callback));
-};
-
-// Calls the wrapped function's callback with the last result returned by the
-// wrapped function.
-FunctionCall.prototype.doCallback_ = function() {
-    this.callback_.apply(null, this.lastResult_);
-};
-
-// Handles wrapped function's completion. This method acts as a replacement
-// for the original callback function.
-FunctionCall.prototype.handleFunctionCallback_ = function() {
-    if (this.isAborted()) {
-        return;
-    }
-
-    var args = Array.prototype.slice.call(arguments);
-    this.lastResult_ = args; // Save last callback arguments.
-    events.EventEmitter.prototype.emit.apply(this, ['callback'].concat(args));
-
-    var err = args[0];
-    if (err && this.retryPredicate_(err)) {
-        this.backoff_.backoff(err);
-    } else {
-        this.state_ = FunctionCall.State_.COMPLETED;
-        this.doCallback_();
-    }
-};
-
-// Handles the backoff event by reemitting it.
-FunctionCall.prototype.handleBackoff_ = function(number, delay, err) {
-    this.emit('backoff', number, delay, err);
-};
-
-module.exports = FunctionCall;
-
-},{"./backoff":59,"./strategy/fibonacci":62,"events":199,"precond":208,"util":289}],61:[function(_dereq_,module,exports){
-//      Copyright (c) 2012 Mathieu Turcotte
-//      Licensed under the MIT license.
-
-var util = _dereq_('util');
-var precond = _dereq_('precond');
-
-var BackoffStrategy = _dereq_('./strategy');
-
-// Exponential backoff strategy.
-function ExponentialBackoffStrategy(options) {
-    BackoffStrategy.call(this, options);
-    this.backoffDelay_ = 0;
-    this.nextBackoffDelay_ = this.getInitialDelay();
-    this.factor_ = ExponentialBackoffStrategy.DEFAULT_FACTOR;
-
-    if (options && options.factor !== undefined) {
-        precond.checkArgument(options.factor > 1,
-            'Exponential factor should be greater than 1 but got %s.',
-            options.factor);
-        this.factor_ = options.factor;
-    }
-}
-util.inherits(ExponentialBackoffStrategy, BackoffStrategy);
-
-// Default multiplication factor used to compute the next backoff delay from
-// the current one. The value can be overridden by passing a custom factor as
-// part of the options.
-ExponentialBackoffStrategy.DEFAULT_FACTOR = 2;
-
-ExponentialBackoffStrategy.prototype.next_ = function() {
-    this.backoffDelay_ = Math.min(this.nextBackoffDelay_, this.getMaxDelay());
-    this.nextBackoffDelay_ = this.backoffDelay_ * this.factor_;
-    return this.backoffDelay_;
-};
-
-ExponentialBackoffStrategy.prototype.reset_ = function() {
-    this.backoffDelay_ = 0;
-    this.nextBackoffDelay_ = this.getInitialDelay();
-};
-
-module.exports = ExponentialBackoffStrategy;
-
-},{"./strategy":63,"precond":208,"util":289}],62:[function(_dereq_,module,exports){
-//      Copyright (c) 2012 Mathieu Turcotte
-//      Licensed under the MIT license.
-
-var util = _dereq_('util');
-
-var BackoffStrategy = _dereq_('./strategy');
-
-// Fibonacci backoff strategy.
-function FibonacciBackoffStrategy(options) {
-    BackoffStrategy.call(this, options);
-    this.backoffDelay_ = 0;
-    this.nextBackoffDelay_ = this.getInitialDelay();
-}
-util.inherits(FibonacciBackoffStrategy, BackoffStrategy);
-
-FibonacciBackoffStrategy.prototype.next_ = function() {
-    var backoffDelay = Math.min(this.nextBackoffDelay_, this.getMaxDelay());
-    this.nextBackoffDelay_ += this.backoffDelay_;
-    this.backoffDelay_ = backoffDelay;
-    return backoffDelay;
-};
-
-FibonacciBackoffStrategy.prototype.reset_ = function() {
-    this.nextBackoffDelay_ = this.getInitialDelay();
-    this.backoffDelay_ = 0;
-};
-
-module.exports = FibonacciBackoffStrategy;
-
-},{"./strategy":63,"util":289}],63:[function(_dereq_,module,exports){
-//      Copyright (c) 2012 Mathieu Turcotte
-//      Licensed under the MIT license.
-
-var events = _dereq_('events');
-var util = _dereq_('util');
-
-function isDef(value) {
-    return value !== undefined && value !== null;
-}
-
-// Abstract class defining the skeleton for the backoff strategies. Accepts an
-// object holding the options for the backoff strategy:
-//
-//  * `randomisationFactor`: The randomisation factor which must be between 0
-//     and 1 where 1 equates to a randomization factor of 100% and 0 to no
-//     randomization.
-//  * `initialDelay`: The backoff initial delay in milliseconds.
-//  * `maxDelay`: The backoff maximal delay in milliseconds.
-function BackoffStrategy(options) {
-    options = options || {};
-
-    if (isDef(options.initialDelay) && options.initialDelay < 1) {
-        throw new Error('The initial timeout must be greater than 0.');
-    } else if (isDef(options.maxDelay) && options.maxDelay < 1) {
-        throw new Error('The maximal timeout must be greater than 0.');
-    }
-
-    this.initialDelay_ = options.initialDelay || 100;
-    this.maxDelay_ = options.maxDelay || 10000;
-
-    if (this.maxDelay_ <= this.initialDelay_) {
-        throw new Error('The maximal backoff delay must be ' +
-                        'greater than the initial backoff delay.');
-    }
-
-    if (isDef(options.randomisationFactor) &&
-        (options.randomisationFactor < 0 || options.randomisationFactor > 1)) {
-        throw new Error('The randomisation factor must be between 0 and 1.');
-    }
-
-    this.randomisationFactor_ = options.randomisationFactor || 0;
-}
-
-// Gets the maximal backoff delay.
-BackoffStrategy.prototype.getMaxDelay = function() {
-    return this.maxDelay_;
-};
-
-// Gets the initial backoff delay.
-BackoffStrategy.prototype.getInitialDelay = function() {
-    return this.initialDelay_;
-};
-
-// Template method that computes and returns the next backoff delay in
-// milliseconds.
-BackoffStrategy.prototype.next = function() {
-    var backoffDelay = this.next_();
-    var randomisationMultiple = 1 + Math.random() * this.randomisationFactor_;
-    var randomizedDelay = Math.round(backoffDelay * randomisationMultiple);
-    return randomizedDelay;
-};
-
-// Computes and returns the next backoff delay. Intended to be overridden by
-// subclasses.
-BackoffStrategy.prototype.next_ = function() {
-    throw new Error('BackoffStrategy.next_() unimplemented.');
-};
-
-// Template method that resets the backoff delay to its initial value.
-BackoffStrategy.prototype.reset = function() {
-    this.reset_();
-};
-
-// Resets the backoff delay to its initial value. Intended to be overridden by
-// subclasses.
-BackoffStrategy.prototype.reset_ = function() {
-    throw new Error('BackoffStrategy.reset_() unimplemented.');
-};
-
-module.exports = BackoffStrategy;
-
-},{"events":199,"util":289}],64:[function(_dereq_,module,exports){
+},{"regenerator-runtime":205}],59:[function(_dereq_,module,exports){
 "use strict";
 
-},{}],65:[function(_dereq_,module,exports){
+},{}],60:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.string.iterator');
 _dereq_('../../modules/es6.array.from');
 module.exports = _dereq_('../../modules/_core').Array.from;
 
-},{"../../modules/_core":97,"../../modules/es6.array.from":172,"../../modules/es6.string.iterator":186}],66:[function(_dereq_,module,exports){
+},{"../../modules/_core":93,"../../modules/es6.array.from":168,"../../modules/es6.string.iterator":183}],61:[function(_dereq_,module,exports){
 _dereq_('../modules/web.dom.iterable');
 _dereq_('../modules/es6.string.iterator');
 module.exports = _dereq_('../modules/core.get-iterator');
 
-},{"../modules/core.get-iterator":170,"../modules/es6.string.iterator":186,"../modules/web.dom.iterable":198}],67:[function(_dereq_,module,exports){
+},{"../modules/core.get-iterator":166,"../modules/es6.string.iterator":183,"../modules/web.dom.iterable":195}],62:[function(_dereq_,module,exports){
 _dereq_('../modules/web.dom.iterable');
 _dereq_('../modules/es6.string.iterator');
 module.exports = _dereq_('../modules/core.is-iterable');
 
-},{"../modules/core.is-iterable":171,"../modules/es6.string.iterator":186,"../modules/web.dom.iterable":198}],68:[function(_dereq_,module,exports){
+},{"../modules/core.is-iterable":167,"../modules/es6.string.iterator":183,"../modules/web.dom.iterable":195}],63:[function(_dereq_,module,exports){
 var core = _dereq_('../../modules/_core');
 var $JSON = core.JSON || (core.JSON = { stringify: JSON.stringify });
 module.exports = function stringify(it) { // eslint-disable-line no-unused-vars
   return $JSON.stringify.apply($JSON, arguments);
 };
 
-},{"../../modules/_core":97}],69:[function(_dereq_,module,exports){
+},{"../../modules/_core":93}],64:[function(_dereq_,module,exports){
 _dereq_('../modules/es6.object.to-string');
 _dereq_('../modules/es6.string.iterator');
 _dereq_('../modules/web.dom.iterable');
@@ -8455,44 +8343,48 @@ _dereq_('../modules/es7.map.of');
 _dereq_('../modules/es7.map.from');
 module.exports = _dereq_('../modules/_core').Map;
 
-},{"../modules/_core":97,"../modules/es6.map":174,"../modules/es6.object.to-string":182,"../modules/es6.string.iterator":186,"../modules/es7.map.from":188,"../modules/es7.map.of":189,"../modules/es7.map.to-json":190,"../modules/web.dom.iterable":198}],70:[function(_dereq_,module,exports){
+},{"../modules/_core":93,"../modules/es6.map":170,"../modules/es6.object.to-string":179,"../modules/es6.string.iterator":183,"../modules/es7.map.from":185,"../modules/es7.map.of":186,"../modules/es7.map.to-json":187,"../modules/web.dom.iterable":195}],65:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.number.is-integer');
 module.exports = _dereq_('../../modules/_core').Number.isInteger;
 
-},{"../../modules/_core":97,"../../modules/es6.number.is-integer":175}],71:[function(_dereq_,module,exports){
+},{"../../modules/_core":93,"../../modules/es6.number.is-integer":171}],66:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.object.assign');
 module.exports = _dereq_('../../modules/_core').Object.assign;
 
-},{"../../modules/_core":97,"../../modules/es6.object.assign":176}],72:[function(_dereq_,module,exports){
+},{"../../modules/_core":93,"../../modules/es6.object.assign":172}],67:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.object.create');
 var $Object = _dereq_('../../modules/_core').Object;
 module.exports = function create(P, D) {
   return $Object.create(P, D);
 };
 
-},{"../../modules/_core":97,"../../modules/es6.object.create":177}],73:[function(_dereq_,module,exports){
+},{"../../modules/_core":93,"../../modules/es6.object.create":173}],68:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.object.define-property');
 var $Object = _dereq_('../../modules/_core').Object;
 module.exports = function defineProperty(it, key, desc) {
   return $Object.defineProperty(it, key, desc);
 };
 
-},{"../../modules/_core":97,"../../modules/es6.object.define-property":178}],74:[function(_dereq_,module,exports){
+},{"../../modules/_core":93,"../../modules/es6.object.define-property":174}],69:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.object.get-own-property-descriptor');
 var $Object = _dereq_('../../modules/_core').Object;
 module.exports = function getOwnPropertyDescriptor(it, key) {
   return $Object.getOwnPropertyDescriptor(it, key);
 };
 
-},{"../../modules/_core":97,"../../modules/es6.object.get-own-property-descriptor":179}],75:[function(_dereq_,module,exports){
+},{"../../modules/_core":93,"../../modules/es6.object.get-own-property-descriptor":175}],70:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.object.get-prototype-of');
 module.exports = _dereq_('../../modules/_core').Object.getPrototypeOf;
 
-},{"../../modules/_core":97,"../../modules/es6.object.get-prototype-of":180}],76:[function(_dereq_,module,exports){
+},{"../../modules/_core":93,"../../modules/es6.object.get-prototype-of":176}],71:[function(_dereq_,module,exports){
+_dereq_('../../modules/es6.object.keys');
+module.exports = _dereq_('../../modules/_core').Object.keys;
+
+},{"../../modules/_core":93,"../../modules/es6.object.keys":177}],72:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.object.set-prototype-of');
 module.exports = _dereq_('../../modules/_core').Object.setPrototypeOf;
 
-},{"../../modules/_core":97,"../../modules/es6.object.set-prototype-of":181}],77:[function(_dereq_,module,exports){
+},{"../../modules/_core":93,"../../modules/es6.object.set-prototype-of":178}],73:[function(_dereq_,module,exports){
 _dereq_('../modules/es6.object.to-string');
 _dereq_('../modules/es6.string.iterator');
 _dereq_('../modules/web.dom.iterable');
@@ -8501,11 +8393,11 @@ _dereq_('../modules/es7.promise.finally');
 _dereq_('../modules/es7.promise.try');
 module.exports = _dereq_('../modules/_core').Promise;
 
-},{"../modules/_core":97,"../modules/es6.object.to-string":182,"../modules/es6.promise":183,"../modules/es6.string.iterator":186,"../modules/es7.promise.finally":191,"../modules/es7.promise.try":192,"../modules/web.dom.iterable":198}],78:[function(_dereq_,module,exports){
+},{"../modules/_core":93,"../modules/es6.object.to-string":179,"../modules/es6.promise":180,"../modules/es6.string.iterator":183,"../modules/es7.promise.finally":188,"../modules/es7.promise.try":189,"../modules/web.dom.iterable":195}],74:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.reflect.construct');
 module.exports = _dereq_('../../modules/_core').Reflect.construct;
 
-},{"../../modules/_core":97,"../../modules/es6.reflect.construct":184}],79:[function(_dereq_,module,exports){
+},{"../../modules/_core":93,"../../modules/es6.reflect.construct":181}],75:[function(_dereq_,module,exports){
 _dereq_('../modules/es6.object.to-string');
 _dereq_('../modules/es6.string.iterator');
 _dereq_('../modules/web.dom.iterable');
@@ -8515,42 +8407,42 @@ _dereq_('../modules/es7.set.of');
 _dereq_('../modules/es7.set.from');
 module.exports = _dereq_('../modules/_core').Set;
 
-},{"../modules/_core":97,"../modules/es6.object.to-string":182,"../modules/es6.set":185,"../modules/es6.string.iterator":186,"../modules/es7.set.from":193,"../modules/es7.set.of":194,"../modules/es7.set.to-json":195,"../modules/web.dom.iterable":198}],80:[function(_dereq_,module,exports){
+},{"../modules/_core":93,"../modules/es6.object.to-string":179,"../modules/es6.set":182,"../modules/es6.string.iterator":183,"../modules/es7.set.from":190,"../modules/es7.set.of":191,"../modules/es7.set.to-json":192,"../modules/web.dom.iterable":195}],76:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.symbol');
 _dereq_('../../modules/es6.object.to-string');
 _dereq_('../../modules/es7.symbol.async-iterator');
 _dereq_('../../modules/es7.symbol.observable');
 module.exports = _dereq_('../../modules/_core').Symbol;
 
-},{"../../modules/_core":97,"../../modules/es6.object.to-string":182,"../../modules/es6.symbol":187,"../../modules/es7.symbol.async-iterator":196,"../../modules/es7.symbol.observable":197}],81:[function(_dereq_,module,exports){
+},{"../../modules/_core":93,"../../modules/es6.object.to-string":179,"../../modules/es6.symbol":184,"../../modules/es7.symbol.async-iterator":193,"../../modules/es7.symbol.observable":194}],77:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.string.iterator');
 _dereq_('../../modules/web.dom.iterable');
 module.exports = _dereq_('../../modules/_wks-ext').f('iterator');
 
-},{"../../modules/_wks-ext":167,"../../modules/es6.string.iterator":186,"../../modules/web.dom.iterable":198}],82:[function(_dereq_,module,exports){
+},{"../../modules/_wks-ext":163,"../../modules/es6.string.iterator":183,"../../modules/web.dom.iterable":195}],78:[function(_dereq_,module,exports){
 module.exports = function (it) {
   if (typeof it != 'function') throw TypeError(it + ' is not a function!');
   return it;
 };
 
-},{}],83:[function(_dereq_,module,exports){
+},{}],79:[function(_dereq_,module,exports){
 module.exports = function () { /* empty */ };
 
-},{}],84:[function(_dereq_,module,exports){
+},{}],80:[function(_dereq_,module,exports){
 module.exports = function (it, Constructor, name, forbiddenField) {
   if (!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)) {
     throw TypeError(name + ': incorrect invocation!');
   } return it;
 };
 
-},{}],85:[function(_dereq_,module,exports){
+},{}],81:[function(_dereq_,module,exports){
 var isObject = _dereq_('./_is-object');
 module.exports = function (it) {
   if (!isObject(it)) throw TypeError(it + ' is not an object!');
   return it;
 };
 
-},{"./_is-object":118}],86:[function(_dereq_,module,exports){
+},{"./_is-object":114}],82:[function(_dereq_,module,exports){
 var forOf = _dereq_('./_for-of');
 
 module.exports = function (iter, ITERATOR) {
@@ -8559,7 +8451,7 @@ module.exports = function (iter, ITERATOR) {
   return result;
 };
 
-},{"./_for-of":107}],87:[function(_dereq_,module,exports){
+},{"./_for-of":103}],83:[function(_dereq_,module,exports){
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = _dereq_('./_to-iobject');
@@ -8584,7 +8476,7 @@ module.exports = function (IS_INCLUDES) {
   };
 };
 
-},{"./_to-absolute-index":157,"./_to-iobject":159,"./_to-length":160}],88:[function(_dereq_,module,exports){
+},{"./_to-absolute-index":153,"./_to-iobject":155,"./_to-length":156}],84:[function(_dereq_,module,exports){
 // 0 -> Array#forEach
 // 1 -> Array#map
 // 2 -> Array#filter
@@ -8630,7 +8522,7 @@ module.exports = function (TYPE, $create) {
   };
 };
 
-},{"./_array-species-create":90,"./_ctx":99,"./_iobject":114,"./_to-length":160,"./_to-object":161}],89:[function(_dereq_,module,exports){
+},{"./_array-species-create":86,"./_ctx":95,"./_iobject":110,"./_to-length":156,"./_to-object":157}],85:[function(_dereq_,module,exports){
 var isObject = _dereq_('./_is-object');
 var isArray = _dereq_('./_is-array');
 var SPECIES = _dereq_('./_wks')('species');
@@ -8648,7 +8540,7 @@ module.exports = function (original) {
   } return C === undefined ? Array : C;
 };
 
-},{"./_is-array":116,"./_is-object":118,"./_wks":168}],90:[function(_dereq_,module,exports){
+},{"./_is-array":112,"./_is-object":114,"./_wks":164}],86:[function(_dereq_,module,exports){
 // 9.4.2.3 ArraySpeciesCreate(originalArray, length)
 var speciesConstructor = _dereq_('./_array-species-constructor');
 
@@ -8656,7 +8548,7 @@ module.exports = function (original, length) {
   return new (speciesConstructor(original))(length);
 };
 
-},{"./_array-species-constructor":89}],91:[function(_dereq_,module,exports){
+},{"./_array-species-constructor":85}],87:[function(_dereq_,module,exports){
 'use strict';
 var aFunction = _dereq_('./_a-function');
 var isObject = _dereq_('./_is-object');
@@ -8683,7 +8575,7 @@ module.exports = Function.bind || function bind(that /* , ...args */) {
   return bound;
 };
 
-},{"./_a-function":82,"./_invoke":113,"./_is-object":118}],92:[function(_dereq_,module,exports){
+},{"./_a-function":78,"./_invoke":109,"./_is-object":114}],88:[function(_dereq_,module,exports){
 // getting tag from 19.1.3.6 Object.prototype.toString()
 var cof = _dereq_('./_cof');
 var TAG = _dereq_('./_wks')('toStringTag');
@@ -8708,14 +8600,14 @@ module.exports = function (it) {
     : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
 };
 
-},{"./_cof":93,"./_wks":168}],93:[function(_dereq_,module,exports){
+},{"./_cof":89,"./_wks":164}],89:[function(_dereq_,module,exports){
 var toString = {}.toString;
 
 module.exports = function (it) {
   return toString.call(it).slice(8, -1);
 };
 
-},{}],94:[function(_dereq_,module,exports){
+},{}],90:[function(_dereq_,module,exports){
 'use strict';
 var dP = _dereq_('./_object-dp').f;
 var create = _dereq_('./_object-create');
@@ -8861,7 +8753,7 @@ module.exports = {
   }
 };
 
-},{"./_an-instance":84,"./_ctx":99,"./_descriptors":101,"./_for-of":107,"./_iter-define":121,"./_iter-step":123,"./_meta":126,"./_object-create":130,"./_object-dp":131,"./_redefine-all":145,"./_set-species":150,"./_validate-collection":165}],95:[function(_dereq_,module,exports){
+},{"./_an-instance":80,"./_ctx":95,"./_descriptors":97,"./_for-of":103,"./_iter-define":117,"./_iter-step":119,"./_meta":122,"./_object-create":126,"./_object-dp":127,"./_redefine-all":141,"./_set-species":146,"./_validate-collection":161}],91:[function(_dereq_,module,exports){
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var classof = _dereq_('./_classof');
 var from = _dereq_('./_array-from-iterable');
@@ -8872,7 +8764,7 @@ module.exports = function (NAME) {
   };
 };
 
-},{"./_array-from-iterable":86,"./_classof":92}],96:[function(_dereq_,module,exports){
+},{"./_array-from-iterable":82,"./_classof":88}],92:[function(_dereq_,module,exports){
 'use strict';
 var global = _dereq_('./_global');
 var $export = _dereq_('./_export');
@@ -8933,11 +8825,11 @@ module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
   return C;
 };
 
-},{"./_an-instance":84,"./_array-methods":88,"./_descriptors":101,"./_export":105,"./_fails":106,"./_for-of":107,"./_global":108,"./_hide":110,"./_is-object":118,"./_meta":126,"./_object-dp":131,"./_redefine-all":145,"./_set-to-string-tag":151}],97:[function(_dereq_,module,exports){
-var core = module.exports = { version: '2.6.0' };
+},{"./_an-instance":80,"./_array-methods":84,"./_descriptors":97,"./_export":101,"./_fails":102,"./_for-of":103,"./_global":104,"./_hide":106,"./_is-object":114,"./_meta":122,"./_object-dp":127,"./_redefine-all":141,"./_set-to-string-tag":147}],93:[function(_dereq_,module,exports){
+var core = module.exports = { version: '2.6.9' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
-},{}],98:[function(_dereq_,module,exports){
+},{}],94:[function(_dereq_,module,exports){
 'use strict';
 var $defineProperty = _dereq_('./_object-dp');
 var createDesc = _dereq_('./_property-desc');
@@ -8947,7 +8839,7 @@ module.exports = function (object, index, value) {
   else object[index] = value;
 };
 
-},{"./_object-dp":131,"./_property-desc":144}],99:[function(_dereq_,module,exports){
+},{"./_object-dp":127,"./_property-desc":140}],95:[function(_dereq_,module,exports){
 // optional / simple context binding
 var aFunction = _dereq_('./_a-function');
 module.exports = function (fn, that, length) {
@@ -8969,20 +8861,20 @@ module.exports = function (fn, that, length) {
   };
 };
 
-},{"./_a-function":82}],100:[function(_dereq_,module,exports){
+},{"./_a-function":78}],96:[function(_dereq_,module,exports){
 // 7.2.1 RequireObjectCoercible(argument)
 module.exports = function (it) {
   if (it == undefined) throw TypeError("Can't call method on  " + it);
   return it;
 };
 
-},{}],101:[function(_dereq_,module,exports){
+},{}],97:[function(_dereq_,module,exports){
 // Thank's IE8 for his funny defineProperty
 module.exports = !_dereq_('./_fails')(function () {
   return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
 });
 
-},{"./_fails":106}],102:[function(_dereq_,module,exports){
+},{"./_fails":102}],98:[function(_dereq_,module,exports){
 var isObject = _dereq_('./_is-object');
 var document = _dereq_('./_global').document;
 // typeof document.createElement is 'object' in old IE
@@ -8991,13 +8883,13 @@ module.exports = function (it) {
   return is ? document.createElement(it) : {};
 };
 
-},{"./_global":108,"./_is-object":118}],103:[function(_dereq_,module,exports){
+},{"./_global":104,"./_is-object":114}],99:[function(_dereq_,module,exports){
 // IE 8- don't enum bug keys
 module.exports = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
 
-},{}],104:[function(_dereq_,module,exports){
+},{}],100:[function(_dereq_,module,exports){
 // all enumerable object keys, includes symbols
 var getKeys = _dereq_('./_object-keys');
 var gOPS = _dereq_('./_object-gops');
@@ -9014,7 +8906,7 @@ module.exports = function (it) {
   } return result;
 };
 
-},{"./_object-gops":136,"./_object-keys":139,"./_object-pie":140}],105:[function(_dereq_,module,exports){
+},{"./_object-gops":132,"./_object-keys":135,"./_object-pie":136}],101:[function(_dereq_,module,exports){
 var global = _dereq_('./_global');
 var core = _dereq_('./_core');
 var ctx = _dereq_('./_ctx');
@@ -9078,7 +8970,7 @@ $export.U = 64;  // safe
 $export.R = 128; // real proto method for `library`
 module.exports = $export;
 
-},{"./_core":97,"./_ctx":99,"./_global":108,"./_has":109,"./_hide":110}],106:[function(_dereq_,module,exports){
+},{"./_core":93,"./_ctx":95,"./_global":104,"./_has":105,"./_hide":106}],102:[function(_dereq_,module,exports){
 module.exports = function (exec) {
   try {
     return !!exec();
@@ -9087,7 +8979,7 @@ module.exports = function (exec) {
   }
 };
 
-},{}],107:[function(_dereq_,module,exports){
+},{}],103:[function(_dereq_,module,exports){
 var ctx = _dereq_('./_ctx');
 var call = _dereq_('./_iter-call');
 var isArrayIter = _dereq_('./_is-array-iter');
@@ -9114,7 +9006,7 @@ var exports = module.exports = function (iterable, entries, fn, that, ITERATOR) 
 exports.BREAK = BREAK;
 exports.RETURN = RETURN;
 
-},{"./_an-object":85,"./_ctx":99,"./_is-array-iter":115,"./_iter-call":119,"./_to-length":160,"./core.get-iterator-method":169}],108:[function(_dereq_,module,exports){
+},{"./_an-object":81,"./_ctx":95,"./_is-array-iter":111,"./_iter-call":115,"./_to-length":156,"./core.get-iterator-method":165}],104:[function(_dereq_,module,exports){
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
   ? window : typeof self != 'undefined' && self.Math == Math ? self
@@ -9122,13 +9014,13 @@ var global = module.exports = typeof window != 'undefined' && window.Math == Mat
   : Function('return this')();
 if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 
-},{}],109:[function(_dereq_,module,exports){
+},{}],105:[function(_dereq_,module,exports){
 var hasOwnProperty = {}.hasOwnProperty;
 module.exports = function (it, key) {
   return hasOwnProperty.call(it, key);
 };
 
-},{}],110:[function(_dereq_,module,exports){
+},{}],106:[function(_dereq_,module,exports){
 var dP = _dereq_('./_object-dp');
 var createDesc = _dereq_('./_property-desc');
 module.exports = _dereq_('./_descriptors') ? function (object, key, value) {
@@ -9138,16 +9030,16 @@ module.exports = _dereq_('./_descriptors') ? function (object, key, value) {
   return object;
 };
 
-},{"./_descriptors":101,"./_object-dp":131,"./_property-desc":144}],111:[function(_dereq_,module,exports){
+},{"./_descriptors":97,"./_object-dp":127,"./_property-desc":140}],107:[function(_dereq_,module,exports){
 var document = _dereq_('./_global').document;
 module.exports = document && document.documentElement;
 
-},{"./_global":108}],112:[function(_dereq_,module,exports){
+},{"./_global":104}],108:[function(_dereq_,module,exports){
 module.exports = !_dereq_('./_descriptors') && !_dereq_('./_fails')(function () {
   return Object.defineProperty(_dereq_('./_dom-create')('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 
-},{"./_descriptors":101,"./_dom-create":102,"./_fails":106}],113:[function(_dereq_,module,exports){
+},{"./_descriptors":97,"./_dom-create":98,"./_fails":102}],109:[function(_dereq_,module,exports){
 // fast apply, http://jsperf.lnkit.com/fast-apply/5
 module.exports = function (fn, args, that) {
   var un = that === undefined;
@@ -9165,7 +9057,7 @@ module.exports = function (fn, args, that) {
   } return fn.apply(that, args);
 };
 
-},{}],114:[function(_dereq_,module,exports){
+},{}],110:[function(_dereq_,module,exports){
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = _dereq_('./_cof');
 // eslint-disable-next-line no-prototype-builtins
@@ -9173,7 +9065,7 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
 
-},{"./_cof":93}],115:[function(_dereq_,module,exports){
+},{"./_cof":89}],111:[function(_dereq_,module,exports){
 // check on default Array iterator
 var Iterators = _dereq_('./_iterators');
 var ITERATOR = _dereq_('./_wks')('iterator');
@@ -9183,14 +9075,14 @@ module.exports = function (it) {
   return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
 };
 
-},{"./_iterators":124,"./_wks":168}],116:[function(_dereq_,module,exports){
+},{"./_iterators":120,"./_wks":164}],112:[function(_dereq_,module,exports){
 // 7.2.2 IsArray(argument)
 var cof = _dereq_('./_cof');
 module.exports = Array.isArray || function isArray(arg) {
   return cof(arg) == 'Array';
 };
 
-},{"./_cof":93}],117:[function(_dereq_,module,exports){
+},{"./_cof":89}],113:[function(_dereq_,module,exports){
 // 20.1.2.3 Number.isInteger(number)
 var isObject = _dereq_('./_is-object');
 var floor = Math.floor;
@@ -9198,12 +9090,12 @@ module.exports = function isInteger(it) {
   return !isObject(it) && isFinite(it) && floor(it) === it;
 };
 
-},{"./_is-object":118}],118:[function(_dereq_,module,exports){
+},{"./_is-object":114}],114:[function(_dereq_,module,exports){
 module.exports = function (it) {
   return typeof it === 'object' ? it !== null : typeof it === 'function';
 };
 
-},{}],119:[function(_dereq_,module,exports){
+},{}],115:[function(_dereq_,module,exports){
 // call something on iterator step with safe closing on error
 var anObject = _dereq_('./_an-object');
 module.exports = function (iterator, fn, value, entries) {
@@ -9217,7 +9109,7 @@ module.exports = function (iterator, fn, value, entries) {
   }
 };
 
-},{"./_an-object":85}],120:[function(_dereq_,module,exports){
+},{"./_an-object":81}],116:[function(_dereq_,module,exports){
 'use strict';
 var create = _dereq_('./_object-create');
 var descriptor = _dereq_('./_property-desc');
@@ -9232,7 +9124,7 @@ module.exports = function (Constructor, NAME, next) {
   setToStringTag(Constructor, NAME + ' Iterator');
 };
 
-},{"./_hide":110,"./_object-create":130,"./_property-desc":144,"./_set-to-string-tag":151,"./_wks":168}],121:[function(_dereq_,module,exports){
+},{"./_hide":106,"./_object-create":126,"./_property-desc":140,"./_set-to-string-tag":147,"./_wks":164}],117:[function(_dereq_,module,exports){
 'use strict';
 var LIBRARY = _dereq_('./_library');
 var $export = _dereq_('./_export');
@@ -9303,7 +9195,7 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
   return methods;
 };
 
-},{"./_export":105,"./_hide":110,"./_iter-create":120,"./_iterators":124,"./_library":125,"./_object-gpo":137,"./_redefine":146,"./_set-to-string-tag":151,"./_wks":168}],122:[function(_dereq_,module,exports){
+},{"./_export":101,"./_hide":106,"./_iter-create":116,"./_iterators":120,"./_library":121,"./_object-gpo":133,"./_redefine":142,"./_set-to-string-tag":147,"./_wks":164}],118:[function(_dereq_,module,exports){
 var ITERATOR = _dereq_('./_wks')('iterator');
 var SAFE_CLOSING = false;
 
@@ -9327,18 +9219,18 @@ module.exports = function (exec, skipClosing) {
   return safe;
 };
 
-},{"./_wks":168}],123:[function(_dereq_,module,exports){
+},{"./_wks":164}],119:[function(_dereq_,module,exports){
 module.exports = function (done, value) {
   return { value: value, done: !!done };
 };
 
-},{}],124:[function(_dereq_,module,exports){
+},{}],120:[function(_dereq_,module,exports){
 module.exports = {};
 
-},{}],125:[function(_dereq_,module,exports){
+},{}],121:[function(_dereq_,module,exports){
 module.exports = true;
 
-},{}],126:[function(_dereq_,module,exports){
+},{}],122:[function(_dereq_,module,exports){
 var META = _dereq_('./_uid')('meta');
 var isObject = _dereq_('./_is-object');
 var has = _dereq_('./_has');
@@ -9393,7 +9285,7 @@ var meta = module.exports = {
   onFreeze: onFreeze
 };
 
-},{"./_fails":106,"./_has":109,"./_is-object":118,"./_object-dp":131,"./_uid":163}],127:[function(_dereq_,module,exports){
+},{"./_fails":102,"./_has":105,"./_is-object":114,"./_object-dp":127,"./_uid":159}],123:[function(_dereq_,module,exports){
 var global = _dereq_('./_global');
 var macrotask = _dereq_('./_task').set;
 var Observer = global.MutationObserver || global.WebKitMutationObserver;
@@ -9464,7 +9356,7 @@ module.exports = function () {
   };
 };
 
-},{"./_cof":93,"./_global":108,"./_task":156}],128:[function(_dereq_,module,exports){
+},{"./_cof":89,"./_global":104,"./_task":152}],124:[function(_dereq_,module,exports){
 'use strict';
 // 25.4.1.5 NewPromiseCapability(C)
 var aFunction = _dereq_('./_a-function');
@@ -9484,9 +9376,10 @@ module.exports.f = function (C) {
   return new PromiseCapability(C);
 };
 
-},{"./_a-function":82}],129:[function(_dereq_,module,exports){
+},{"./_a-function":78}],125:[function(_dereq_,module,exports){
 'use strict';
 // 19.1.2.1 Object.assign(target, source, ...)
+var DESCRIPTORS = _dereq_('./_descriptors');
 var getKeys = _dereq_('./_object-keys');
 var gOPS = _dereq_('./_object-gops');
 var pIE = _dereq_('./_object-pie');
@@ -9516,11 +9409,14 @@ module.exports = !$assign || _dereq_('./_fails')(function () {
     var length = keys.length;
     var j = 0;
     var key;
-    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
+    while (length > j) {
+      key = keys[j++];
+      if (!DESCRIPTORS || isEnum.call(S, key)) T[key] = S[key];
+    }
   } return T;
 } : $assign;
 
-},{"./_fails":106,"./_iobject":114,"./_object-gops":136,"./_object-keys":139,"./_object-pie":140,"./_to-object":161}],130:[function(_dereq_,module,exports){
+},{"./_descriptors":97,"./_fails":102,"./_iobject":110,"./_object-gops":132,"./_object-keys":135,"./_object-pie":136,"./_to-object":157}],126:[function(_dereq_,module,exports){
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject = _dereq_('./_an-object');
 var dPs = _dereq_('./_object-dps');
@@ -9563,7 +9459,7 @@ module.exports = Object.create || function create(O, Properties) {
   return Properties === undefined ? result : dPs(result, Properties);
 };
 
-},{"./_an-object":85,"./_dom-create":102,"./_enum-bug-keys":103,"./_html":111,"./_object-dps":132,"./_shared-key":152}],131:[function(_dereq_,module,exports){
+},{"./_an-object":81,"./_dom-create":98,"./_enum-bug-keys":99,"./_html":107,"./_object-dps":128,"./_shared-key":148}],127:[function(_dereq_,module,exports){
 var anObject = _dereq_('./_an-object');
 var IE8_DOM_DEFINE = _dereq_('./_ie8-dom-define');
 var toPrimitive = _dereq_('./_to-primitive');
@@ -9581,7 +9477,7 @@ exports.f = _dereq_('./_descriptors') ? Object.defineProperty : function defineP
   return O;
 };
 
-},{"./_an-object":85,"./_descriptors":101,"./_ie8-dom-define":112,"./_to-primitive":162}],132:[function(_dereq_,module,exports){
+},{"./_an-object":81,"./_descriptors":97,"./_ie8-dom-define":108,"./_to-primitive":158}],128:[function(_dereq_,module,exports){
 var dP = _dereq_('./_object-dp');
 var anObject = _dereq_('./_an-object');
 var getKeys = _dereq_('./_object-keys');
@@ -9596,7 +9492,7 @@ module.exports = _dereq_('./_descriptors') ? Object.defineProperties : function 
   return O;
 };
 
-},{"./_an-object":85,"./_descriptors":101,"./_object-dp":131,"./_object-keys":139}],133:[function(_dereq_,module,exports){
+},{"./_an-object":81,"./_descriptors":97,"./_object-dp":127,"./_object-keys":135}],129:[function(_dereq_,module,exports){
 var pIE = _dereq_('./_object-pie');
 var createDesc = _dereq_('./_property-desc');
 var toIObject = _dereq_('./_to-iobject');
@@ -9614,7 +9510,7 @@ exports.f = _dereq_('./_descriptors') ? gOPD : function getOwnPropertyDescriptor
   if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
 };
 
-},{"./_descriptors":101,"./_has":109,"./_ie8-dom-define":112,"./_object-pie":140,"./_property-desc":144,"./_to-iobject":159,"./_to-primitive":162}],134:[function(_dereq_,module,exports){
+},{"./_descriptors":97,"./_has":105,"./_ie8-dom-define":108,"./_object-pie":136,"./_property-desc":140,"./_to-iobject":155,"./_to-primitive":158}],130:[function(_dereq_,module,exports){
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 var toIObject = _dereq_('./_to-iobject');
 var gOPN = _dereq_('./_object-gopn').f;
@@ -9635,7 +9531,7 @@ module.exports.f = function getOwnPropertyNames(it) {
   return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
 };
 
-},{"./_object-gopn":135,"./_to-iobject":159}],135:[function(_dereq_,module,exports){
+},{"./_object-gopn":131,"./_to-iobject":155}],131:[function(_dereq_,module,exports){
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
 var $keys = _dereq_('./_object-keys-internal');
 var hiddenKeys = _dereq_('./_enum-bug-keys').concat('length', 'prototype');
@@ -9644,10 +9540,10 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
   return $keys(O, hiddenKeys);
 };
 
-},{"./_enum-bug-keys":103,"./_object-keys-internal":138}],136:[function(_dereq_,module,exports){
+},{"./_enum-bug-keys":99,"./_object-keys-internal":134}],132:[function(_dereq_,module,exports){
 exports.f = Object.getOwnPropertySymbols;
 
-},{}],137:[function(_dereq_,module,exports){
+},{}],133:[function(_dereq_,module,exports){
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has = _dereq_('./_has');
 var toObject = _dereq_('./_to-object');
@@ -9662,7 +9558,7 @@ module.exports = Object.getPrototypeOf || function (O) {
   } return O instanceof Object ? ObjectProto : null;
 };
 
-},{"./_has":109,"./_shared-key":152,"./_to-object":161}],138:[function(_dereq_,module,exports){
+},{"./_has":105,"./_shared-key":148,"./_to-object":157}],134:[function(_dereq_,module,exports){
 var has = _dereq_('./_has');
 var toIObject = _dereq_('./_to-iobject');
 var arrayIndexOf = _dereq_('./_array-includes')(false);
@@ -9681,7 +9577,7 @@ module.exports = function (object, names) {
   return result;
 };
 
-},{"./_array-includes":87,"./_has":109,"./_shared-key":152,"./_to-iobject":159}],139:[function(_dereq_,module,exports){
+},{"./_array-includes":83,"./_has":105,"./_shared-key":148,"./_to-iobject":155}],135:[function(_dereq_,module,exports){
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys = _dereq_('./_object-keys-internal');
 var enumBugKeys = _dereq_('./_enum-bug-keys');
@@ -9690,10 +9586,10 @@ module.exports = Object.keys || function keys(O) {
   return $keys(O, enumBugKeys);
 };
 
-},{"./_enum-bug-keys":103,"./_object-keys-internal":138}],140:[function(_dereq_,module,exports){
+},{"./_enum-bug-keys":99,"./_object-keys-internal":134}],136:[function(_dereq_,module,exports){
 exports.f = {}.propertyIsEnumerable;
 
-},{}],141:[function(_dereq_,module,exports){
+},{}],137:[function(_dereq_,module,exports){
 // most Object methods by ES6 should accept primitives
 var $export = _dereq_('./_export');
 var core = _dereq_('./_core');
@@ -9705,7 +9601,7 @@ module.exports = function (KEY, exec) {
   $export($export.S + $export.F * fails(function () { fn(1); }), 'Object', exp);
 };
 
-},{"./_core":97,"./_export":105,"./_fails":106}],142:[function(_dereq_,module,exports){
+},{"./_core":93,"./_export":101,"./_fails":102}],138:[function(_dereq_,module,exports){
 module.exports = function (exec) {
   try {
     return { e: false, v: exec() };
@@ -9714,7 +9610,7 @@ module.exports = function (exec) {
   }
 };
 
-},{}],143:[function(_dereq_,module,exports){
+},{}],139:[function(_dereq_,module,exports){
 var anObject = _dereq_('./_an-object');
 var isObject = _dereq_('./_is-object');
 var newPromiseCapability = _dereq_('./_new-promise-capability');
@@ -9728,7 +9624,7 @@ module.exports = function (C, x) {
   return promiseCapability.promise;
 };
 
-},{"./_an-object":85,"./_is-object":118,"./_new-promise-capability":128}],144:[function(_dereq_,module,exports){
+},{"./_an-object":81,"./_is-object":114,"./_new-promise-capability":124}],140:[function(_dereq_,module,exports){
 module.exports = function (bitmap, value) {
   return {
     enumerable: !(bitmap & 1),
@@ -9738,7 +9634,7 @@ module.exports = function (bitmap, value) {
   };
 };
 
-},{}],145:[function(_dereq_,module,exports){
+},{}],141:[function(_dereq_,module,exports){
 var hide = _dereq_('./_hide');
 module.exports = function (target, src, safe) {
   for (var key in src) {
@@ -9747,10 +9643,10 @@ module.exports = function (target, src, safe) {
   } return target;
 };
 
-},{"./_hide":110}],146:[function(_dereq_,module,exports){
+},{"./_hide":106}],142:[function(_dereq_,module,exports){
 module.exports = _dereq_('./_hide');
 
-},{"./_hide":110}],147:[function(_dereq_,module,exports){
+},{"./_hide":106}],143:[function(_dereq_,module,exports){
 'use strict';
 // https://tc39.github.io/proposal-setmap-offrom/
 var $export = _dereq_('./_export');
@@ -9780,7 +9676,7 @@ module.exports = function (COLLECTION) {
   } });
 };
 
-},{"./_a-function":82,"./_ctx":99,"./_export":105,"./_for-of":107}],148:[function(_dereq_,module,exports){
+},{"./_a-function":78,"./_ctx":95,"./_export":101,"./_for-of":103}],144:[function(_dereq_,module,exports){
 'use strict';
 // https://tc39.github.io/proposal-setmap-offrom/
 var $export = _dereq_('./_export');
@@ -9794,7 +9690,7 @@ module.exports = function (COLLECTION) {
   } });
 };
 
-},{"./_export":105}],149:[function(_dereq_,module,exports){
+},{"./_export":101}],145:[function(_dereq_,module,exports){
 // Works with __proto__ only. Old v8 can't work with null proto objects.
 /* eslint-disable no-proto */
 var isObject = _dereq_('./_is-object');
@@ -9821,7 +9717,7 @@ module.exports = {
   check: check
 };
 
-},{"./_an-object":85,"./_ctx":99,"./_is-object":118,"./_object-gopd":133}],150:[function(_dereq_,module,exports){
+},{"./_an-object":81,"./_ctx":95,"./_is-object":114,"./_object-gopd":129}],146:[function(_dereq_,module,exports){
 'use strict';
 var global = _dereq_('./_global');
 var core = _dereq_('./_core');
@@ -9837,7 +9733,7 @@ module.exports = function (KEY) {
   });
 };
 
-},{"./_core":97,"./_descriptors":101,"./_global":108,"./_object-dp":131,"./_wks":168}],151:[function(_dereq_,module,exports){
+},{"./_core":93,"./_descriptors":97,"./_global":104,"./_object-dp":127,"./_wks":164}],147:[function(_dereq_,module,exports){
 var def = _dereq_('./_object-dp').f;
 var has = _dereq_('./_has');
 var TAG = _dereq_('./_wks')('toStringTag');
@@ -9846,14 +9742,14 @@ module.exports = function (it, tag, stat) {
   if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
 };
 
-},{"./_has":109,"./_object-dp":131,"./_wks":168}],152:[function(_dereq_,module,exports){
+},{"./_has":105,"./_object-dp":127,"./_wks":164}],148:[function(_dereq_,module,exports){
 var shared = _dereq_('./_shared')('keys');
 var uid = _dereq_('./_uid');
 module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
 };
 
-},{"./_shared":153,"./_uid":163}],153:[function(_dereq_,module,exports){
+},{"./_shared":149,"./_uid":159}],149:[function(_dereq_,module,exports){
 var core = _dereq_('./_core');
 var global = _dereq_('./_global');
 var SHARED = '__core-js_shared__';
@@ -9864,10 +9760,10 @@ var store = global[SHARED] || (global[SHARED] = {});
 })('versions', []).push({
   version: core.version,
   mode: _dereq_('./_library') ? 'pure' : 'global',
-  copyright: '© 2018 Denis Pushkarev (zloirock.ru)'
+  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
 
-},{"./_core":97,"./_global":108,"./_library":125}],154:[function(_dereq_,module,exports){
+},{"./_core":93,"./_global":104,"./_library":121}],150:[function(_dereq_,module,exports){
 // 7.3.20 SpeciesConstructor(O, defaultConstructor)
 var anObject = _dereq_('./_an-object');
 var aFunction = _dereq_('./_a-function');
@@ -9878,7 +9774,7 @@ module.exports = function (O, D) {
   return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);
 };
 
-},{"./_a-function":82,"./_an-object":85,"./_wks":168}],155:[function(_dereq_,module,exports){
+},{"./_a-function":78,"./_an-object":81,"./_wks":164}],151:[function(_dereq_,module,exports){
 var toInteger = _dereq_('./_to-integer');
 var defined = _dereq_('./_defined');
 // true  -> String#at
@@ -9897,7 +9793,7 @@ module.exports = function (TO_STRING) {
   };
 };
 
-},{"./_defined":100,"./_to-integer":158}],156:[function(_dereq_,module,exports){
+},{"./_defined":96,"./_to-integer":154}],152:[function(_dereq_,module,exports){
 var ctx = _dereq_('./_ctx');
 var invoke = _dereq_('./_invoke');
 var html = _dereq_('./_html');
@@ -9983,7 +9879,7 @@ module.exports = {
   clear: clearTask
 };
 
-},{"./_cof":93,"./_ctx":99,"./_dom-create":102,"./_global":108,"./_html":111,"./_invoke":113}],157:[function(_dereq_,module,exports){
+},{"./_cof":89,"./_ctx":95,"./_dom-create":98,"./_global":104,"./_html":107,"./_invoke":109}],153:[function(_dereq_,module,exports){
 var toInteger = _dereq_('./_to-integer');
 var max = Math.max;
 var min = Math.min;
@@ -9992,7 +9888,7 @@ module.exports = function (index, length) {
   return index < 0 ? max(index + length, 0) : min(index, length);
 };
 
-},{"./_to-integer":158}],158:[function(_dereq_,module,exports){
+},{"./_to-integer":154}],154:[function(_dereq_,module,exports){
 // 7.1.4 ToInteger
 var ceil = Math.ceil;
 var floor = Math.floor;
@@ -10000,7 +9896,7 @@ module.exports = function (it) {
   return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
 
-},{}],159:[function(_dereq_,module,exports){
+},{}],155:[function(_dereq_,module,exports){
 // to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = _dereq_('./_iobject');
 var defined = _dereq_('./_defined');
@@ -10008,7 +9904,7 @@ module.exports = function (it) {
   return IObject(defined(it));
 };
 
-},{"./_defined":100,"./_iobject":114}],160:[function(_dereq_,module,exports){
+},{"./_defined":96,"./_iobject":110}],156:[function(_dereq_,module,exports){
 // 7.1.15 ToLength
 var toInteger = _dereq_('./_to-integer');
 var min = Math.min;
@@ -10016,14 +9912,14 @@ module.exports = function (it) {
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
 
-},{"./_to-integer":158}],161:[function(_dereq_,module,exports){
+},{"./_to-integer":154}],157:[function(_dereq_,module,exports){
 // 7.1.13 ToObject(argument)
 var defined = _dereq_('./_defined');
 module.exports = function (it) {
   return Object(defined(it));
 };
 
-},{"./_defined":100}],162:[function(_dereq_,module,exports){
+},{"./_defined":96}],158:[function(_dereq_,module,exports){
 // 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject = _dereq_('./_is-object');
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
@@ -10037,27 +9933,27 @@ module.exports = function (it, S) {
   throw TypeError("Can't convert object to primitive value");
 };
 
-},{"./_is-object":118}],163:[function(_dereq_,module,exports){
+},{"./_is-object":114}],159:[function(_dereq_,module,exports){
 var id = 0;
 var px = Math.random();
 module.exports = function (key) {
   return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
 };
 
-},{}],164:[function(_dereq_,module,exports){
+},{}],160:[function(_dereq_,module,exports){
 var global = _dereq_('./_global');
 var navigator = global.navigator;
 
 module.exports = navigator && navigator.userAgent || '';
 
-},{"./_global":108}],165:[function(_dereq_,module,exports){
+},{"./_global":104}],161:[function(_dereq_,module,exports){
 var isObject = _dereq_('./_is-object');
 module.exports = function (it, TYPE) {
   if (!isObject(it) || it._t !== TYPE) throw TypeError('Incompatible receiver, ' + TYPE + ' required!');
   return it;
 };
 
-},{"./_is-object":118}],166:[function(_dereq_,module,exports){
+},{"./_is-object":114}],162:[function(_dereq_,module,exports){
 var global = _dereq_('./_global');
 var core = _dereq_('./_core');
 var LIBRARY = _dereq_('./_library');
@@ -10068,10 +9964,10 @@ module.exports = function (name) {
   if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
 };
 
-},{"./_core":97,"./_global":108,"./_library":125,"./_object-dp":131,"./_wks-ext":167}],167:[function(_dereq_,module,exports){
+},{"./_core":93,"./_global":104,"./_library":121,"./_object-dp":127,"./_wks-ext":163}],163:[function(_dereq_,module,exports){
 exports.f = _dereq_('./_wks');
 
-},{"./_wks":168}],168:[function(_dereq_,module,exports){
+},{"./_wks":164}],164:[function(_dereq_,module,exports){
 var store = _dereq_('./_shared')('wks');
 var uid = _dereq_('./_uid');
 var Symbol = _dereq_('./_global').Symbol;
@@ -10084,7 +9980,7 @@ var $exports = module.exports = function (name) {
 
 $exports.store = store;
 
-},{"./_global":108,"./_shared":153,"./_uid":163}],169:[function(_dereq_,module,exports){
+},{"./_global":104,"./_shared":149,"./_uid":159}],165:[function(_dereq_,module,exports){
 var classof = _dereq_('./_classof');
 var ITERATOR = _dereq_('./_wks')('iterator');
 var Iterators = _dereq_('./_iterators');
@@ -10094,7 +9990,7 @@ module.exports = _dereq_('./_core').getIteratorMethod = function (it) {
     || Iterators[classof(it)];
 };
 
-},{"./_classof":92,"./_core":97,"./_iterators":124,"./_wks":168}],170:[function(_dereq_,module,exports){
+},{"./_classof":88,"./_core":93,"./_iterators":120,"./_wks":164}],166:[function(_dereq_,module,exports){
 var anObject = _dereq_('./_an-object');
 var get = _dereq_('./core.get-iterator-method');
 module.exports = _dereq_('./_core').getIterator = function (it) {
@@ -10103,7 +9999,7 @@ module.exports = _dereq_('./_core').getIterator = function (it) {
   return anObject(iterFn.call(it));
 };
 
-},{"./_an-object":85,"./_core":97,"./core.get-iterator-method":169}],171:[function(_dereq_,module,exports){
+},{"./_an-object":81,"./_core":93,"./core.get-iterator-method":165}],167:[function(_dereq_,module,exports){
 var classof = _dereq_('./_classof');
 var ITERATOR = _dereq_('./_wks')('iterator');
 var Iterators = _dereq_('./_iterators');
@@ -10115,7 +10011,7 @@ module.exports = _dereq_('./_core').isIterable = function (it) {
     || Iterators.hasOwnProperty(classof(O));
 };
 
-},{"./_classof":92,"./_core":97,"./_iterators":124,"./_wks":168}],172:[function(_dereq_,module,exports){
+},{"./_classof":88,"./_core":93,"./_iterators":120,"./_wks":164}],168:[function(_dereq_,module,exports){
 'use strict';
 var ctx = _dereq_('./_ctx');
 var $export = _dereq_('./_export');
@@ -10154,7 +10050,7 @@ $export($export.S + $export.F * !_dereq_('./_iter-detect')(function (iter) { Arr
   }
 });
 
-},{"./_create-property":98,"./_ctx":99,"./_export":105,"./_is-array-iter":115,"./_iter-call":119,"./_iter-detect":122,"./_to-length":160,"./_to-object":161,"./core.get-iterator-method":169}],173:[function(_dereq_,module,exports){
+},{"./_create-property":94,"./_ctx":95,"./_export":101,"./_is-array-iter":111,"./_iter-call":115,"./_iter-detect":118,"./_to-length":156,"./_to-object":157,"./core.get-iterator-method":165}],169:[function(_dereq_,module,exports){
 'use strict';
 var addToUnscopables = _dereq_('./_add-to-unscopables');
 var step = _dereq_('./_iter-step');
@@ -10190,7 +10086,7 @@ addToUnscopables('keys');
 addToUnscopables('values');
 addToUnscopables('entries');
 
-},{"./_add-to-unscopables":83,"./_iter-define":121,"./_iter-step":123,"./_iterators":124,"./_to-iobject":159}],174:[function(_dereq_,module,exports){
+},{"./_add-to-unscopables":79,"./_iter-define":117,"./_iter-step":119,"./_iterators":120,"./_to-iobject":155}],170:[function(_dereq_,module,exports){
 'use strict';
 var strong = _dereq_('./_collection-strong');
 var validate = _dereq_('./_validate-collection');
@@ -10211,29 +10107,29 @@ module.exports = _dereq_('./_collection')(MAP, function (get) {
   }
 }, strong, true);
 
-},{"./_collection":96,"./_collection-strong":94,"./_validate-collection":165}],175:[function(_dereq_,module,exports){
+},{"./_collection":92,"./_collection-strong":90,"./_validate-collection":161}],171:[function(_dereq_,module,exports){
 // 20.1.2.3 Number.isInteger(number)
 var $export = _dereq_('./_export');
 
 $export($export.S, 'Number', { isInteger: _dereq_('./_is-integer') });
 
-},{"./_export":105,"./_is-integer":117}],176:[function(_dereq_,module,exports){
+},{"./_export":101,"./_is-integer":113}],172:[function(_dereq_,module,exports){
 // 19.1.3.1 Object.assign(target, source)
 var $export = _dereq_('./_export');
 
 $export($export.S + $export.F, 'Object', { assign: _dereq_('./_object-assign') });
 
-},{"./_export":105,"./_object-assign":129}],177:[function(_dereq_,module,exports){
+},{"./_export":101,"./_object-assign":125}],173:[function(_dereq_,module,exports){
 var $export = _dereq_('./_export');
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 $export($export.S, 'Object', { create: _dereq_('./_object-create') });
 
-},{"./_export":105,"./_object-create":130}],178:[function(_dereq_,module,exports){
+},{"./_export":101,"./_object-create":126}],174:[function(_dereq_,module,exports){
 var $export = _dereq_('./_export');
 // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
 $export($export.S + $export.F * !_dereq_('./_descriptors'), 'Object', { defineProperty: _dereq_('./_object-dp').f });
 
-},{"./_descriptors":101,"./_export":105,"./_object-dp":131}],179:[function(_dereq_,module,exports){
+},{"./_descriptors":97,"./_export":101,"./_object-dp":127}],175:[function(_dereq_,module,exports){
 // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
 var toIObject = _dereq_('./_to-iobject');
 var $getOwnPropertyDescriptor = _dereq_('./_object-gopd').f;
@@ -10244,7 +10140,7 @@ _dereq_('./_object-sap')('getOwnPropertyDescriptor', function () {
   };
 });
 
-},{"./_object-gopd":133,"./_object-sap":141,"./_to-iobject":159}],180:[function(_dereq_,module,exports){
+},{"./_object-gopd":129,"./_object-sap":137,"./_to-iobject":155}],176:[function(_dereq_,module,exports){
 // 19.1.2.9 Object.getPrototypeOf(O)
 var toObject = _dereq_('./_to-object');
 var $getPrototypeOf = _dereq_('./_object-gpo');
@@ -10255,14 +10151,25 @@ _dereq_('./_object-sap')('getPrototypeOf', function () {
   };
 });
 
-},{"./_object-gpo":137,"./_object-sap":141,"./_to-object":161}],181:[function(_dereq_,module,exports){
+},{"./_object-gpo":133,"./_object-sap":137,"./_to-object":157}],177:[function(_dereq_,module,exports){
+// 19.1.2.14 Object.keys(O)
+var toObject = _dereq_('./_to-object');
+var $keys = _dereq_('./_object-keys');
+
+_dereq_('./_object-sap')('keys', function () {
+  return function keys(it) {
+    return $keys(toObject(it));
+  };
+});
+
+},{"./_object-keys":135,"./_object-sap":137,"./_to-object":157}],178:[function(_dereq_,module,exports){
 // 19.1.3.19 Object.setPrototypeOf(O, proto)
 var $export = _dereq_('./_export');
 $export($export.S, 'Object', { setPrototypeOf: _dereq_('./_set-proto').set });
 
-},{"./_export":105,"./_set-proto":149}],182:[function(_dereq_,module,exports){
+},{"./_export":101,"./_set-proto":145}],179:[function(_dereq_,module,exports){
 
-},{}],183:[function(_dereq_,module,exports){
+},{}],180:[function(_dereq_,module,exports){
 'use strict';
 var LIBRARY = _dereq_('./_library');
 var global = _dereq_('./_global');
@@ -10550,7 +10457,7 @@ $export($export.S + $export.F * !(USE_NATIVE && _dereq_('./_iter-detect')(functi
   }
 });
 
-},{"./_a-function":82,"./_an-instance":84,"./_classof":92,"./_core":97,"./_ctx":99,"./_export":105,"./_for-of":107,"./_global":108,"./_is-object":118,"./_iter-detect":122,"./_library":125,"./_microtask":127,"./_new-promise-capability":128,"./_perform":142,"./_promise-resolve":143,"./_redefine-all":145,"./_set-species":150,"./_set-to-string-tag":151,"./_species-constructor":154,"./_task":156,"./_user-agent":164,"./_wks":168}],184:[function(_dereq_,module,exports){
+},{"./_a-function":78,"./_an-instance":80,"./_classof":88,"./_core":93,"./_ctx":95,"./_export":101,"./_for-of":103,"./_global":104,"./_is-object":114,"./_iter-detect":118,"./_library":121,"./_microtask":123,"./_new-promise-capability":124,"./_perform":138,"./_promise-resolve":139,"./_redefine-all":141,"./_set-species":146,"./_set-to-string-tag":147,"./_species-constructor":150,"./_task":152,"./_user-agent":160,"./_wks":164}],181:[function(_dereq_,module,exports){
 // 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
 var $export = _dereq_('./_export');
 var create = _dereq_('./_object-create');
@@ -10599,7 +10506,7 @@ $export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
   }
 });
 
-},{"./_a-function":82,"./_an-object":85,"./_bind":91,"./_export":105,"./_fails":106,"./_global":108,"./_is-object":118,"./_object-create":130}],185:[function(_dereq_,module,exports){
+},{"./_a-function":78,"./_an-object":81,"./_bind":87,"./_export":101,"./_fails":102,"./_global":104,"./_is-object":114,"./_object-create":126}],182:[function(_dereq_,module,exports){
 'use strict';
 var strong = _dereq_('./_collection-strong');
 var validate = _dereq_('./_validate-collection');
@@ -10615,7 +10522,7 @@ module.exports = _dereq_('./_collection')(SET, function (get) {
   }
 }, strong);
 
-},{"./_collection":96,"./_collection-strong":94,"./_validate-collection":165}],186:[function(_dereq_,module,exports){
+},{"./_collection":92,"./_collection-strong":90,"./_validate-collection":161}],183:[function(_dereq_,module,exports){
 'use strict';
 var $at = _dereq_('./_string-at')(true);
 
@@ -10634,7 +10541,7 @@ _dereq_('./_iter-define')(String, 'String', function (iterated) {
   return { value: point, done: false };
 });
 
-},{"./_iter-define":121,"./_string-at":155}],187:[function(_dereq_,module,exports){
+},{"./_iter-define":117,"./_string-at":151}],184:[function(_dereq_,module,exports){
 'use strict';
 // ECMAScript 6 symbols shim
 var global = _dereq_('./_global');
@@ -10654,12 +10561,14 @@ var enumKeys = _dereq_('./_enum-keys');
 var isArray = _dereq_('./_is-array');
 var anObject = _dereq_('./_an-object');
 var isObject = _dereq_('./_is-object');
+var toObject = _dereq_('./_to-object');
 var toIObject = _dereq_('./_to-iobject');
 var toPrimitive = _dereq_('./_to-primitive');
 var createDesc = _dereq_('./_property-desc');
 var _create = _dereq_('./_object-create');
 var gOPNExt = _dereq_('./_object-gopn-ext');
 var $GOPD = _dereq_('./_object-gopd');
+var $GOPS = _dereq_('./_object-gops');
 var $DP = _dereq_('./_object-dp');
 var $keys = _dereq_('./_object-keys');
 var gOPD = $GOPD.f;
@@ -10676,7 +10585,7 @@ var SymbolRegistry = shared('symbol-registry');
 var AllSymbols = shared('symbols');
 var OPSymbols = shared('op-symbols');
 var ObjectProto = Object[PROTOTYPE];
-var USE_NATIVE = typeof $Symbol == 'function';
+var USE_NATIVE = typeof $Symbol == 'function' && !!$GOPS.f;
 var QObject = global.QObject;
 // Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
 var setter = !QObject || !QObject[PROTOTYPE] || !QObject[PROTOTYPE].findChild;
@@ -10786,7 +10695,7 @@ if (!USE_NATIVE) {
   $DP.f = $defineProperty;
   _dereq_('./_object-gopn').f = gOPNExt.f = $getOwnPropertyNames;
   _dereq_('./_object-pie').f = $propertyIsEnumerable;
-  _dereq_('./_object-gops').f = $getOwnPropertySymbols;
+  $GOPS.f = $getOwnPropertySymbols;
 
   if (DESCRIPTORS && !_dereq_('./_library')) {
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
@@ -10837,6 +10746,16 @@ $export($export.S + $export.F * !USE_NATIVE, 'Object', {
   getOwnPropertySymbols: $getOwnPropertySymbols
 });
 
+// Chrome 38 and 39 `Object.getOwnPropertySymbols` fails on primitives
+// https://bugs.chromium.org/p/v8/issues/detail?id=3443
+var FAILS_ON_PRIMITIVES = $fails(function () { $GOPS.f(1); });
+
+$export($export.S + $export.F * FAILS_ON_PRIMITIVES, 'Object', {
+  getOwnPropertySymbols: function getOwnPropertySymbols(it) {
+    return $GOPS.f(toObject(it));
+  }
+});
+
 // 24.3.2 JSON.stringify(value [, replacer [, space]])
 $JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function () {
   var S = $Symbol();
@@ -10870,21 +10789,21 @@ setToStringTag(Math, 'Math', true);
 // 24.3.3 JSON[@@toStringTag]
 setToStringTag(global.JSON, 'JSON', true);
 
-},{"./_an-object":85,"./_descriptors":101,"./_enum-keys":104,"./_export":105,"./_fails":106,"./_global":108,"./_has":109,"./_hide":110,"./_is-array":116,"./_is-object":118,"./_library":125,"./_meta":126,"./_object-create":130,"./_object-dp":131,"./_object-gopd":133,"./_object-gopn":135,"./_object-gopn-ext":134,"./_object-gops":136,"./_object-keys":139,"./_object-pie":140,"./_property-desc":144,"./_redefine":146,"./_set-to-string-tag":151,"./_shared":153,"./_to-iobject":159,"./_to-primitive":162,"./_uid":163,"./_wks":168,"./_wks-define":166,"./_wks-ext":167}],188:[function(_dereq_,module,exports){
+},{"./_an-object":81,"./_descriptors":97,"./_enum-keys":100,"./_export":101,"./_fails":102,"./_global":104,"./_has":105,"./_hide":106,"./_is-array":112,"./_is-object":114,"./_library":121,"./_meta":122,"./_object-create":126,"./_object-dp":127,"./_object-gopd":129,"./_object-gopn":131,"./_object-gopn-ext":130,"./_object-gops":132,"./_object-keys":135,"./_object-pie":136,"./_property-desc":140,"./_redefine":142,"./_set-to-string-tag":147,"./_shared":149,"./_to-iobject":155,"./_to-object":157,"./_to-primitive":158,"./_uid":159,"./_wks":164,"./_wks-define":162,"./_wks-ext":163}],185:[function(_dereq_,module,exports){
 // https://tc39.github.io/proposal-setmap-offrom/#sec-map.from
 _dereq_('./_set-collection-from')('Map');
 
-},{"./_set-collection-from":147}],189:[function(_dereq_,module,exports){
+},{"./_set-collection-from":143}],186:[function(_dereq_,module,exports){
 // https://tc39.github.io/proposal-setmap-offrom/#sec-map.of
 _dereq_('./_set-collection-of')('Map');
 
-},{"./_set-collection-of":148}],190:[function(_dereq_,module,exports){
+},{"./_set-collection-of":144}],187:[function(_dereq_,module,exports){
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export = _dereq_('./_export');
 
 $export($export.P + $export.R, 'Map', { toJSON: _dereq_('./_collection-to-json')('Map') });
 
-},{"./_collection-to-json":95,"./_export":105}],191:[function(_dereq_,module,exports){
+},{"./_collection-to-json":91,"./_export":101}],188:[function(_dereq_,module,exports){
 // https://github.com/tc39/proposal-promise-finally
 'use strict';
 var $export = _dereq_('./_export');
@@ -10906,7 +10825,7 @@ $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
   );
 } });
 
-},{"./_core":97,"./_export":105,"./_global":108,"./_promise-resolve":143,"./_species-constructor":154}],192:[function(_dereq_,module,exports){
+},{"./_core":93,"./_export":101,"./_global":104,"./_promise-resolve":139,"./_species-constructor":150}],189:[function(_dereq_,module,exports){
 'use strict';
 // https://github.com/tc39/proposal-promise-try
 var $export = _dereq_('./_export');
@@ -10920,27 +10839,27 @@ $export($export.S, 'Promise', { 'try': function (callbackfn) {
   return promiseCapability.promise;
 } });
 
-},{"./_export":105,"./_new-promise-capability":128,"./_perform":142}],193:[function(_dereq_,module,exports){
+},{"./_export":101,"./_new-promise-capability":124,"./_perform":138}],190:[function(_dereq_,module,exports){
 // https://tc39.github.io/proposal-setmap-offrom/#sec-set.from
 _dereq_('./_set-collection-from')('Set');
 
-},{"./_set-collection-from":147}],194:[function(_dereq_,module,exports){
+},{"./_set-collection-from":143}],191:[function(_dereq_,module,exports){
 // https://tc39.github.io/proposal-setmap-offrom/#sec-set.of
 _dereq_('./_set-collection-of')('Set');
 
-},{"./_set-collection-of":148}],195:[function(_dereq_,module,exports){
+},{"./_set-collection-of":144}],192:[function(_dereq_,module,exports){
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export = _dereq_('./_export');
 
 $export($export.P + $export.R, 'Set', { toJSON: _dereq_('./_collection-to-json')('Set') });
 
-},{"./_collection-to-json":95,"./_export":105}],196:[function(_dereq_,module,exports){
+},{"./_collection-to-json":91,"./_export":101}],193:[function(_dereq_,module,exports){
 _dereq_('./_wks-define')('asyncIterator');
 
-},{"./_wks-define":166}],197:[function(_dereq_,module,exports){
+},{"./_wks-define":162}],194:[function(_dereq_,module,exports){
 _dereq_('./_wks-define')('observable');
 
-},{"./_wks-define":166}],198:[function(_dereq_,module,exports){
+},{"./_wks-define":162}],195:[function(_dereq_,module,exports){
 _dereq_('./es6.array.iterator');
 var global = _dereq_('./_global');
 var hide = _dereq_('./_hide');
@@ -10961,7 +10880,7 @@ for (var i = 0; i < DOMIterables.length; i++) {
   Iterators[NAME] = Iterators.Array;
 }
 
-},{"./_global":108,"./_hide":110,"./_iterators":124,"./_wks":168,"./es6.array.iterator":173}],199:[function(_dereq_,module,exports){
+},{"./_global":104,"./_hide":106,"./_iterators":120,"./_wks":164,"./es6.array.iterator":169}],196:[function(_dereq_,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -11486,32 +11405,7 @@ function functionBindPolyfill(context) {
   };
 }
 
-},{}],200:[function(_dereq_,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
-}
-
-},{}],201:[function(_dereq_,module,exports){
+},{}],197:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11527,7 +11421,7 @@ Object.defineProperty(exports, "__esModule", {
  */
 
 // PnYnMnDTnHnMnS
-var numbers = '\\d+(?:[\\.,]\\d{0,3})?';
+var numbers = '\\d+(?:[\\.,]\\d+)?';
 var weekPattern = '(' + numbers + 'W)';
 var datePattern = '(' + numbers + 'Y)?(' + numbers + 'M)?(' + numbers + 'D)?';
 var timePattern = 'T(' + numbers + 'H)?(' + numbers + 'M)?(' + numbers + 'S)?';
@@ -11587,7 +11481,7 @@ var end = exports.end = function end(duration, startDate) {
 var toSeconds = exports.toSeconds = function toSeconds(duration, startDate) {
   var timestamp = startDate ? startDate.getTime() : Date.now();
   var now = new Date(timestamp);
-  var then = end(duration, startDate);
+  var then = end(duration, now);
 
   var seconds = (then.getTime() - now.getTime()) / 1000;
   return seconds;
@@ -11599,10 +11493,10 @@ exports.default = {
   pattern: pattern,
   parse: parse
 };
-},{}],202:[function(_dereq_,module,exports){
+},{}],198:[function(_dereq_,module,exports){
 module.exports = window.FormData
 
-},{}],203:[function(_dereq_,module,exports){
+},{}],199:[function(_dereq_,module,exports){
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -12272,670 +12166,7 @@ module.exports = function(message, transition, from, to, current) {
 /***/ })
 /******/ ]);
 });
-},{}],204:[function(_dereq_,module,exports){
-"use strict";
-
-var _regenerator = _dereq_("babel-runtime/regenerator");
-
-var _regenerator2 = _interopRequireDefault(_regenerator);
-
-var _getIterator2 = _dereq_("babel-runtime/core-js/get-iterator");
-
-var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-var _iterator2 = _dereq_("babel-runtime/core-js/symbol/iterator");
-
-var _iterator3 = _interopRequireDefault(_iterator2);
-
-var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-
-var Node = function () {
-    function Node(key, value) {
-        (0, _classCallCheck3.default)(this, Node);
-
-        this.balanceFactor = 0;
-        this.key = key;
-        this.value = value;
-        this.parent = null;
-        this.left = null;
-        this.right = null;
-    }
-
-    (0, _createClass3.default)(Node, [{
-        key: "update",
-        value: function update(value) {
-            this.value = value;
-        }
-    }, {
-        key: "replace",
-        value: function replace(target, replacement) {
-            if (!target) {
-                return;
-            }
-            if (this.left === replacement) {
-                this.left = replacement;
-            } else if (this.right === replacement) {
-                this.right = replacement;
-            }
-        }
-    }, {
-        key: "isRoot",
-        get: function get() {
-            return this.parent === null;
-        }
-    }, {
-        key: "isLeaf",
-        get: function get() {
-            return this.left === null && this.right === null;
-        }
-    }, {
-        key: "isLeftChild",
-        get: function get() {
-            return this.parent.left === this;
-        }
-    }]);
-    return Node;
-}();
-/**
- * @property length
- */
-
-
-var TreeMap = function () {
-    function TreeMap(less, equal) {
-        (0, _classCallCheck3.default)(this, TreeMap);
-
-        this.isLessThan = less || function (x, y) {
-            return x < y;
-        };
-        this.isEqual = equal || function (x, y) {
-            return x === y;
-        };
-        this.root = null;
-        this.count = null;
-    }
-
-    (0, _createClass3.default)(TreeMap, [{
-        key: "clear",
-        value: function clear() {
-            this.root = null;
-            this.count = 0;
-        }
-    }, {
-        key: "set",
-        value: function set(key, value) {
-            var node = this.getNode(key);
-            if (node) {
-                node.update(value);
-            } else {
-                this.insert(key, value);
-            }
-            // return node;
-        }
-    }, {
-        key: "insert",
-        value: function insert(key, value) {
-            var node = new Node(key, value);
-            this.count++;
-            if (!this.root) {
-                this.root = node;
-                // return node;
-                return;
-            }
-            var currNode = this.root;
-            for (;;) {
-                if (this.isLessThan(key, currNode.key)) {
-                    if (currNode.left) {
-                        currNode = currNode.left;
-                    } else {
-                        currNode.left = node;
-                        break;
-                    }
-                } else {
-                    if (currNode.right) {
-                        currNode = currNode.right;
-                    } else {
-                        currNode.right = node;
-                        break;
-                    }
-                }
-            }
-            node.parent = currNode;
-            currNode = node;
-            while (currNode.parent) {
-                var parent = currNode.parent;
-                var prevBalanceFactor = parent.balanceFactor;
-                if (currNode.isLeftChild) {
-                    parent.balanceFactor++;
-                } else {
-                    parent.balanceFactor--;
-                }
-                if (Math.abs(parent.balanceFactor) < Math.abs(prevBalanceFactor)) {
-                    break;
-                }
-                if (parent.balanceFactor < -1 || parent.balanceFactor > 1) {
-                    this.rebalance(parent);
-                    break;
-                }
-                currNode = parent;
-            }
-            // return node;
-        }
-    }, {
-        key: "get",
-        value: function get(key) {
-            var currentNode = this.root;
-            while (currentNode) {
-                if (this.isEqual(key, currentNode.key)) {
-                    return currentNode.value;
-                }
-                if (this.isLessThan(key, currentNode.key)) {
-                    currentNode = currentNode.left;
-                } else {
-                    currentNode = currentNode.right;
-                }
-            }
-            return null;
-        }
-    }, {
-        key: "delete",
-        value: function _delete(key) {
-            // update this algorithm and remove any
-            var node = this.getNode(key);
-            if (!node || node.key !== key) {
-                return null;
-            }
-            var parent = node.parent;
-            var left = node.left;
-            var right = node.right;
-            if (!!left !== !!right) {
-                var child = left || right;
-                if (!parent && !child) {
-                    this.root = null;
-                } else if (parent && !child) {
-                    this.root = child;
-                } else {
-                    parent.replace(node, null);
-                    this.rebalance(parent);
-                }
-            } else {
-                var maxLeft = node.left;
-                while (maxLeft.right) {
-                    maxLeft = maxLeft.right;
-                }
-                if (node.left === maxLeft) {
-                    if (node.isRoot) {
-                        this.root = maxLeft;
-                        maxLeft.parent = null;
-                    } else {
-                        if (node.isLeftChild) {
-                            node.parent.left = maxLeft;
-                        } else {
-                            node.parent.right = maxLeft;
-                        }
-                        maxLeft.parent = node.parent;
-                    }
-                    maxLeft.right = node.right;
-                    maxLeft.right.parent = maxLeft;
-                    maxLeft.balanceFactor = node.balanceFactor;
-                    node = {
-                        parent: maxLeft, isLeftChild: true
-                    };
-                } else {
-                    var mlParent = maxLeft.parent;
-                    var mlLeft = maxLeft.left;
-                    mlParent.right = mlLeft;
-                    if (mlLeft) {
-                        mlLeft.parent = mlParent;
-                    }
-                    if (node.isRoot) {
-                        this.root = maxLeft;
-                        maxLeft.parent = null;
-                    } else {
-                        if (node.isLeftChild) {
-                            node.parent.left = maxLeft;
-                        } else {
-                            node.parent.right = maxLeft;
-                        }
-                        maxLeft.parent = node.parent;
-                    }
-                    maxLeft.right = node.right;
-                    maxLeft.right.parent = maxLeft;
-                    maxLeft.left = node.left;
-                    maxLeft.left.parent = maxLeft;
-                    maxLeft.balanceFactor = node.balanceFactor;
-                    node = {
-                        parent: mlParent, isLeftChild: false
-                    };
-                }
-            }
-            this.count--;
-            while (node.parent) {
-                var _parent = node.parent;
-                var prevBalanceFactor = _parent.balanceFactor;
-                if (node.isLeftChild) {
-                    _parent.balanceFactor -= 1;
-                } else {
-                    _parent.balanceFactor += 1;
-                }
-                if (Math.abs(_parent.balanceFactor) > Math.abs(prevBalanceFactor)) {
-                    if (_parent.balanceFactor < -1 || _parent.balanceFactor > 1) {
-                        this.rebalance(_parent);
-                        if (_parent.parent.balanceFactor === 0) {
-                            node = _parent.parent;
-                        } else {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                } else {
-                    node = _parent;
-                }
-            }
-            return null;
-        }
-    }, {
-        key: "getNode",
-        value: function getNode(key) {
-            var currentNode = this.root;
-            while (currentNode) {
-                if (this.isEqual(key, currentNode.key)) {
-                    return currentNode;
-                }
-                if (this.isLessThan(key, currentNode.key)) {
-                    currentNode = currentNode.left;
-                } else {
-                    currentNode = currentNode.right;
-                }
-            }
-            return null;
-        }
-    }, {
-        key: "rebalance",
-        value: function rebalance(node) {
-            if (node.balanceFactor < 0) {
-                if (node.right.balanceFactor > 0) {
-                    this.rotateRight(node.right);
-                    this.rotateLeft(node);
-                } else {
-                    this.rotateLeft(node);
-                }
-            } else if (node.balanceFactor > 0) {
-                if (node.left.balanceFactor < 0) {
-                    this.rotateLeft(node.left);
-                    this.rotateRight(node);
-                } else {
-                    this.rotateRight(node);
-                }
-            }
-        }
-    }, {
-        key: "rotateLeft",
-        value: function rotateLeft(pivot) {
-            var root = pivot.right;
-            pivot.right = root.left;
-            if (root.left !== null) {
-                root.left.parent = pivot;
-            }
-            root.parent = pivot.parent;
-            if (root.parent === null) {
-                this.root = root;
-            } else if (pivot.isLeftChild) {
-                root.parent.left = root;
-            } else {
-                root.parent.right = root;
-            }
-            root.left = pivot;
-            pivot.parent = root;
-            pivot.balanceFactor = pivot.balanceFactor + 1 - Math.min(root.balanceFactor, 0);
-            root.balanceFactor = root.balanceFactor + 1 - Math.max(pivot.balanceFactor, 0);
-        }
-    }, {
-        key: "rotateRight",
-        value: function rotateRight(pivot) {
-            var root = pivot.left;
-            pivot.left = root.right;
-            if (root.right !== null) {
-                root.right.parent = pivot;
-            }
-            root.parent = pivot.parent;
-            if (root.parent === null) {
-                this.root = root;
-            } else if (pivot.isLeftChild) {
-                root.parent.left = root;
-            } else {
-                root.parent.right = root;
-            }
-            root.right = pivot;
-            pivot.parent = root;
-            pivot.balanceFactor = pivot.balanceFactor - 1 - Math.min(root.balanceFactor, 0);
-            root.balanceFactor = root.balanceFactor - 1 - Math.max(pivot.balanceFactor, 0);
-        }
-    }, {
-        key: _iterator3.default,
-        value: /*#__PURE__*/_regenerator2.default.mark(function value() {
-            var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, iter;
-
-            return _regenerator2.default.wrap(function value$(_context) {
-                while (1) {
-                    switch (_context.prev = _context.next) {
-                        case 0:
-                            _iteratorNormalCompletion = true;
-                            _didIteratorError = false;
-                            _iteratorError = undefined;
-                            _context.prev = 3;
-                            _iterator = (0, _getIterator3.default)(this.getIterator());
-
-                        case 5:
-                            if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                                _context.next = 12;
-                                break;
-                            }
-
-                            iter = _step.value;
-                            _context.next = 9;
-                            return iter;
-
-                        case 9:
-                            _iteratorNormalCompletion = true;
-                            _context.next = 5;
-                            break;
-
-                        case 12:
-                            _context.next = 18;
-                            break;
-
-                        case 14:
-                            _context.prev = 14;
-                            _context.t0 = _context["catch"](3);
-                            _didIteratorError = true;
-                            _iteratorError = _context.t0;
-
-                        case 18:
-                            _context.prev = 18;
-                            _context.prev = 19;
-
-                            if (!_iteratorNormalCompletion && _iterator.return) {
-                                _iterator.return();
-                            }
-
-                        case 21:
-                            _context.prev = 21;
-
-                            if (!_didIteratorError) {
-                                _context.next = 24;
-                                break;
-                            }
-
-                            throw _iteratorError;
-
-                        case 24:
-                            return _context.finish(21);
-
-                        case 25:
-                            return _context.finish(18);
-
-                        case 26:
-                        case "end":
-                            return _context.stop();
-                    }
-                }
-            }, value, this, [[3, 14, 18, 26], [19,, 21, 25]]);
-        })
-    }, {
-        key: "getIterator",
-        value: /*#__PURE__*/_regenerator2.default.mark(function getIterator() {
-            var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-            var currentNode, fromleft;
-            return _regenerator2.default.wrap(function getIterator$(_context2) {
-                while (1) {
-                    switch (_context2.prev = _context2.next) {
-                        case 0:
-                            currentNode = this.root;
-
-                        case 1:
-                            if (!currentNode) {
-                                _context2.next = 7;
-                                break;
-                            }
-
-                            if (!(this.isEqual(key, currentNode.key) || key === null && !currentNode.left)) {
-                                _context2.next = 4;
-                                break;
-                            }
-
-                            return _context2.abrupt("break", 7);
-
-                        case 4:
-                            if (this.isLessThan(key, currentNode.key) || key === null) {
-                                currentNode = currentNode.left;
-                            } else {
-                                currentNode = currentNode.right;
-                            }
-                            _context2.next = 1;
-                            break;
-
-                        case 7:
-                            if (currentNode) {
-                                _context2.next = 9;
-                                break;
-                            }
-
-                            return _context2.abrupt("return", null);
-
-                        case 9:
-                            fromleft = true;
-
-                        case 10:
-                            if (!fromleft) {
-                                _context2.next = 28;
-                                break;
-                            }
-
-                            _context2.next = 13;
-                            return [currentNode.key, currentNode.value];
-
-                        case 13:
-                            fromleft = false;
-
-                            if (!currentNode.right) {
-                                _context2.next = 20;
-                                break;
-                            }
-
-                            currentNode = currentNode.right;
-                            while (currentNode.left) {
-                                currentNode = currentNode.left;
-                            }
-                            fromleft = true;
-                            _context2.next = 26;
-                            break;
-
-                        case 20:
-                            if (!currentNode.parent) {
-                                _context2.next = 25;
-                                break;
-                            }
-
-                            fromleft = currentNode.parent.left === currentNode;
-                            currentNode = currentNode.parent;
-                            _context2.next = 26;
-                            break;
-
-                        case 25:
-                            return _context2.abrupt("break", 36);
-
-                        case 26:
-                            _context2.next = 34;
-                            break;
-
-                        case 28:
-                            if (!currentNode.parent) {
-                                _context2.next = 33;
-                                break;
-                            }
-
-                            fromleft = currentNode.parent.left === currentNode;
-                            currentNode = currentNode.parent;
-                            _context2.next = 34;
-                            break;
-
-                        case 33:
-                            return _context2.abrupt("break", 36);
-
-                        case 34:
-                            _context2.next = 10;
-                            break;
-
-                        case 36:
-                            return _context2.abrupt("return", null);
-
-                        case 37:
-                        case "end":
-                            return _context2.stop();
-                    }
-                }
-            }, getIterator, this);
-        })
-    }, {
-        key: "getReverseIterator",
-        value: /*#__PURE__*/_regenerator2.default.mark(function getReverseIterator() {
-            var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-            var currentNode, fromright;
-            return _regenerator2.default.wrap(function getReverseIterator$(_context3) {
-                while (1) {
-                    switch (_context3.prev = _context3.next) {
-                        case 0:
-                            currentNode = this.root;
-
-                        case 1:
-                            if (!currentNode) {
-                                _context3.next = 7;
-                                break;
-                            }
-
-                            if (!(this.isEqual(key, currentNode.key) || key === null && !currentNode.right)) {
-                                _context3.next = 4;
-                                break;
-                            }
-
-                            return _context3.abrupt("break", 7);
-
-                        case 4:
-                            if (!this.isLessThan(key, currentNode.key) || key === null) {
-                                currentNode = currentNode.right;
-                            } else {
-                                currentNode = currentNode.left;
-                            }
-                            _context3.next = 1;
-                            break;
-
-                        case 7:
-                            if (currentNode) {
-                                _context3.next = 9;
-                                break;
-                            }
-
-                            return _context3.abrupt("return", null);
-
-                        case 9:
-                            fromright = true;
-
-                        case 10:
-                            if (!fromright) {
-                                _context3.next = 28;
-                                break;
-                            }
-
-                            _context3.next = 13;
-                            return [currentNode.key, currentNode.value];
-
-                        case 13:
-                            fromright = false;
-
-                            if (!currentNode.left) {
-                                _context3.next = 20;
-                                break;
-                            }
-
-                            currentNode = currentNode.left;
-                            while (currentNode.right) {
-                                currentNode = currentNode.right;
-                            }
-                            fromright = true;
-                            _context3.next = 26;
-                            break;
-
-                        case 20:
-                            if (!currentNode.parent) {
-                                _context3.next = 25;
-                                break;
-                            }
-
-                            fromright = currentNode.parent.right === currentNode;
-                            currentNode = currentNode.parent;
-                            _context3.next = 26;
-                            break;
-
-                        case 25:
-                            return _context3.abrupt("break", 36);
-
-                        case 26:
-                            _context3.next = 34;
-                            break;
-
-                        case 28:
-                            if (!currentNode.parent) {
-                                _context3.next = 33;
-                                break;
-                            }
-
-                            fromright = currentNode.parent.right === currentNode;
-                            currentNode = currentNode.parent;
-                            _context3.next = 34;
-                            break;
-
-                        case 33:
-                            return _context3.abrupt("break", 36);
-
-                        case 34:
-                            _context3.next = 10;
-                            break;
-
-                        case 36:
-                            return _context3.abrupt("return", null);
-
-                        case 37:
-                        case "end":
-                            return _context3.stop();
-                    }
-                }
-            }, getReverseIterator, this);
-        })
-    }, {
-        key: "size",
-        get: function get() {
-            return this.count;
-        }
-    }]);
-    return TreeMap;
-}();
-
-exports.TreeMap = TreeMap;
-
-
-},{"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/symbol/iterator":47,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],205:[function(_dereq_,module,exports){
+},{}],200:[function(_dereq_,module,exports){
 /*
 * loglevel - https://github.com/pimterry/loglevel
 *
@@ -13187,7 +12418,138 @@ exports.TreeMap = TreeMap;
     return defaultLogger;
 }));
 
-},{}],206:[function(_dereq_,module,exports){
+},{}],201:[function(_dereq_,module,exports){
+"use strict";
+
+var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = _dereq_("babel-runtime/helpers/possibleConstructorReturn");
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = _dereq_("babel-runtime/helpers/inherits");
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var events_1 = _dereq_("events");
+function isDef(value) {
+    return value !== undefined && value !== null;
+}
+
+var Backoff = function (_events_1$EventEmitte) {
+    (0, _inherits3.default)(Backoff, _events_1$EventEmitte);
+
+    function Backoff(options) {
+        (0, _classCallCheck3.default)(this, Backoff);
+
+        var _this = (0, _possibleConstructorReturn3.default)(this, (Backoff.__proto__ || (0, _getPrototypeOf2.default)(Backoff)).call(this));
+
+        options = options || {};
+        if (isDef(options.initialDelay) && options.initialDelay < 1) {
+            throw new Error('The initial timeout must be equal to or greater than 1.');
+        } else if (isDef(options.maxDelay) && options.maxDelay <= 1) {
+            throw new Error('The maximal timeout must be greater than 1.');
+        } else if (isDef(options.randomisationFactor) && (options.randomisationFactor < 0 || options.randomisationFactor > 1)) {
+            throw new Error('The randomisation factor must be between 0 and 1.');
+        } else if (isDef(options.factor) && options.factor <= 1) {
+            throw new Error("Exponential factor should be greater than 1.");
+        }
+        _this.initialDelay = options.initialDelay || 100;
+        _this.maxDelay = options.maxDelay || 10000;
+        if (_this.maxDelay <= _this.initialDelay) {
+            throw new Error('The maximal backoff delay must be greater than the initial backoff delay.');
+        }
+        _this.randomisationFactor = options.randomisationFactor || 0;
+        _this.factor = options.factor || 2;
+        _this.maxNumberOfRetry = -1;
+        _this.reset();
+        return _this;
+    }
+
+    (0, _createClass3.default)(Backoff, [{
+        key: "backoff",
+        value: function backoff(err) {
+            if (this.timeoutID == null) {
+                if (this.backoffNumber === this.maxNumberOfRetry) {
+                    this.emit('fail', err);
+                    this.reset();
+                } else {
+                    this.backoffDelay = this.next();
+                    this.timeoutID = setTimeout(this.onBackoff.bind(this), this.backoffDelay);
+                    this.emit('backoff', this.backoffNumber, this.backoffDelay, err);
+                }
+            }
+        }
+    }, {
+        key: "reset",
+        value: function reset() {
+            this.backoffDelay = 0;
+            this.nextBackoffDelay = this.initialDelay;
+            this.backoffNumber = 0;
+            clearTimeout(this.timeoutID);
+            this.timeoutID = null;
+        }
+    }, {
+        key: "failAfter",
+        value: function failAfter(maxNumberOfRetry) {
+            if (maxNumberOfRetry <= 0) {
+                throw new Error("Expected a maximum number of retry greater than 0 but got " + maxNumberOfRetry);
+            }
+            this.maxNumberOfRetry = maxNumberOfRetry;
+        }
+    }, {
+        key: "next",
+        value: function next() {
+            this.backoffDelay = Math.min(this.nextBackoffDelay, this.maxDelay);
+            this.nextBackoffDelay = this.backoffDelay * this.factor;
+            var randomisationMultiple = 1 + Math.random() * this.randomisationFactor;
+            return Math.min(this.maxDelay, Math.round(this.backoffDelay * randomisationMultiple));
+        }
+    }, {
+        key: "onBackoff",
+        value: function onBackoff() {
+            this.timeoutID = null;
+            this.emit('ready', this.backoffNumber, this.backoffDelay);
+            this.backoffNumber++;
+        }
+    }], [{
+        key: "exponential",
+        value: function exponential(options) {
+            return new Backoff(options);
+        }
+    }]);
+    return Backoff;
+}(events_1.EventEmitter);
+
+exports.Backoff = Backoff;
+exports.default = Backoff;
+
+
+},{"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"events":196}],202:[function(_dereq_,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var retrier_1 = _dereq_("./retrier");
+exports.Retrier = retrier_1.Retrier;
+var backoff_1 = _dereq_("./backoff");
+exports.Backoff = backoff_1.Backoff;
+exports.default = retrier_1.Retrier;
+
+
+},{"./backoff":201,"./retrier":203}],203:[function(_dereq_,module,exports){
 "use strict";
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
@@ -13252,7 +12614,7 @@ var Retrier = function (_events_1$EventEmitte) {
             clearTimeout(this.timeout);
             this.attemptNum++;
             this.timeout = null;
-            this.emit("attempt", this);
+            this.emit('attempt', this);
         }
     }, {
         key: "nextDelay",
@@ -13269,8 +12631,12 @@ var Retrier = function (_events_1$EventEmitte) {
                 this.currDelay = this.minDelay;
                 return this.currDelay;
             }
-            var delay = this.currDelay + this.prevDelay;
             this.prevDelay = this.currDelay;
+            var delay = this.currDelay + this.prevDelay;
+            if (this.maxDelay && delay > this.maxDelay) {
+                this.currDelay = this.maxDelay;
+                delay = this.maxDelay;
+            }
             this.currDelay = delay;
             return delay;
         }
@@ -13298,6 +12664,7 @@ var Retrier = function (_events_1$EventEmitte) {
                 this.cleanup();
                 this.emit('failed', new Error('Maximum attempt time limit reached'));
                 this.reject(new Error('Maximum attempt time limit reached'));
+                return;
             }
             this.timeout = setTimeout(function () {
                 return _this2.attempt();
@@ -13336,21 +12703,21 @@ var Retrier = function (_events_1$EventEmitte) {
                 clearTimeout(this.timeout);
                 this.timeout = null;
                 this.inProgress = false;
-                this.emit("cancelled");
-                this.reject(new Error("Cancelled"));
+                this.emit('cancelled');
+                this.reject(new Error('Cancelled'));
             }
         }
     }, {
         key: "succeeded",
         value: function succeeded(arg) {
-            this.emit("succeeded", arg);
+            this.emit('succeeded', arg);
             this.resolve(arg);
         }
     }, {
         key: "failed",
         value: function failed(err, nextAttemptDelayOverride) {
             if (this.timeout) {
-                throw new Error("Retrier attempt is already in progress");
+                throw new Error('Retrier attempt is already in progress');
             }
             this.scheduleAttempt(nextAttemptDelayOverride);
         }
@@ -13376,7 +12743,7 @@ exports.Retrier = Retrier;
 exports.default = Retrier;
 
 
-},{"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"events":199}],207:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"events":196}],204:[function(_dereq_,module,exports){
 (function (global){
 /*!
  * Platform.js <https://mths.be/platform>
@@ -14597,322 +13964,7 @@ exports.default = Retrier;
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],208:[function(_dereq_,module,exports){
-/*
- * Copyright (c) 2012 Mathieu Turcotte
- * Licensed under the MIT license.
- */
-
-module.exports = _dereq_('./lib/checks');
-},{"./lib/checks":209}],209:[function(_dereq_,module,exports){
-/*
- * Copyright (c) 2012 Mathieu Turcotte
- * Licensed under the MIT license.
- */
-
-var util = _dereq_('util');
-
-var errors = module.exports = _dereq_('./errors');
-
-function failCheck(ExceptionConstructor, callee, messageFormat, formatArgs) {
-    messageFormat = messageFormat || '';
-    var message = util.format.apply(this, [messageFormat].concat(formatArgs));
-    var error = new ExceptionConstructor(message);
-    Error.captureStackTrace(error, callee);
-    throw error;
-}
-
-function failArgumentCheck(callee, message, formatArgs) {
-    failCheck(errors.IllegalArgumentError, callee, message, formatArgs);
-}
-
-function failStateCheck(callee, message, formatArgs) {
-    failCheck(errors.IllegalStateError, callee, message, formatArgs);
-}
-
-module.exports.checkArgument = function(value, message) {
-    if (!value) {
-        failArgumentCheck(arguments.callee, message,
-            Array.prototype.slice.call(arguments, 2));
-    }
-};
-
-module.exports.checkState = function(value, message) {
-    if (!value) {
-        failStateCheck(arguments.callee, message,
-            Array.prototype.slice.call(arguments, 2));
-    }
-};
-
-module.exports.checkIsDef = function(value, message) {
-    if (value !== undefined) {
-        return value;
-    }
-
-    failArgumentCheck(arguments.callee, message ||
-        'Expected value to be defined but was undefined.',
-        Array.prototype.slice.call(arguments, 2));
-};
-
-module.exports.checkIsDefAndNotNull = function(value, message) {
-    // Note that undefined == null.
-    if (value != null) {
-        return value;
-    }
-
-    failArgumentCheck(arguments.callee, message ||
-        'Expected value to be defined and not null but got "' +
-        typeOf(value) + '".', Array.prototype.slice.call(arguments, 2));
-};
-
-// Fixed version of the typeOf operator which returns 'null' for null values
-// and 'array' for arrays.
-function typeOf(value) {
-    var s = typeof value;
-    if (s == 'object') {
-        if (!value) {
-            return 'null';
-        } else if (value instanceof Array) {
-            return 'array';
-        }
-    }
-    return s;
-}
-
-function typeCheck(expect) {
-    return function(value, message) {
-        var type = typeOf(value);
-
-        if (type == expect) {
-            return value;
-        }
-
-        failArgumentCheck(arguments.callee, message ||
-            'Expected "' + expect + '" but got "' + type + '".',
-            Array.prototype.slice.call(arguments, 2));
-    };
-}
-
-module.exports.checkIsString = typeCheck('string');
-module.exports.checkIsArray = typeCheck('array');
-module.exports.checkIsNumber = typeCheck('number');
-module.exports.checkIsBoolean = typeCheck('boolean');
-module.exports.checkIsFunction = typeCheck('function');
-module.exports.checkIsObject = typeCheck('object');
-
-},{"./errors":210,"util":289}],210:[function(_dereq_,module,exports){
-/*
- * Copyright (c) 2012 Mathieu Turcotte
- * Licensed under the MIT license.
- */
-
-var util = _dereq_('util');
-
-function IllegalArgumentError(message) {
-    Error.call(this, message);
-    this.message = message;
-}
-util.inherits(IllegalArgumentError, Error);
-
-IllegalArgumentError.prototype.name = 'IllegalArgumentError';
-
-function IllegalStateError(message) {
-    Error.call(this, message);
-    this.message = message;
-}
-util.inherits(IllegalStateError, Error);
-
-IllegalStateError.prototype.name = 'IllegalStateError';
-
-module.exports.IllegalStateError = IllegalStateError;
-module.exports.IllegalArgumentError = IllegalArgumentError;
-},{"util":289}],211:[function(_dereq_,module,exports){
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],212:[function(_dereq_,module,exports){
+},{}],205:[function(_dereq_,module,exports){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -14949,7 +14001,7 @@ if (hadRuntime) {
   }
 }
 
-},{"./runtime":213}],213:[function(_dereq_,module,exports){
+},{"./runtime":206}],206:[function(_dereq_,module,exports){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -15678,74 +14730,94 @@ if (hadRuntime) {
   (function() { return this })() || Function("return this")()
 );
 
-},{}],214:[function(_dereq_,module,exports){
+},{}],207:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var equal_1 = _dereq_("./equal");
+var hasOwnProperty = Object.prototype.hasOwnProperty;
 function isDestructive(_a) {
     var op = _a.op;
     return op === 'remove' || op === 'replace' || op === 'copy' || op === 'move';
 }
 exports.isDestructive = isDestructive;
 /**
-subtract(a, b) returns the keys in `a` that are not in `b`.
+List the keys in `minuend` that are not in `subtrahend`.
+
+A key is only considered if it is both 1) an own-property (o.hasOwnProperty(k))
+of the object, and 2) has a value that is not undefined. This is to match JSON
+semantics, where JSON object serialization drops keys with undefined values.
+
+@param minuend Object of interest
+@param subtrahend Object of comparison
+@returns Array of keys that are in `minuend` but not in `subtrahend`.
 */
-function subtract(a, b) {
+function subtract(minuend, subtrahend) {
+    // initialize empty object; we only care about the keys, the values can be anything
     var obj = {};
-    for (var add_key in a) {
-        obj[add_key] = 1;
+    // build up obj with all the properties of minuend
+    for (var add_key in minuend) {
+        if (hasOwnProperty.call(minuend, add_key) && minuend[add_key] !== undefined) {
+            obj[add_key] = 1;
+        }
     }
-    for (var del_key in b) {
-        delete obj[del_key];
+    // now delete all the properties of subtrahend from obj
+    // (deleting a missing key has no effect)
+    for (var del_key in subtrahend) {
+        if (hasOwnProperty.call(subtrahend, del_key) && subtrahend[del_key] !== undefined) {
+            delete obj[del_key];
+        }
     }
+    // finally, extract whatever keys remain in obj
     return Object.keys(obj);
 }
 exports.subtract = subtract;
 /**
-intersection(objects) returns the keys that shared by all given `objects`.
+List the keys that shared by all `objects`.
+
+The semantics of what constitutes a "key" is described in {@link subtract}.
+
+@param objects Array of objects to compare
+@returns Array of keys that are in ("own-properties" of) every object in `objects`.
 */
 function intersection(objects) {
-    // initialize like union()
-    var key_counts = {};
-    objects.forEach(function (object) {
+    var length = objects.length;
+    // prepare empty counter to keep track of how many objects each key occurred in
+    var counter = {};
+    // go through each object and increment the counter for each key in that object
+    for (var i = 0; i < length; i++) {
+        var object = objects[i];
         for (var key in object) {
-            key_counts[key] = (key_counts[key] || 0) + 1;
-        }
-    });
-    // but then, extra requirement: delete less commonly-seen keys
-    var threshold = objects.length;
-    for (var key in key_counts) {
-        if (key_counts[key] < threshold) {
-            delete key_counts[key];
+            if (hasOwnProperty.call(object, key) && object[key] !== undefined) {
+                counter[key] = (counter[key] || 0) + 1;
+            }
         }
     }
-    return Object.keys(key_counts);
+    // now delete all keys from the counter that were not seen in every object
+    for (var key in counter) {
+        if (counter[key] < length) {
+            delete counter[key];
+        }
+    }
+    // finally, extract whatever keys remain in the counter
+    return Object.keys(counter);
 }
 exports.intersection = intersection;
-function objectType(object) {
-    if (object === undefined) {
-        return 'undefined';
-    }
-    if (object === null) {
-        return 'null';
-    }
-    if (Array.isArray(object)) {
-        return 'array';
-    }
-    return typeof object;
-}
-exports.objectType = objectType;
 function isArrayAdd(array_operation) {
     return array_operation.op === 'add';
 }
 function isArrayRemove(array_operation) {
     return array_operation.op === 'remove';
 }
-function isArrayReplace(array_operation) {
-    return array_operation.op === 'replace';
+function appendArrayOperation(base, operation) {
+    return {
+        // the new operation must be pushed on the end
+        operations: base.operations.concat(operation),
+        cost: base.cost + 1,
+    };
 }
 /**
-Array-diffing smarter (levenshtein-like) diffing here
+Calculate the shortest sequence of operations to get from `input` to `output`,
+using a dynamic programming implementation of the Levenshtein distance algorithm.
 
 To get from the input ABC to the output AZ we could just delete all the input
 and say "insert A, insert Z" and be done with it. That's what we do if the
@@ -15764,9 +14836,12 @@ input A |  1  [0]  1
 3) remove B (+1)
 4) replace C with Z (+1)
 
-if input (source) is empty, they'll all be in the top row, just a bunch of
-additions. If the output is empty, everything will be in the left column, as a
-bunch of deletions.
+If the `input` (source) is empty, they'll all be in the top row, resulting in an
+array of 'add' operations.
+If the `output` (target) is empty, everything will be in the left column,
+resulting in an array of 'remove' operations.
+
+@returns A list of add/remove/replace operations.
 */
 function diffArrays(input, output, ptr, diff) {
     if (diff === void 0) { diff = diffAny; }
@@ -15775,21 +14850,21 @@ function diffArrays(input, output, ptr, diff) {
         '0,0': { operations: [], cost: 0 },
     };
     /**
-    input[i's] -> output[j's]
+    Calculate the cheapest sequence of operations required to get from
+    input.slice(0, i) to output.slice(0, j).
+    There may be other valid sequences with the same cost, but none cheaper.
   
-    Given the layout above, i is the row, j is the col
-  
-    returns a list of Operations needed to get to from input.slice(0, i) to
-    output.slice(0, j), the each marked with the total cost of getting there.
-    `cost` is a non-negative integer.
-    Recursive.
+    @param i The row in the layout above
+    @param j The column in the layout above
+    @returns An object containing a list of operations, along with the total cost
+             of applying them (+1 for each add/remove/replace operation)
     */
     function dist(i, j) {
         // memoized
         var memo_key = i + "," + j;
         var memoized = memo[memo_key];
         if (memoized === undefined) {
-            if (equal_1.compare(input[i - 1], output[j - 1])) {
+            if (i > 0 && j > 0 && equal_1.compare(input[i - 1], output[j - 1])) {
                 // equal (no operations => no cost)
                 memoized = dist(i - 1, j - 1);
             }
@@ -15797,44 +14872,37 @@ function diffArrays(input, output, ptr, diff) {
                 var alternatives = [];
                 if (i > 0) {
                     // NOT topmost row
-                    var remove_alternative = dist(i - 1, j);
-                    alternatives.push({
-                        // the new operation must be pushed on the end
-                        operations: remove_alternative.operations.concat({
-                            op: 'remove',
-                            index: i - 1,
-                        }),
-                        cost: remove_alternative.cost + 1,
-                    });
+                    var remove_base = dist(i - 1, j);
+                    var remove_operation = {
+                        op: 'remove',
+                        index: i - 1,
+                    };
+                    alternatives.push(appendArrayOperation(remove_base, remove_operation));
                 }
                 if (j > 0) {
                     // NOT leftmost column
-                    var add_alternative = dist(i, j - 1);
-                    alternatives.push({
-                        operations: add_alternative.operations.concat({
-                            op: 'add',
-                            index: i - 1,
-                            value: output[j - 1],
-                        }),
-                        cost: add_alternative.cost + 1,
-                    });
+                    var add_base = dist(i, j - 1);
+                    var add_operation = {
+                        op: 'add',
+                        index: i - 1,
+                        value: output[j - 1],
+                    };
+                    alternatives.push(appendArrayOperation(add_base, add_operation));
                 }
                 if (i > 0 && j > 0) {
                     // TABLE MIDDLE
                     // supposing we replaced it, compute the rest of the costs:
-                    var replace_alternative = dist(i - 1, j - 1);
+                    var replace_base = dist(i - 1, j - 1);
                     // okay, the general plan is to replace it, but we can be smarter,
                     // recursing into the structure and replacing only part of it if
                     // possible, but to do so we'll need the original value
-                    alternatives.push({
-                        operations: replace_alternative.operations.concat({
-                            op: 'replace',
-                            index: i - 1,
-                            original: input[i - 1],
-                            value: output[j - 1],
-                        }),
-                        cost: replace_alternative.cost + 1,
-                    });
+                    var replace_operation = {
+                        op: 'replace',
+                        index: i - 1,
+                        original: input[i - 1],
+                        value: output[j - 1],
+                    };
+                    alternatives.push(appendArrayOperation(replace_base, replace_operation));
                 }
                 // the only other case, i === 0 && j === 0, has already been memoized
                 // the meat of the algorithm:
@@ -15909,8 +14977,8 @@ function diffValues(input, output, ptr) {
 exports.diffValues = diffValues;
 function diffAny(input, output, ptr, diff) {
     if (diff === void 0) { diff = diffAny; }
-    var input_type = objectType(input);
-    var output_type = objectType(output);
+    var input_type = equal_1.objectType(input);
+    var output_type = equal_1.objectType(output);
     if (input_type == 'array' && output_type == 'array') {
         return diffArrays(input, output, ptr, diff);
     }
@@ -15923,38 +14991,67 @@ function diffAny(input, output, ptr, diff) {
 }
 exports.diffAny = diffAny;
 
-},{"./equal":215}],215:[function(_dereq_,module,exports){
+},{"./equal":208}],208:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
-zip(a, b) assumes that a.length === b.length.
-*/
-function zip(a, b) {
-    var zipped = [];
-    for (var i = 0, l = a.length; i < l; i++) {
-        zipped.push([a[i], b[i]]);
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+function objectType(object) {
+    if (object === undefined) {
+        return 'undefined';
     }
-    return zipped;
+    if (object === null) {
+        return 'null';
+    }
+    if (Array.isArray(object)) {
+        return 'array';
+    }
+    return typeof object;
 }
+exports.objectType = objectType;
 /**
-compareArrays(left, right) assumes that `left` and `right` are both Arrays.
+Evaluate `left === right`, treating `left` and `right` as ordered lists.
+
+@returns true iff `left` and `right` have identical lengths, and every element
+         of `left` is equal to the corresponding element of `right`. Equality is
+         determined recursivly, via `compare`.
 */
 function compareArrays(left, right) {
-    if (left.length !== right.length) {
+    var length = left.length;
+    if (length !== right.length) {
         return false;
     }
-    return zip(left, right).every(function (pair) { return compare(pair[0], pair[1]); });
+    for (var i = 0; i < length; i++) {
+        if (!compare(left[i], right[i])) {
+            return false;
+        }
+    }
+    return true;
 }
 /**
-compareObjects(left, right) assumes that `left` and `right` are both Objects.
+Evaluate `left === right`, treating `left` and `right` as property maps.
+
+@returns true iff every property in `left` has a value equal to the value of the
+         corresponding property in `right`, and vice-versa, stopping as soon as
+         possible. Equality is determined recursivly, via `compare`.
 */
 function compareObjects(left, right) {
     var left_keys = Object.keys(left);
     var right_keys = Object.keys(right);
-    if (!compareArrays(left_keys, right_keys)) {
+    var length = left_keys.length;
+    // quick exit if the number of keys don't match up
+    if (length !== right_keys.length) {
         return false;
     }
-    return left_keys.every(function (key) { return compare(left[key], right[key]); });
+    // we don't know for sure that Set(left_keys) is equal to Set(right_keys),
+    // much less that their values in left and right are equal, but if right
+    // contains each key in left, we know it can't have any additional keys
+    for (var i = 0; i < length; i++) {
+        var key = left_keys[i];
+        if (!hasOwnProperty.call(right, key) || !compare(left[key], right[key])) {
+            return false;
+        }
+    }
+    return true;
 }
 /**
 `compare()` returns true if `left` and `right` are materially equal
@@ -15983,12 +15080,14 @@ function compare(left, right) {
     if (left === right) {
         return true;
     }
+    var left_type = objectType(left);
+    var right_type = objectType(right);
     // check arrays
-    if (Array.isArray(left) && Array.isArray(right)) {
+    if (left_type == 'array' && right_type == 'array') {
         return compareArrays(left, right);
     }
     // check objects
-    if (Object(left) === left && Object(right) === right) {
+    if (left_type == 'object' && right_type == 'object') {
         return compareObjects(left, right);
     }
     // mismatched arrays & objects, etc., are always inequal
@@ -15996,62 +15095,11 @@ function compare(left, right) {
 }
 exports.compare = compare;
 
-},{}],216:[function(_dereq_,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var MissingError = /** @class */ (function (_super) {
-    __extends(MissingError, _super);
-    function MissingError(path) {
-        var _this = _super.call(this, "Value required at path: " + path) || this;
-        _this.path = path;
-        _this.name = 'MissingError';
-        return _this;
-    }
-    return MissingError;
-}(Error));
-exports.MissingError = MissingError;
-var InvalidOperationError = /** @class */ (function (_super) {
-    __extends(InvalidOperationError, _super);
-    function InvalidOperationError(op) {
-        var _this = _super.call(this, "Invalid operation: " + op) || this;
-        _this.op = op;
-        _this.name = 'InvalidOperationError';
-        return _this;
-    }
-    return InvalidOperationError;
-}(Error));
-exports.InvalidOperationError = InvalidOperationError;
-var TestError = /** @class */ (function (_super) {
-    __extends(TestError, _super);
-    function TestError(actual, expected) {
-        var _this = _super.call(this, "Test failed: " + actual + " != " + expected) || this;
-        _this.actual = actual;
-        _this.expected = expected;
-        _this.name = 'TestError';
-        _this.actual = actual;
-        _this.expected = expected;
-        return _this;
-    }
-    return TestError;
-}(Error));
-exports.TestError = TestError;
-
-},{}],217:[function(_dereq_,module,exports){
+},{}],209:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var errors_1 = _dereq_("./errors");
 var pointer_1 = _dereq_("./pointer");
-var operationFunctions = _dereq_("./patch");
+var patch_1 = _dereq_("./patch");
 var diff_1 = _dereq_("./diff");
 /**
 Apply a 'application/json-patch+json'-type patch to an object.
@@ -16063,22 +15111,14 @@ Apply a 'application/json-patch+json'-type patch to an object.
 > "remove", "replace", "move", "copy", or "test"; other values are
 > errors.
 
-This method currently operates on the target object in-place.
+This method mutates the target object in-place.
 
-Returns list of results, one for each operation.
-  - `null` indicated success.
-  - otherwise, the result will be an instance of one of the Error classe
-    defined in errors.js.
+@returns list of results, one for each operation: `null` indicated success,
+         otherwise, the result will be an instance of one of the Error classes:
+         MissingError, InvalidOperationError, or TestError.
 */
 function applyPatch(object, patch) {
-    return patch.map(function (operation) {
-        var operationFunction = operationFunctions[operation.op];
-        // speedy exit if we don't recognize the operation name
-        if (operationFunction === undefined) {
-            return new errors_1.InvalidOperationError(operation.op);
-        }
-        return operationFunction(object, operation);
-    });
+    return patch.map(function (operation) { return patch_1.apply(object, operation); });
 }
 exports.applyPatch = applyPatch;
 function wrapVoidableDiff(diff) {
@@ -16108,6 +15148,10 @@ function createPatch(input, output, diff) {
     return (diff ? wrapVoidableDiff(diff) : diff_1.diffAny)(input, output, ptr);
 }
 exports.createPatch = createPatch;
+/**
+Create a test operation based on `input`'s current evaluation of the JSON
+Pointer `path`; if such a pointer cannot be resolved, returns undefined.
+*/
 function createTest(input, path) {
     var endpoint = pointer_1.Pointer.fromJSON(path).evaluate(input);
     if (endpoint !== undefined) {
@@ -16140,12 +15184,50 @@ function createTests(input, patch) {
 }
 exports.createTests = createTests;
 
-},{"./diff":214,"./errors":216,"./patch":218,"./pointer":219}],218:[function(_dereq_,module,exports){
+},{"./diff":207,"./patch":210,"./pointer":211}],210:[function(_dereq_,module,exports){
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 var pointer_1 = _dereq_("./pointer");
+var util_1 = _dereq_("./util");
 var equal_1 = _dereq_("./equal");
-var errors_1 = _dereq_("./errors");
+var MissingError = /** @class */ (function (_super) {
+    __extends(MissingError, _super);
+    function MissingError(path) {
+        var _this = _super.call(this, "Value required at path: " + path) || this;
+        _this.path = path;
+        _this.name = 'MissingError';
+        return _this;
+    }
+    return MissingError;
+}(Error));
+exports.MissingError = MissingError;
+var TestError = /** @class */ (function (_super) {
+    __extends(TestError, _super);
+    function TestError(actual, expected) {
+        var _this = _super.call(this, "Test failed: " + actual + " != " + expected) || this;
+        _this.actual = actual;
+        _this.expected = expected;
+        _this.name = 'TestError';
+        _this.actual = actual;
+        _this.expected = expected;
+        return _this;
+    }
+    return TestError;
+}(Error));
+exports.TestError = TestError;
 function _add(object, key, value) {
     if (Array.isArray(object)) {
         // `key` must be an index
@@ -16153,7 +15235,8 @@ function _add(object, key, value) {
             object.push(value);
         }
         else {
-            object.splice(key, 0, value);
+            var index = parseInt(key, 10);
+            object.splice(index, 0, value);
         }
     }
     else {
@@ -16163,7 +15246,8 @@ function _add(object, key, value) {
 function _remove(object, key) {
     if (Array.isArray(object)) {
         // '-' syntax doesn't make sense when removing
-        object.splice(key, 1);
+        var index = parseInt(key, 10);
+        object.splice(index, 1);
     }
     else {
         // not sure what the proper behavior is when path = ''
@@ -16182,9 +15266,9 @@ function add(object, operation) {
     var endpoint = pointer_1.Pointer.fromJSON(operation.path).evaluate(object);
     // it's not exactly a "MissingError" in the same way that `remove` is -- more like a MissingParent, or something
     if (endpoint.parent === undefined) {
-        return new errors_1.MissingError(operation.path);
+        return new MissingError(operation.path);
     }
-    _add(endpoint.parent, endpoint.key, operation.value);
+    _add(endpoint.parent, endpoint.key, util_1.clone(operation.value));
     return null;
 }
 exports.add = add;
@@ -16196,7 +15280,7 @@ function remove(object, operation) {
     // endpoint has parent, key, and value properties
     var endpoint = pointer_1.Pointer.fromJSON(operation.path).evaluate(object);
     if (endpoint.value === undefined) {
-        return new errors_1.MissingError(operation.path);
+        return new MissingError(operation.path);
     }
     // not sure what the proper behavior is when path = ''
     _remove(endpoint.parent, endpoint.key);
@@ -16217,8 +15301,18 @@ Even more simply, it's like the add operation with an existence check.
 */
 function replace(object, operation) {
     var endpoint = pointer_1.Pointer.fromJSON(operation.path).evaluate(object);
-    if (endpoint.value === undefined)
-        return new errors_1.MissingError(operation.path);
+    if (endpoint.parent === null) {
+        return new MissingError(operation.path);
+    }
+    // this existence check treats arrays as a special case
+    if (Array.isArray(endpoint.parent)) {
+        if (parseInt(endpoint.key, 10) >= endpoint.parent.length) {
+            return new MissingError(operation.path);
+        }
+    }
+    else if (endpoint.value === undefined) {
+        return new MissingError(operation.path);
+    }
     endpoint.parent[endpoint.key] = operation.value;
     return null;
 }
@@ -16240,11 +15334,13 @@ TODO: throw if the check described in the previous paragraph fails.
 */
 function move(object, operation) {
     var from_endpoint = pointer_1.Pointer.fromJSON(operation.from).evaluate(object);
-    if (from_endpoint.value === undefined)
-        return new errors_1.MissingError(operation.from);
+    if (from_endpoint.value === undefined) {
+        return new MissingError(operation.from);
+    }
     var endpoint = pointer_1.Pointer.fromJSON(operation.path).evaluate(object);
-    if (endpoint.parent === undefined)
-        return new errors_1.MissingError(operation.path);
+    if (endpoint.parent === undefined) {
+        return new MissingError(operation.path);
+    }
     _remove(from_endpoint.parent, from_endpoint.key);
     _add(endpoint.parent, endpoint.key, from_endpoint.value);
     return null;
@@ -16265,13 +15361,14 @@ Alternatively, it's like 'move' without the 'remove'.
 */
 function copy(object, operation) {
     var from_endpoint = pointer_1.Pointer.fromJSON(operation.from).evaluate(object);
-    if (from_endpoint.value === undefined)
-        return new errors_1.MissingError(operation.from);
+    if (from_endpoint.value === undefined) {
+        return new MissingError(operation.from);
+    }
     var endpoint = pointer_1.Pointer.fromJSON(operation.path).evaluate(object);
-    if (endpoint.parent === undefined)
-        return new errors_1.MissingError(operation.path);
-    _remove(from_endpoint.parent, from_endpoint.key);
-    _add(endpoint.parent, endpoint.key, from_endpoint.value);
+    if (endpoint.parent === undefined) {
+        return new MissingError(operation.path);
+    }
+    _add(endpoint.parent, endpoint.key, util_1.clone(from_endpoint.value));
     return null;
 }
 exports.copy = copy;
@@ -16286,13 +15383,44 @@ exports.copy = copy;
 function test(object, operation) {
     var endpoint = pointer_1.Pointer.fromJSON(operation.path).evaluate(object);
     var result = equal_1.compare(endpoint.value, operation.value);
-    if (!result)
-        return new errors_1.TestError(endpoint.value, operation.value);
+    if (!result) {
+        return new TestError(endpoint.value, operation.value);
+    }
     return null;
 }
 exports.test = test;
+var InvalidOperationError = /** @class */ (function (_super) {
+    __extends(InvalidOperationError, _super);
+    function InvalidOperationError(operation) {
+        var _this = _super.call(this, "Invalid operation: " + operation.op) || this;
+        _this.operation = operation;
+        _this.name = 'InvalidOperationError';
+        return _this;
+    }
+    return InvalidOperationError;
+}(Error));
+exports.InvalidOperationError = InvalidOperationError;
+/**
+Switch on `operation.op`, applying the corresponding patch function for each
+case to `object`.
+*/
+function apply(object, operation) {
+    // not sure why TypeScript can't infer typesafety of:
+    //   {add, remove, replace, move, copy, test}[operation.op](object, operation)
+    // (seems like a bug)
+    switch (operation.op) {
+        case 'add': return add(object, operation);
+        case 'remove': return remove(object, operation);
+        case 'replace': return replace(object, operation);
+        case 'move': return move(object, operation);
+        case 'copy': return copy(object, operation);
+        case 'test': return test(object, operation);
+    }
+    return new InvalidOperationError(operation);
+}
+exports.apply = apply;
 
-},{"./equal":215,"./errors":216,"./pointer":219}],219:[function(_dereq_,module,exports){
+},{"./equal":208,"./pointer":211,"./util":212}],211:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -16351,20 +15479,21 @@ var Pointer = /** @class */ (function () {
     };
     /**
     Returns an object with 'parent', 'key', and 'value' properties.
-    In the special case that pointer = "", parent and key will be null, and `value = obj`
-    Otherwise, parent will be the such that `parent[key] == value`
+    In the special case that this Pointer's path == "",
+    this object will be {parent: null, key: '', value: object}.
+    Otherwise, parent and key will have the property such that parent[key] == value.
     */
     Pointer.prototype.evaluate = function (object) {
-        var value = object;
         var parent = null;
-        var token = null;
+        var key = '';
+        var value = object;
         for (var i = 1, l = this.tokens.length; i < l; i++) {
             parent = value;
-            token = this.tokens[i];
+            key = this.tokens[i];
             // not sure if this the best way to handle non-existant paths...
-            value = (parent || {})[token];
+            value = (parent || {})[key];
         }
-        return { parent: parent, key: token, value: value };
+        return { parent: parent, key: key, value: value };
     };
     Pointer.prototype.get = function (object) {
         return this.evaluate(object).value;
@@ -16396,7 +15525,50 @@ var Pointer = /** @class */ (function () {
 }());
 exports.Pointer = Pointer;
 
-},{}],220:[function(_dereq_,module,exports){
+},{}],212:[function(_dereq_,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+/**
+Recursively copy a value.
+
+@param source - should be a JavaScript primitive, Array, or (plain old) Object.
+@returns copy of source where every Array and Object have been recursively
+         reconstructed from their constituent elements
+*/
+function clone(source) {
+    // loose-equality checking for null is faster than strict checking for each of null/undefined/true/false
+    // checking null first, then calling typeof, is faster than vice-versa
+    if (source == null || typeof source != 'object') {
+        // short-circuiting is faster than a single return
+        return source;
+    }
+    // x.constructor == Array is the fastest way to check if x is an Array
+    if (source.constructor == Array) {
+        // construction via imperative for-loop is faster than source.map(arrayVsObject)
+        var length_1 = source.length;
+        // setting the Array length during construction is faster than just `[]` or `new Array()`
+        var arrayTarget = new Array(length_1);
+        for (var i = 0; i < length_1; i++) {
+            arrayTarget[i] = clone(source[i]);
+        }
+        return arrayTarget;
+    }
+    // Object
+    var objectTarget = {};
+    // declaring the variable (with const) inside the loop is faster
+    for (var key in source) {
+        // hasOwnProperty costs a bit of performance, but it's semantically necessary
+        // using a global helper is MUCH faster than calling source.hasOwnProperty(key)
+        if (hasOwnProperty.call(source, key)) {
+            objectTarget[key] = clone(source[key]);
+        }
+    }
+    return objectTarget;
+}
+exports.clone = clone;
+
+},{}],213:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -16606,7 +15778,7 @@ exports.Client = Client;
 exports.McsClient = Client;
 exports.default = Client;
 
-},{"./../package.json":226,"./configuration":221,"./logger":223,"./media":224,"./services/network":225,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57,"twilio-transport":259}],221:[function(_dereq_,module,exports){
+},{"./../package.json":220,"./configuration":214,"./logger":216,"./media":217,"./services/network":218,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58,"twilio-transport":256}],214:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -16662,13 +15834,13 @@ var Configuration = function () {
 
 exports.Configuration = Configuration;
 
-},{"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],222:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],215:[function(_dereq_,module,exports){
 'use strict';
 
 var mcsclient = _dereq_('./client');
 module.exports = mcsclient;
 
-},{"./client":220}],223:[function(_dereq_,module,exports){
+},{"./client":213}],216:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -16810,7 +15982,7 @@ var Logger = function () {
 
 exports.Logger = Logger;
 
-},{"babel-runtime/core-js/array/from":31,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"loglevel":205}],224:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/array/from":31,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"loglevel":200}],217:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -16967,7 +16139,7 @@ var Media = function () {
 
 exports.Media = Media;
 
-},{"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],225:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58}],218:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -17059,7 +16231,7 @@ var Network = function () {
                 if (retryWhenThrottled) {
                     codesToRetryOn.push(429);
                 }
-                var retrier = new operation_retrier_1.default(_this.backoffConfig());
+                var retrier = new operation_retrier_1.Retrier(_this.backoffConfig());
                 retrier.on('attempt', function () {
                     request().then(function (result) {
                         return retrier.succeeded(result);
@@ -17185,30 +16357,36 @@ var Network = function () {
 
 exports.Network = Network;
 
-},{"../configuration":221,"../logger":223,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57,"isomorphic-form-data":202,"operation-retrier":206}],226:[function(_dereq_,module,exports){
+},{"../configuration":214,"../logger":216,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58,"isomorphic-form-data":219,"operation-retrier":202}],219:[function(_dereq_,module,exports){
+arguments[4][198][0].apply(exports,arguments)
+},{"dup":198}],220:[function(_dereq_,module,exports){
 module.exports={
-  "_from": "twilio-mcs-client@^0.2.2",
-  "_id": "twilio-mcs-client@0.2.2",
+  "_from": "twilio-mcs-client@^0.2.4",
+  "_id": "twilio-mcs-client@0.2.4",
   "_inBundle": false,
-  "_integrity": "sha512-/NywKHcgLkM5WW//gXFkJXmdV8d/N3vpCiONlMQiumzaZ3OoEcBrpFr1PiHlkoUXI2C2comypFWunfI6DieeNw==",
+  "_integrity": "sha512-oNB4B3am62syzcsfMPKL/KyXufKmGlschjZvAw+MdTnEEtwYR6EFyq2vF2RawJQQCk2cdLC1OUWQU3FU9dtiwQ==",
   "_location": "/twilio-mcs-client",
-  "_phantomChildren": {},
+  "_phantomChildren": {
+    "combined-stream": "1.0.8",
+    "lodash": "4.17.11",
+    "mime-types": "2.1.24"
+  },
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "twilio-mcs-client@^0.2.2",
+    "raw": "twilio-mcs-client@^0.2.4",
     "name": "twilio-mcs-client",
     "escapedName": "twilio-mcs-client",
-    "rawSpec": "^0.2.2",
+    "rawSpec": "^0.2.4",
     "saveSpec": null,
-    "fetchSpec": "^0.2.2"
+    "fetchSpec": "^0.2.4"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/twilio-mcs-client/-/twilio-mcs-client-0.2.2.tgz",
-  "_shasum": "5bda462304791df6d4bd1a4f8bf5b6b65335a1bf",
-  "_spec": "twilio-mcs-client@^0.2.2",
+  "_resolved": "https://registry.npmjs.org/twilio-mcs-client/-/twilio-mcs-client-0.2.4.tgz",
+  "_shasum": "ad35df3ec6d7b4410d7d602b683209f252ca4617",
+  "_spec": "twilio-mcs-client@^0.2.4",
   "_where": "/home/travis/build/twilio/twilio-chat.js",
   "author": {
     "name": "Twilio"
@@ -17221,9 +16399,9 @@ module.exports={
   "bundleDependencies": false,
   "dependencies": {
     "isomorphic-form-data": "^1.0.0",
-    "loglevel": "^1.6.1",
-    "operation-retrier": "^2.0.0",
-    "twilio-transport": "^0.3.3"
+    "loglevel": "^1.6.3",
+    "operation-retrier": "^3.0.0",
+    "twilio-transport": "^0.3.5"
   },
   "deprecated": false,
   "description": "Twilio Media Content Service client library",
@@ -17290,10 +16468,10 @@ module.exports={
   "name": "twilio-mcs-client",
   "scripts": {},
   "types": "./lib/client.d.ts",
-  "version": "0.2.2"
+  "version": "0.2.4"
 }
 
-},{}],227:[function(_dereq_,module,exports){
+},{}],221:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -17582,7 +16760,7 @@ exports.Client = Client;
  *   (from strictest to broadest): ['silent', 'error', 'warn', 'info', 'debug', 'trace']
  */
 
-},{"./configuration":228,"./logger":231,"./registrar":233,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199,"twilsock":269}],228:[function(_dereq_,module,exports){
+},{"./configuration":222,"./logger":225,"./registrar":227,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196,"twilsock":266}],222:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -17625,7 +16803,7 @@ var Configuration = function () {
 
 exports.Configuration = Configuration;
 
-},{"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],229:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],223:[function(_dereq_,module,exports){
 "use strict";
 
 var _slicedToArray2 = _dereq_("babel-runtime/helpers/slicedToArray");
@@ -17917,14 +17095,14 @@ var Connector = function (_events_1$EventEmitte) {
 
 exports.Connector = Connector;
 
-},{"./logger":231,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/set":45,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/helpers/slicedToArray":54,"babel-runtime/helpers/toConsumableArray":55,"babel-runtime/regenerator":57,"events":199}],230:[function(_dereq_,module,exports){
+},{"./logger":225,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/set":46,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/helpers/slicedToArray":55,"babel-runtime/helpers/toConsumableArray":56,"babel-runtime/regenerator":58,"events":196}],224:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = _dereq_("./client");
 exports.Notifications = client_1.Client;
 
-},{"./client":227}],231:[function(_dereq_,module,exports){
+},{"./client":221}],225:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -18020,7 +17198,7 @@ exports.Logger = Logger;
 var logInstance = Logger.scope();
 exports.log = logInstance;
 
-},{"babel-runtime/core-js/array/from":31,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"loglevel":205}],232:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/array/from":31,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"loglevel":200}],226:[function(_dereq_,module,exports){
 "use strict";
 
 var _from = _dereq_("babel-runtime/core-js/array/from");
@@ -18271,7 +17449,7 @@ var RegistrarConnector = function (_connector_1$Connecto) {
 
 exports.RegistrarConnector = RegistrarConnector;
 
-},{"./connector":229,"./logger":231,"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"operation-retrier":206}],233:[function(_dereq_,module,exports){
+},{"./connector":223,"./logger":225,"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"operation-retrier":202}],227:[function(_dereq_,module,exports){
 "use strict";
 
 var _map = _dereq_("babel-runtime/core-js/map");
@@ -18417,7 +17595,7 @@ var Registrar = function (_events_1$EventEmitte) {
 
 exports.Registrar = Registrar;
 
-},{"./registrar.connector":232,"./twilsock.connector":234,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"events":199}],234:[function(_dereq_,module,exports){
+},{"./registrar.connector":226,"./twilsock.connector":228,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"events":196}],228:[function(_dereq_,module,exports){
 "use strict";
 
 var _from = _dereq_("babel-runtime/core-js/array/from");
@@ -18576,7 +17754,7 @@ var TwilsockConnector = function (_connector_1$Connecto) {
 
 exports.TwilsockConnector = TwilsockConnector;
 
-},{"./connector":229,"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"uuid":290}],235:[function(_dereq_,module,exports){
+},{"./connector":223,"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"uuid":285}],229:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -18590,7 +17768,7 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var karibu_1 = _dereq_("karibu");
+var tree_1 = _dereq_("./utils/tree");
 
 var Entry = function () {
     function Entry(value, revision) {
@@ -18629,7 +17807,7 @@ var Cache = function () {
     function Cache() {
         (0, _classCallCheck3.default)(this, Cache);
 
-        this.items = new karibu_1.TreeMap();
+        this.items = new tree_1.TreeMap();
     }
 
     (0, _createClass3.default)(Cache, [{
@@ -18681,8 +17859,12 @@ var Cache = function () {
 exports.Cache = Cache;
 exports.default = Cache;
 
-},{"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"karibu":204}],236:[function(_dereq_,module,exports){
+},{"./utils/tree":253,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],230:[function(_dereq_,module,exports){
 "use strict";
+
+var _promise = _dereq_("babel-runtime/core-js/promise");
+
+var _promise2 = _interopRequireDefault(_promise);
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
 
@@ -18722,34 +17904,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = _dereq_("events");
 var twilsock_1 = _dereq_("twilsock");
 var twilio_notifications_1 = _dereq_("twilio-notifications");
-var utils_1 = _dereq_("./utils");
-var logger_1 = _dereq_("./logger");
+var uri_1 = _dereq_("./utils/uri");
+var syncerror_1 = _dereq_("./utils/syncerror");
+var sanitize_1 = _dereq_("./utils/sanitize");
+var logger_1 = _dereq_("./utils/logger");
 var configuration_1 = _dereq_("./configuration");
 var subscriptions_1 = _dereq_("./subscriptions");
 var router_1 = _dereq_("./router");
-var network_1 = _dereq_("./network");
+var network_1 = _dereq_("./services/network");
 var syncdocument_1 = _dereq_("./syncdocument");
 var synclist_1 = _dereq_("./synclist");
 var syncmap_1 = _dereq_("./syncmap");
 var clientInfo_1 = _dereq_("./clientInfo");
 var entitiesCache_1 = _dereq_("./entitiesCache");
 var storage_1 = _dereq_("./services/storage");
-var utils_2 = _dereq_("./utils");
-var syncerror_1 = _dereq_("./syncerror");
 var syncstream_1 = _dereq_("./streams/syncstream");
+var livequery_1 = _dereq_("./livequery");
+var livequery_2 = _dereq_("./livequery");
 var SYNC_PRODUCT_ID = 'data_sync';
 var SDK_VERSION = _dereq_('../package.json').version;
-function subscribe(subscribable) {
-    subscribable._subscribe();
-    return subscribable;
-}
 function decompose(arg) {
     if (!arg) {
         return { mode: 'create_new' };
     } else if (typeof arg === 'string') {
         return { id: arg, mode: 'open_or_create' };
     } else {
-        utils_1.validateOptionalTtl(arg.ttl);
+        sanitize_1.validateOptionalTtl(arg.ttl);
         var mode = arg.mode || (arg.id ? 'open_or_create' : 'create_new');
         return (0, _assign2.default)({}, arg, { mode: mode });
     }
@@ -18798,9 +17978,12 @@ var Client = function (_events_1$EventEmitte) {
         twilsock.on('tokenExpired', function () {
             return _this.emit('tokenExpired');
         });
+        twilsock.on('connectionError', function (err) {
+            return _this.emit('connectionError', err);
+        });
         var notifications = options.notificationsClient = options.notificationsClient || new twilio_notifications_1.Notifications(fpaToken, options);
         var config = new configuration_1.Configuration(options);
-        var network = new network_1.Network(new clientInfo_1.ClientInfo(SDK_VERSION), config, twilsock);
+        var network = new network_1.NetworkService(new clientInfo_1.ClientInfo(SDK_VERSION), config, twilsock);
         var storage = new storage_1.SessionStorage(config);
         _this.localStorageId = null;
         twilsock.connect();
@@ -18892,7 +18075,7 @@ var Client = function (_events_1$EventEmitte) {
             if (!this.services.config.sessionStorageEnabled || !id) {
                 return;
             }
-            var valueToStore = utils_2.deepClone(value);
+            var valueToStore = sanitize_1.deepClone(value);
             if (type === synclist_1.SyncList.type || type === syncmap_1.SyncMap.type) {
                 valueToStore['last_event_id'] = null;
                 delete valueToStore['items'];
@@ -18922,10 +18105,10 @@ var Client = function (_events_1$EventEmitte) {
                                     break;
                                 }
 
-                                throw new syncerror_1.default("Cannot get entity without id", 404);
+                                throw new syncerror_1.SyncError("Cannot get entity without id", 404);
 
                             case 2:
-                                uri = new utils_1.UriBuilder(baseUri).pathSegment(id).queryParam('Include', optimistic ? 'items' : undefined).build();
+                                uri = new uri_1.UriBuilder(baseUri).pathSegment(id).queryParam('Include', optimistic ? 'items' : undefined).build();
                                 _context2.next = 5;
                                 return this.services.network.get(uri);
 
@@ -19126,6 +18309,11 @@ var Client = function (_events_1$EventEmitte) {
             return _createStream;
         }()
     }, {
+        key: "_getLiveQuery",
+        value: function _getLiveQuery(sid) {
+            return this.readRootFromSessionCache(livequery_1.LiveQuery.type, sid);
+        }
+    }, {
         key: "getCached",
         value: function getCached(id, type) {
             if (id) {
@@ -19169,7 +18357,7 @@ var Client = function (_events_1$EventEmitte) {
             var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(arg) {
                 var _this2 = this;
 
-                var opts, docDescriptor, docFromInMemoryCache, syncDocument;
+                var opts, docDescriptor, docFromInMemoryCache, syncDocumentImpl;
                 return _regenerator2.default.wrap(function _callee8$(_context8) {
                     while (1) {
                         switch (_context8.prev = _context8.next) {
@@ -19202,7 +18390,7 @@ var Client = function (_events_1$EventEmitte) {
                                     break;
                                 }
 
-                                return _context8.abrupt("return", docFromInMemoryCache);
+                                return _context8.abrupt("return", new syncdocument_1.SyncDocument(docFromInMemoryCache));
 
                             case 15:
                                 _context8.prev = 15;
@@ -19251,12 +18439,12 @@ var Client = function (_events_1$EventEmitte) {
 
                             case 40:
                                 this.storeRootInSessionCache(syncdocument_1.SyncDocument.type, opts.id, docDescriptor);
-                                syncDocument = new syncdocument_1.SyncDocument(this.services, docDescriptor, function (type, sid, uniqueName) {
+                                syncDocumentImpl = new syncdocument_1.SyncDocumentImpl(this.services, docDescriptor, function (type, sid, uniqueName) {
                                     return _this2.removeFromCacheAndSession(type, sid, uniqueName);
                                 });
 
-                                syncDocument = this.entities.store(syncDocument);
-                                return _context8.abrupt("return", subscribe(syncDocument));
+                                syncDocumentImpl = this.entities.store(syncDocumentImpl);
+                                return _context8.abrupt("return", new syncdocument_1.SyncDocument(syncDocumentImpl));
 
                             case 44:
                             case "end":
@@ -19300,7 +18488,7 @@ var Client = function (_events_1$EventEmitte) {
             var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(arg) {
                 var _this3 = this;
 
-                var opts, mapDescriptor, mapFromInMemoryCache, syncMap;
+                var opts, mapDescriptor, mapFromInMemoryCache, syncMapImpl;
                 return _regenerator2.default.wrap(function _callee9$(_context9) {
                     while (1) {
                         switch (_context9.prev = _context9.next) {
@@ -19333,7 +18521,7 @@ var Client = function (_events_1$EventEmitte) {
                                     break;
                                 }
 
-                                return _context9.abrupt("return", mapFromInMemoryCache);
+                                return _context9.abrupt("return", new syncmap_1.SyncMap(mapFromInMemoryCache));
 
                             case 15:
                                 _context9.prev = 15;
@@ -19382,12 +18570,12 @@ var Client = function (_events_1$EventEmitte) {
 
                             case 40:
                                 this.storeRootInSessionCache(syncmap_1.SyncMap.type, opts.id, mapDescriptor);
-                                syncMap = new syncmap_1.SyncMap(this.services, mapDescriptor, function (type, sid, uniqueName) {
+                                syncMapImpl = new syncmap_1.SyncMapImpl(this.services, mapDescriptor, function (type, sid, uniqueName) {
                                     return _this3.removeFromCacheAndSession(type, sid, uniqueName);
                                 });
 
-                                syncMap = this.entities.store(syncMap);
-                                return _context9.abrupt("return", subscribe(syncMap));
+                                syncMapImpl = this.entities.store(syncMapImpl);
+                                return _context9.abrupt("return", new syncmap_1.SyncMap(syncMapImpl));
 
                             case 44:
                             case "end":
@@ -19431,7 +18619,7 @@ var Client = function (_events_1$EventEmitte) {
             var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(arg) {
                 var _this4 = this;
 
-                var opts, listDescriptor, listFromInMemoryCache, syncList;
+                var opts, listDescriptor, listFromInMemoryCache, syncListImpl;
                 return _regenerator2.default.wrap(function _callee10$(_context10) {
                     while (1) {
                         switch (_context10.prev = _context10.next) {
@@ -19464,7 +18652,7 @@ var Client = function (_events_1$EventEmitte) {
                                     break;
                                 }
 
-                                return _context10.abrupt("return", listFromInMemoryCache);
+                                return _context10.abrupt("return", new synclist_1.SyncList(listFromInMemoryCache));
 
                             case 15:
                                 _context10.prev = 15;
@@ -19513,12 +18701,12 @@ var Client = function (_events_1$EventEmitte) {
 
                             case 40:
                                 this.storeRootInSessionCache(synclist_1.SyncList.type, opts.id, listDescriptor);
-                                syncList = new synclist_1.SyncList(this.services, listDescriptor, function (type, sid, uniqueName) {
+                                syncListImpl = new synclist_1.SyncListImpl(this.services, listDescriptor, function (type, sid, uniqueName) {
                                     return _this4.removeFromCacheAndSession(type, sid, uniqueName);
                                 });
 
-                                syncList = this.entities.store(syncList);
-                                return _context10.abrupt("return", subscribe(syncList));
+                                syncListImpl = this.entities.store(syncListImpl);
+                                return _context10.abrupt("return", new synclist_1.SyncList(syncListImpl));
 
                             case 44:
                             case "end":
@@ -19563,7 +18751,7 @@ var Client = function (_events_1$EventEmitte) {
             var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(arg) {
                 var _this5 = this;
 
-                var opts, streamDescriptor, streamFromInMemoryCache, streamRemovalHandler, syncStream;
+                var opts, streamDescriptor, streamFromInMemoryCache, streamRemovalHandler, syncStreamImpl;
                 return _regenerator2.default.wrap(function _callee11$(_context11) {
                     while (1) {
                         switch (_context11.prev = _context11.next) {
@@ -19596,7 +18784,7 @@ var Client = function (_events_1$EventEmitte) {
                                     break;
                                 }
 
-                                return _context11.abrupt("return", streamFromInMemoryCache);
+                                return _context11.abrupt("return", new syncstream_1.SyncStream(streamFromInMemoryCache));
 
                             case 15:
                                 _context11.prev = 15;
@@ -19650,10 +18838,10 @@ var Client = function (_events_1$EventEmitte) {
                                     return _this5.removeFromCacheAndSession(type, sid, uniqueName);
                                 };
 
-                                syncStream = new syncstream_1.SyncStream(this.services, streamDescriptor, streamRemovalHandler);
+                                syncStreamImpl = new syncstream_1.SyncStreamImpl(this.services, streamDescriptor, streamRemovalHandler);
 
-                                syncStream = this.entities.store(syncStream);
-                                return _context11.abrupt("return", subscribe(syncStream));
+                                syncStreamImpl = this.entities.store(syncStreamImpl);
+                                return _context11.abrupt("return", new syncstream_1.SyncStream(syncStreamImpl));
 
                             case 45:
                             case "end":
@@ -19715,8 +18903,171 @@ var Client = function (_events_1$EventEmitte) {
     }, {
         key: "updateToken",
         value: function updateToken(token) {
+            if (!token) {
+                return _promise2.default.reject(new Error('A valid Twilio token should be provided'));
+            }
             return this.services.twilsock.updateToken(token);
         }
+        /**
+         * For Flex customers only. Establishes a long-running query against Flex data wherein the returned
+         * result set is updated whenever new (or updated) records match the given expression. Updated results
+         * are presented row-by-row according to the lifetime of the returned LiveQuery object.
+         *
+         * @param indexName {String} Must specify one of the Flex data classes for which Live Queries are available.
+         * @param queryExpression {String} A query expression to be executed against the given data index.
+         * Please review <a href="https://www.twilio.com/docs/sync/live-query" target="_blank">Live Query Language</a>
+         * page for Sync Client limits and full list of operators currently supported in query expressions.
+         *
+         * @return {Promise<LiveQuery>} a promise that resolves when the query has been successfully executed.
+         * @public
+         * @example
+         * syncClient.liveQuery('tr-worker', 'data.attributes.worker_name == "Bob"')
+         *     .then(function(args) {
+         *        console.log('Subscribed to live data updates for worker Bob');
+         *        let items = args.getItems();
+         *        Object.entries(items).forEach(([key, value]) => {
+         *          console.log('Search result item key: ' + key);
+         *          console.log('Search result item value: ' + value);
+         *        });
+         *     })
+         *     .catch(function(err) {
+         *        console.log('Error when subscribing to live updates for worker Bob', err);
+         *     });
+         */
+
+    }, {
+        key: "liveQuery",
+        value: function () {
+            var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13(indexName, queryExpression) {
+                var _this6 = this;
+
+                var queryUri, response, liveQueryImpl, descriptor, liveQueryRemovalHandler;
+                return _regenerator2.default.wrap(function _callee13$(_context13) {
+                    while (1) {
+                        switch (_context13.prev = _context13.next) {
+                            case 0:
+                                _context13.next = 2;
+                                return this.ensureReady();
+
+                            case 2:
+                                if (!(!indexName || typeof indexName !== 'string')) {
+                                    _context13.next = 4;
+                                    break;
+                                }
+
+                                throw new Error('Index name must contain a non-empty string value');
+
+                            case 4:
+                                queryUri = new uri_1.UriBuilder(this.services.config.insightsUri).pathSegment(indexName).pathSegment('Items').build();
+                                // send query to CDS to get server-generated sid and item list
+
+                                _context13.next = 7;
+                                return livequery_2.queryItems({
+                                    network: this.services.network,
+                                    uri: queryUri,
+                                    queryString: queryExpression
+                                });
+
+                            case 7:
+                                response = _context13.sent;
+                                liveQueryImpl = this.getCached(response.query_id, livequery_1.LiveQuery.type);
+
+                                if (!liveQueryImpl) {
+                                    descriptor = this._getLiveQuery(response.query_id);
+
+                                    if (!descriptor) {
+                                        descriptor = {
+                                            indexName: indexName,
+                                            queryExpression: queryExpression,
+                                            sid: response.query_id,
+                                            queryUri: queryUri
+                                        };
+                                    }
+
+                                    liveQueryRemovalHandler = function liveQueryRemovalHandler(type, sid, uniqueName) {
+                                        return _this6.removeFromCacheAndSession(type, sid, uniqueName);
+                                    };
+
+                                    liveQueryImpl = new livequery_1.LiveQueryImpl(descriptor, this.services, liveQueryRemovalHandler, response.items);
+                                }
+                                this.storeRootInSessionCache(livequery_1.LiveQuery.type, response.query_id, liveQueryImpl.liveQueryDescriptor);
+                                liveQueryImpl = this.entities.store(liveQueryImpl);
+                                return _context13.abrupt("return", new livequery_1.LiveQuery(liveQueryImpl));
+
+                            case 13:
+                            case "end":
+                                return _context13.stop();
+                        }
+                    }
+                }, _callee13, this);
+            }));
+
+            function liveQuery(_x16, _x17) {
+                return _ref13.apply(this, arguments);
+            }
+
+            return liveQuery;
+        }()
+        /**
+         * For Flex customers only. Creates a query object that can be used to issue one-time queries repeatedly
+         * against the target index.
+         *
+         * @param indexName {String} Must specify one of the Flex data classes for which Live Queries are available.
+         * @return {Promise<InstantQuery>} a promise which resolves after the InstantQuery is successfully created.
+         * @public
+         * @example
+         * syncClient.instantQuery('tr-worker')
+         *    .then(function(q) {
+         *        q.on('searchResult', function(items) {
+         *          Object.entries(items).forEach(([key, value]) => {
+         *             console.log('Search result item key: ' + key);
+         *             console.log('Search result item value: ' + value);
+         *          });
+         *       });
+         *    });
+         */
+
+    }, {
+        key: "instantQuery",
+        value: function () {
+            var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee14(indexName) {
+                var _this7 = this;
+
+                var liveQueryCreator, search;
+                return _regenerator2.default.wrap(function _callee14$(_context14) {
+                    while (1) {
+                        switch (_context14.prev = _context14.next) {
+                            case 0:
+                                _context14.next = 2;
+                                return this.ensureReady();
+
+                            case 2:
+                                liveQueryCreator = function liveQueryCreator(indexName, queryExpression) {
+                                    return _this7.liveQuery(indexName, queryExpression);
+                                };
+
+                                search = new livequery_1.InstantQuery({
+                                    indexName: indexName,
+                                    network: this.services.network,
+                                    insightsUri: this.services.config.insightsUri,
+                                    liveQueryCreator: liveQueryCreator
+                                });
+                                return _context14.abrupt("return", search);
+
+                            case 5:
+                            case "end":
+                                return _context14.stop();
+                        }
+                    }
+                }, _callee14, this);
+            }));
+
+            function instantQuery(_x18) {
+                return _ref14.apply(this, arguments);
+            }
+
+            return instantQuery;
+        }()
     }, {
         key: "connectionState",
         get: function get() {
@@ -19758,6 +19109,20 @@ exports.default = Client;
  * @example
  * syncClient.on('connectionStateChanged', function(newState) {
  *   console.log('Received new connection state: ' + newState);
+ * });
+ */
+/**
+ * Fired when connection is interrupted by unexpected reason
+ * @property {Object} error - connection error details
+ * @property {Boolean} error.terminal - twilsock will stop connection attempts
+ * @property {String} error.message - root cause
+ * @property {Number} [error.httpStatusCode] - http status code if available
+ * @property {Number} [error.errorCode] - Twilio public error code if available
+ * @event Client#connectionError
+ * @example
+ * syncClient.on('connectionError', function(connectionError) {
+ *   console.log('Connection was interrupted: ' + connectionError.message +
+ *     ' (isTerminal: ' + connectionError.terminal')');
  * });
  */
 /**
@@ -19805,7 +19170,7 @@ exports.default = Client;
  *   var token = '<your-access-token-here>';
  *   syncClient.updateToken(token);
  * });
-*/
+ */
 /**
  * Fired when the access token is expired.
  * In case the token is not refreshed, all subsequent Sync operations will fail and the client will disconnect.
@@ -19815,7 +19180,7 @@ exports.default = Client;
  * @type {void}
  */
 
-},{"../package.json":258,"./clientInfo":237,"./configuration":238,"./entitiesCache":239,"./logger":243,"./network":246,"./router":248,"./services/storage":249,"./streams/syncstream":250,"./subscriptions":251,"./syncdocument":253,"./syncerror":254,"./synclist":255,"./syncmap":256,"./utils":257,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199,"twilio-notifications":230,"twilsock":269}],237:[function(_dereq_,module,exports){
+},{"../package.json":255,"./clientInfo":231,"./configuration":233,"./entitiesCache":234,"./livequery":238,"./router":242,"./services/network":243,"./services/storage":244,"./streams/syncstream":245,"./subscriptions":246,"./syncdocument":247,"./synclist":248,"./syncmap":249,"./utils/logger":250,"./utils/sanitize":251,"./utils/syncerror":252,"./utils/uri":254,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196,"twilio-notifications":224,"twilsock":266}],231:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -19841,7 +19206,74 @@ var ClientInfo = function ClientInfo(version) {
 exports.ClientInfo = ClientInfo;
 exports.default = ClientInfo;
 
-},{"babel-runtime/helpers/classCallCheck":49,"platform":207}],238:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"platform":204}],232:[function(_dereq_,module,exports){
+"use strict";
+
+var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = _dereq_("babel-runtime/helpers/possibleConstructorReturn");
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = _dereq_("babel-runtime/helpers/inherits");
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var events_1 = _dereq_("events");
+var uuidv4 = _dereq_("uuid");
+
+var Closeable = function (_events_1$EventEmitte) {
+    (0, _inherits3.default)(Closeable, _events_1$EventEmitte);
+
+    function Closeable() {
+        (0, _classCallCheck3.default)(this, Closeable);
+
+        var _this = (0, _possibleConstructorReturn3.default)(this, (Closeable.__proto__ || (0, _getPrototypeOf2.default)(Closeable)).call(this));
+
+        _this.closed = false;
+        _this.uuid = uuidv4();
+        return _this;
+    }
+
+    (0, _createClass3.default)(Closeable, [{
+        key: "close",
+        value: function close() {
+            this.removeAllListeners();
+            this.closed = true;
+        }
+    }, {
+        key: "ensureNotClosed",
+        value: function ensureNotClosed() {
+            if (this.closed) {
+                throw new Error('Invalid operation on closed object');
+            }
+        }
+    }, {
+        key: "listenerUuid",
+        get: function get() {
+            return this.uuid;
+        }
+    }]);
+    return Closeable;
+}(events_1.EventEmitter);
+
+exports.Closeable = Closeable;
+exports.default = Closeable;
+
+},{"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"events":196,"uuid":285}],233:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -19860,6 +19292,7 @@ var MAPS_PATH = '/v3/Maps';
 var LISTS_PATH = '/v3/Lists';
 var DOCUMENTS_PATH = '/v3/Documents';
 var STREAMS_PATH = '/v3/Streams';
+var INSIGHTS_PATH = '/v3/Insights';
 function getWithDefault(container, key, defaultValue) {
     if (container && typeof container[key] !== 'undefined') {
         return container[key];
@@ -19887,6 +19320,7 @@ var Configuration = function () {
             listsUri: baseUri + LISTS_PATH,
             mapsUri: baseUri + MAPS_PATH,
             streamsUri: baseUri + STREAMS_PATH,
+            insightsUri: baseUri + INSIGHTS_PATH,
             sessionStorageEnabled: getWithDefault(options.Sync, 'enableSessionStorage', true)
         };
     }
@@ -19917,6 +19351,11 @@ var Configuration = function () {
             return this.settings.streamsUri;
         }
     }, {
+        key: "insightsUri",
+        get: function get() {
+            return this.settings.insightsUri;
+        }
+    }, {
         key: "backoffConfig",
         get: function get() {
             return this.settings.backoffConfig || {};
@@ -19932,7 +19371,7 @@ var Configuration = function () {
 
 exports.Configuration = Configuration;
 
-},{"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],239:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],234:[function(_dereq_,module,exports){
 "use strict";
 
 var _map = _dereq_("babel-runtime/core-js/map");
@@ -20004,12 +19443,16 @@ var EntitiesCache = function () {
 
 exports.EntitiesCache = EntitiesCache;
 
-},{"babel-runtime/core-js/map":35,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],240:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/map":35,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],235:[function(_dereq_,module,exports){
 "use strict";
 
-var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
+var _getIterator2 = _dereq_("babel-runtime/core-js/get-iterator");
 
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+var _map = _dereq_("babel-runtime/core-js/map");
+
+var _map2 = _interopRequireDefault(_map);
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
 
@@ -20019,31 +19462,18 @@ var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = _dereq_("babel-runtime/helpers/possibleConstructorReturn");
-
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-var _inherits2 = _dereq_("babel-runtime/helpers/inherits");
-
-var _inherits3 = _interopRequireDefault(_inherits2);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var events_1 = _dereq_("events");
 
-var SyncEntity = function (_events_1$EventEmitte) {
-    (0, _inherits3.default)(SyncEntity, _events_1$EventEmitte);
-
+var SyncEntity = function () {
     function SyncEntity(services, removalHandler) {
         (0, _classCallCheck3.default)(this, SyncEntity);
 
-        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncEntity.__proto__ || (0, _getPrototypeOf2.default)(SyncEntity)).call(this));
-
-        _this.services = services;
-        _this.removalHandler = removalHandler;
-        _this.subscriptionState = 'none';
-        return _this;
+        this.services = services;
+        this.removalHandler = removalHandler;
+        this.subscriptionState = 'none';
+        this._attachedListeners = new _map2.default();
     }
 
     (0, _createClass3.default)(SyncEntity, [{
@@ -20056,7 +19486,7 @@ var SyncEntity = function (_events_1$EventEmitte) {
                 // assume that 404 means that entity has been removed while we were away
                 this.onRemoved(false);
             } else {
-                this.emit('failure', err);
+                this.broadcastEventToListeners('failure', err);
             }
         }
         /**
@@ -20068,7 +19498,6 @@ var SyncEntity = function (_events_1$EventEmitte) {
         key: "_subscribe",
         value: function _subscribe() {
             this.services.router.subscribe(this.sid, this);
-            return this;
         }
         /**
          * Unsubscribe from changes of current data entity
@@ -20078,14 +19507,13 @@ var SyncEntity = function (_events_1$EventEmitte) {
     }, {
         key: "_unsubscribe",
         value: function _unsubscribe() {
-            this.services.router.unsubscribe(this.sid, this);
-            return this;
+            this.services.router.unsubscribe(this.sid);
         }
     }, {
         key: "_setSubscriptionState",
         value: function _setSubscriptionState(newState) {
             this.subscriptionState = newState;
-            this.emit('_subscriptionStateChanged', newState);
+            this.broadcastEventToListeners('_subscriptionStateChanged', newState);
         }
         /**
          * @public
@@ -20095,16 +19523,69 @@ var SyncEntity = function (_events_1$EventEmitte) {
         key: "close",
         value: function close() {
             this._unsubscribe();
-            this.removalHandler(this.type, this.sid, this.uniqueName);
+            if (this.removalHandler != null) {
+                this.removalHandler(this.type, this.sid, this.uniqueName);
+            }
+        }
+    }, {
+        key: "attach",
+        value: function attach(closeable) {
+            var uuid = closeable.listenerUuid;
+            var existingRecord = this._attachedListeners.get(uuid);
+            if (existingRecord) {
+                return;
+            }
+            if (!this._attachedListeners.size) {
+                // the first one to arrive
+                this._subscribe();
+            }
+            this._attachedListeners.set(uuid, closeable);
+        }
+    }, {
+        key: "detach",
+        value: function detach(listenerUuid) {
+            this._attachedListeners.delete(listenerUuid);
+            if (!this._attachedListeners.size) {
+                // last one out, turn off lights, shut the door
+                this.close(); // invokes unsubscribe and removal handler
+            }
+        }
+    }, {
+        key: "broadcastEventToListeners",
+        value: function broadcastEventToListeners(eventName, args) {
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = (0, _getIterator3.default)(this._attachedListeners.values()), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var listener = _step.value;
+
+                    listener.emit(eventName, args);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
         }
     }]);
     return SyncEntity;
-}(events_1.EventEmitter);
+}();
 
 exports.SyncEntity = SyncEntity;
 exports.default = SyncEntity;
 
-},{"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"events":199}],241:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/map":35,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],236:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -20125,7 +19606,7 @@ exports.default = client_1.SyncClient;
 module.exports = client_1.SyncClient;
 module.exports.SyncClient = client_1.SyncClient;
 
-},{"./client":236,"./listitem":242,"./mapitem":244,"./syncdocument":253,"./synclist":255,"./syncmap":256}],242:[function(_dereq_,module,exports){
+},{"./client":230,"./listitem":237,"./mapitem":239,"./syncdocument":247,"./synclist":248,"./syncmap":249}],237:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -20150,140 +19631,616 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 
 var ListItem = function () {
-  /**
-   * @private
-   * @constructor
-   * @param {Object} data Item descriptor
-   * @param {Number} data.index Item identifier
-   * @param {String} data.uri Item URI
-   * @param {Object} data.value Item data
-   */
-  function ListItem(data) {
-    (0, _classCallCheck3.default)(this, ListItem);
-
-    this.data = data;
-  }
-
-  (0, _createClass3.default)(ListItem, [{
-    key: "update",
-
     /**
      * @private
+     * @constructor
+     * @param {Object} data Item descriptor
+     * @param {Number} data.index Item identifier
+     * @param {String} data.uri Item URI
+     * @param {Object} data.value Item data
      */
-    value: function update(eventId, revision, value, dateUpdated) {
-      this.data.lastEventId = eventId;
-      this.data.revision = revision;
-      this.data.value = value;
-      this.data.dateUpdated = dateUpdated;
-      return this;
-    }
-    /**
-     * @private
-     */
+    function ListItem(data) {
+        (0, _classCallCheck3.default)(this, ListItem);
 
-  }, {
-    key: "updateDateExpires",
-    value: function updateDateExpires(dateExpires) {
-      this.data.dateExpires = dateExpires;
+        this.data = data;
     }
-  }, {
-    key: "uri",
-    get: function get() {
-      return this.data.uri;
-    }
-  }, {
-    key: "revision",
-    get: function get() {
-      return this.data.revision;
-    }
-  }, {
-    key: "lastEventId",
-    get: function get() {
-      return this.data.lastEventId;
-    }
-  }, {
-    key: "dateUpdated",
-    get: function get() {
-      return this.data.dateUpdated;
-    }
-  }, {
-    key: "dateExpires",
-    get: function get() {
-      return this.data.dateExpires;
-    }
-  }, {
-    key: "index",
-    get: function get() {
-      return this.data.index;
-    }
-  }, {
-    key: "value",
-    get: function get() {
-      return this.data.value;
-    }
-  }]);
-  return ListItem;
+
+    (0, _createClass3.default)(ListItem, [{
+        key: "update",
+
+        /**
+         * @private
+         */
+        value: function update(eventId, revision, value, dateUpdated) {
+            this.data.lastEventId = eventId;
+            this.data.revision = revision;
+            this.data.value = value;
+            this.data.dateUpdated = dateUpdated;
+            return this;
+        }
+        /**
+         * @private
+         */
+
+    }, {
+        key: "updateDateExpires",
+        value: function updateDateExpires(dateExpires) {
+            this.data.dateExpires = dateExpires;
+        }
+    }, {
+        key: "uri",
+        get: function get() {
+            return this.data.uri;
+        }
+    }, {
+        key: "revision",
+        get: function get() {
+            return this.data.revision;
+        }
+    }, {
+        key: "lastEventId",
+        get: function get() {
+            return this.data.lastEventId;
+        }
+    }, {
+        key: "dateUpdated",
+        get: function get() {
+            return this.data.dateUpdated;
+        }
+    }, {
+        key: "dateExpires",
+        get: function get() {
+            return this.data.dateExpires;
+        }
+    }, {
+        key: "index",
+        get: function get() {
+            return this.data.index;
+        }
+    }, {
+        key: "value",
+        get: function get() {
+            return this.data.value;
+        }
+    }]);
+    return ListItem;
 }();
 
 exports.ListItem = ListItem;
 exports.default = ListItem;
 
-},{"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],243:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],238:[function(_dereq_,module,exports){
 "use strict";
 
-var _from = _dereq_("babel-runtime/core-js/array/from");
+var _promise = _dereq_("babel-runtime/core-js/promise");
 
-var _from2 = _interopRequireDefault(_from);
+var _promise2 = _interopRequireDefault(_promise);
+
+var _assign = _dereq_("babel-runtime/core-js/object/assign");
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _get2 = _dereq_("babel-runtime/helpers/get");
+
+var _get3 = _interopRequireDefault(_get2);
+
+var _regenerator = _dereq_("babel-runtime/regenerator");
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = _dereq_("babel-runtime/helpers/asyncToGenerator");
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _keys = _dereq_("babel-runtime/core-js/object/keys");
+
+var _keys2 = _interopRequireDefault(_keys);
+
+var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = _dereq_("babel-runtime/helpers/possibleConstructorReturn");
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = _dereq_("babel-runtime/helpers/inherits");
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var queryItems = function () {
+    var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(params) {
+        var network, queryString, uri, liveQueryRequestBody, response;
+        return _regenerator2.default.wrap(function _callee$(_context) {
+            while (1) {
+                switch (_context.prev = _context.next) {
+                    case 0:
+                        network = params.network, queryString = params.queryString, uri = params.uri;
+
+                        if (!(queryString == null)) {
+                            _context.next = 3;
+                            break;
+                        }
+
+                        throw new syncerror_1.SyncError("Invalid query", 400, 54507);
+
+                    case 3:
+                        liveQueryRequestBody = {
+                            query_string: queryString // raw query string (like `key == "value" AND key2 != "value2"`)
+                        };
+                        _context.next = 6;
+                        return network.post(uri, liveQueryRequestBody, undefined, true);
+
+                    case 6:
+                        response = _context.sent;
+                        return _context.abrupt("return", response.body);
+
+                    case 8:
+                    case "end":
+                        return _context.stop();
+                }
+            }
+        }, _callee, this);
+    }));
+
+    return function queryItems(_x) {
+        return _ref.apply(this, arguments);
+    };
+}();
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var log = _dereq_("loglevel");
-function prepareLine(prefix, args) {
-    return [new Date().toISOString() + " Sync " + prefix + ":"].concat((0, _from2.default)(args));
-}
-exports.default = {
-    setLevel: function setLevel(level) {
-        log.setLevel(level);
-    },
-    trace: function trace() {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-        }
+var uri_1 = _dereq_("./utils/uri");
+var syncerror_1 = _dereq_("./utils/syncerror");
+var logger_1 = _dereq_("./utils/logger");
+var events_1 = _dereq_("events");
+var entity_1 = _dereq_("./entity");
+var closeable_1 = _dereq_("./closeable");
 
-        log.trace.apply(null, prepareLine('T', args));
-    },
-    debug: function debug() {
-        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            args[_key2] = arguments[_key2];
-        }
-
-        log.debug.apply(null, prepareLine('D', args));
-    },
-    info: function info() {
-        for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-            args[_key3] = arguments[_key3];
-        }
-
-        log.info.apply(null, prepareLine('I', args));
-    },
-    warn: function warn() {
-        for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-            args[_key4] = arguments[_key4];
-        }
-
-        log.warn.apply(null, prepareLine('W', args));
-    },
-    error: function error() {
-        for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-            args[_key5] = arguments[_key5];
-        }
-
-        log.error.apply(null, prepareLine('E', args));
-    }
+var InsightsItem = function InsightsItem() {
+    (0, _classCallCheck3.default)(this, InsightsItem);
 };
 
-},{"babel-runtime/core-js/array/from":31,"loglevel":205}],244:[function(_dereq_,module,exports){
+exports.InsightsItem = InsightsItem;
+
+var LiveQueryImpl = function (_entity_1$SyncEntity) {
+    (0, _inherits3.default)(LiveQueryImpl, _entity_1$SyncEntity);
+
+    function LiveQueryImpl(descriptor, services, removalHandler, items) {
+        (0, _classCallCheck3.default)(this, LiveQueryImpl);
+
+        var _this = (0, _possibleConstructorReturn3.default)(this, (LiveQueryImpl.__proto__ || (0, _getPrototypeOf2.default)(LiveQueryImpl)).call(this, services, removalHandler));
+
+        _this.descriptor = descriptor;
+        _this.items = handleItems(items);
+        return _this;
+    }
+    // public
+
+
+    (0, _createClass3.default)(LiveQueryImpl, [{
+        key: "onRemoved",
+
+        // dummy stub from iface
+        value: function onRemoved() {}
+    }, {
+        key: "getItems",
+        value: function getItems() {
+            var _this2 = this;
+
+            var dataByKey = {};
+            if (this.items) {
+                (0, _keys2.default)(this.items).map(function (key, index) {
+                    dataByKey[key] = _this2.items[key].value;
+                });
+            }
+            return dataByKey;
+        }
+        /**
+         * @private
+         */
+
+    }, {
+        key: "_update",
+        value: function _update(message) {
+            var key = message.item_key;
+            var revision = message.item_revision;
+            switch (message.type) {
+                case 'live_query_item_updated':
+                    var existingItem = this.items[key];
+                    if (!existingItem || revision > existingItem.revision) {
+                        var newItem = { key: key, revision: revision, value: message.item_data };
+                        this.items[key] = newItem;
+                        this.broadcastEventToListeners('itemUpdated', newItem);
+                    }
+                    break;
+                case 'live_query_item_removed':
+                    delete this.items[key];
+                    this.broadcastEventToListeners('itemRemoved', { key: key });
+                    break;
+            }
+        }
+    }, {
+        key: "sid",
+        get: function get() {
+            return this.descriptor.sid;
+        }
+        // private extension of SyncEntity
+
+    }, {
+        key: "uniqueName",
+        get: function get() {
+            return null;
+        }
+    }, {
+        key: "type",
+        get: function get() {
+            return LiveQueryImpl.type;
+        }
+    }, {
+        key: "lastEventId",
+        get: function get() {
+            return null;
+        }
+    }, {
+        key: "indexName",
+        get: function get() {
+            return this.descriptor.indexName;
+        }
+    }, {
+        key: "queryString",
+        get: function get() {
+            return this.descriptor.queryExpression;
+        }
+        // custom private props
+
+    }, {
+        key: "queryUri",
+        get: function get() {
+            return this.descriptor.queryUri;
+        }
+    }, {
+        key: "liveQueryDescriptor",
+        get: function get() {
+            return this.descriptor;
+        }
+    }, {
+        key: "network",
+        get: function get() {
+            return this.services.network;
+        }
+    }], [{
+        key: "type",
+        get: function get() {
+            return 'live_query';
+        }
+    }]);
+    return LiveQueryImpl;
+}(entity_1.SyncEntity);
+
+exports.LiveQueryImpl = LiveQueryImpl;
+
+exports.queryItems = queryItems;
+function handleItems(items) {
+    if (items) {
+        return items.reduce(function (mapAcc, item) {
+            mapAcc[item.key] = {
+                key: item.key,
+                value: item.data,
+                revision: item.revision
+            };
+            return mapAcc;
+        }, {});
+    }
+}
+/**
+ * @class
+ * @alias LiveQuery
+ * @classdesc Represents a long-running query against Flex data wherein the returned result set
+ *     subsequently receives pushed updates whenever new (or updated) records would match the
+ *     given expression. Updated results are presented row-by-row until this query is explicitly
+ *     closed.
+ *
+ *     Use the {@link Client#liveQuery} method to create a live query.
+ *
+ * @property {String} sid The immutable identifier of this query object, assigned by the system.
+ *
+ * @fires LiveQuery#itemUpdated
+ * @fires LiveQuery#itemRemoved
+ */
+
+var LiveQuery = function (_closeable_1$default) {
+    (0, _inherits3.default)(LiveQuery, _closeable_1$default);
+    (0, _createClass3.default)(LiveQuery, [{
+        key: "type",
+        get: function get() {
+            return LiveQueryImpl.type;
+        }
+        // public
+
+    }, {
+        key: "sid",
+        get: function get() {
+            return this.liveQueryImpl.sid;
+        }
+        /**
+         * @private
+         */
+
+    }], [{
+        key: "type",
+        get: function get() {
+            return LiveQueryImpl.type;
+        }
+    }]);
+
+    function LiveQuery(liveQueryImpl) {
+        (0, _classCallCheck3.default)(this, LiveQuery);
+
+        var _this3 = (0, _possibleConstructorReturn3.default)(this, (LiveQuery.__proto__ || (0, _getPrototypeOf2.default)(LiveQuery)).call(this));
+
+        _this3.liveQueryImpl = liveQueryImpl;
+        _this3.liveQueryImpl.attach(_this3);
+        return _this3;
+    }
+    /**
+     * Closes this query instance and unsubscribes from further service events.
+     * This will eventually stop the physical inflow of updates over the network, when all other instances of this query are closed as well.
+     * @public
+     */
+
+
+    (0, _createClass3.default)(LiveQuery, [{
+        key: "close",
+        value: function close() {
+            (0, _get3.default)(LiveQuery.prototype.__proto__ || (0, _getPrototypeOf2.default)(LiveQuery.prototype), "close", this).call(this);
+            this.liveQueryImpl.detach(this.listenerUuid);
+        }
+        /**
+         * @returns {LiveQuery#ItemsSnapshot} A snapshot of items matching the current query expression.
+         * @public
+         */
+
+    }, {
+        key: "getItems",
+        value: function getItems() {
+            this.ensureNotClosed();
+            return this.liveQueryImpl.getItems();
+        }
+    }]);
+    return LiveQuery;
+}(closeable_1.default);
+
+exports.LiveQuery = LiveQuery;
+/**
+ * @class
+ * @alias InstantQuery
+ * @classdesc Allows repetitive quick searches against a specific Flex data. Unlike a
+ * LiveQuery, this result set does not subscribe to any updates and therefore receives no events
+ * beyond the initial result set.
+ *
+ * Use the {@link Client#instantQuery} method to create an Instant Query.
+ *
+ * @fires InstantQuery#searchResult
+ */
+
+var InstantQuery = function (_events_1$EventEmitte) {
+    (0, _inherits3.default)(InstantQuery, _events_1$EventEmitte);
+
+    /**
+     * @private
+     */
+    function InstantQuery(params) {
+        (0, _classCallCheck3.default)(this, InstantQuery);
+
+        var _this4 = (0, _possibleConstructorReturn3.default)(this, (InstantQuery.__proto__ || (0, _getPrototypeOf2.default)(InstantQuery)).call(this));
+
+        _this4.queryExpression = null;
+        (0, _assign2.default)(_this4, params);
+        _this4.updateIndexName(params.indexName);
+        return _this4;
+    }
+    // private props
+
+
+    (0, _createClass3.default)(InstantQuery, [{
+        key: "search",
+
+        /**
+         * Spawns a new search request. The result will be provided asynchronously via the {@link InstantQuery#event:searchResult}
+         * event.
+         * @param {String} queryExpression A query expression to be executed against the given data index. For more information
+         * on the syntax read {@link Client#liveQuery}.
+         * @returns {Promise<void>} A promise that resolves when query result has been received.
+         * @public
+         */
+        value: function () {
+            var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(queryExpression) {
+                var _this5 = this;
+
+                return _regenerator2.default.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                return _context2.abrupt("return", queryItems({
+                                    network: this.network,
+                                    uri: this.queryUri,
+                                    queryString: queryExpression
+                                }).then(function (response) {
+                                    _this5.queryExpression = queryExpression;
+                                    _this5.items = handleItems(response.items);
+                                    _this5.emit('searchResult', _this5.getItems());
+                                }).catch(function (err) {
+                                    logger_1.default.error("Error '" + err.message + "' while executing query '" + queryExpression + "'");
+                                    _this5.queryExpression = null;
+                                    _this5.items = null;
+                                    throw err;
+                                }));
+
+                            case 1:
+                            case "end":
+                                return _context2.stop();
+                        }
+                    }
+                }, _callee2, this);
+            }));
+
+            function search(_x2) {
+                return _ref2.apply(this, arguments);
+            }
+
+            return search;
+        }()
+        /**
+         * Instantiates a LiveQuery object based on the last known query expression that was passed to the
+         * {@link InstantQuery#search} method. This LiveQuery will start receiving updates with new results,
+         * while current object can be still used to execute repetitive searches.
+         * @returns {Promise<LiveQuery>} A promise which resolves when the LiveQuery object is ready.
+         * @public
+         */
+
+    }, {
+        key: "subscribe",
+        value: function () {
+            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                if (!(this.queryExpression == null)) {
+                                    _context3.next = 2;
+                                    break;
+                                }
+
+                                return _context3.abrupt("return", _promise2.default.reject(new syncerror_1.SyncError("Invalid query", 400, 54507)));
+
+                            case 2:
+                                return _context3.abrupt("return", this.liveQueryCreator(this.indexName, this.queryExpression));
+
+                            case 3:
+                            case "end":
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+
+            function subscribe() {
+                return _ref3.apply(this, arguments);
+            }
+
+            return subscribe;
+        }()
+        /**
+         * @returns {LiveQuery#ItemsSnapshot} A snapshot of items matching current query expression.
+         * @public
+         */
+
+    }, {
+        key: "getItems",
+        value: function getItems() {
+            var _this6 = this;
+
+            var dataByKey = {};
+            if (this.items) {
+                (0, _keys2.default)(this.items).map(function (key, index) {
+                    dataByKey[key] = _this6.items[key].value;
+                });
+            }
+            return dataByKey;
+        }
+        /**
+         * Set new index name
+         * @param {String} indexName New index name to set
+         * @returns void
+         * @public
+         */
+
+    }, {
+        key: "updateIndexName",
+        value: function updateIndexName(indexName) {
+            if (!indexName || typeof indexName !== 'string') {
+                throw new Error('Index name must contain a non-empty string value');
+            }
+            this.indexName = indexName;
+            this.queryUri = this.generateQueryUri(this.indexName);
+        }
+    }, {
+        key: "generateQueryUri",
+        value: function generateQueryUri(indexName) {
+            return new uri_1.UriBuilder(this.insightsUri).pathSegment(indexName).pathSegment('Items').build();
+        }
+    }, {
+        key: "type",
+        get: function get() {
+            return InstantQuery.type;
+        }
+    }], [{
+        key: "type",
+        get: function get() {
+            return 'instant_query';
+        }
+    }]);
+    return InstantQuery;
+}(events_1.EventEmitter);
+
+exports.InstantQuery = InstantQuery;
+exports.default = LiveQuery;
+/**
+ * @class InsightsItem
+ * @classdesc An individual result from a LiveQuery or InstantQuery result set.
+ * @property {String} key The identifier that maps to this item within the search result.
+ * @property {Object} value The contents of the item.
+ */
+/**
+ * A result set, i.e. a collection of items that matched a LiveQuery or InstantQuery expression. Each result is a
+ * key-value pair, where each key identifies its object uniquely. These results are equivalent to a set of
+ * {@link InsightsItem}-s.
+ * @typedef {Object.<string, Object>} LiveQuery#ItemsSnapshot
+ */
+/**
+ * Fired when an item has been added or updated.
+ * @event LiveQuery#itemUpdated
+ * @param {InsightsItem} item Updated item.
+ * @example
+ * liveQuery.on('itemUpdated', function(item) {
+ *   console.log('Item ' + item.key + ' was updated');
+ *   console.log('Item value: ', item.value);
+ * });
+ */
+/**
+ * Fired when an existing item has been removed.
+ * @event LiveQuery#itemRemoved
+ * @param {Object} args Arguments provided with the event.
+ * @param {String} args.key The key of the removed item.
+ * @example
+ * liveQuery.on('itemRemoved', function(args) {
+ *   console.log('Item ' + args.key + ' was removed');
+ * });
+ */
+/**
+ * Fired when a search result is ready.
+ * @event InstantQuery#searchResult
+ * @param {LiveQuery#ItemsSnapshot} items A snapshot of items matching current query expression.
+ * @example
+ * instantQuery.on('searchResult', function(items) {
+ *    Object.entries(items).forEach(([key, value]) => {
+ *      console.log('Search result item key: ' + key);
+ *      console.log('Search result item value: ' + value);
+ *    });
+ * });
+ */
+
+},{"./closeable":232,"./entity":235,"./utils/logger":250,"./utils/syncerror":252,"./utils/uri":254,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/object/keys":42,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/get":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196}],239:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -20307,80 +20264,80 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 
 var MapItem = function () {
-  /**
-   * @private
-   * @constructor
-   */
-  function MapItem(descriptor) {
-    (0, _classCallCheck3.default)(this, MapItem);
-
-    this.descriptor = descriptor;
-  }
-
-  (0, _createClass3.default)(MapItem, [{
-    key: "update",
-
     /**
      * @private
+     * @constructor
      */
-    value: function update(eventId, revision, value, dateUpdated) {
-      this.descriptor.last_event_id = eventId;
-      this.descriptor.revision = revision;
-      this.descriptor.data = value;
-      this.descriptor.date_updated = dateUpdated;
-      return this;
-    }
-    /**
-     * @private
-     */
+    function MapItem(descriptor) {
+        (0, _classCallCheck3.default)(this, MapItem);
 
-  }, {
-    key: "updateDateExpires",
-    value: function updateDateExpires(dateExpires) {
-      this.descriptor.date_expires = dateExpires;
+        this.descriptor = descriptor;
     }
-  }, {
-    key: "uri",
-    get: function get() {
-      return this.descriptor.url;
-    }
-  }, {
-    key: "revision",
-    get: function get() {
-      return this.descriptor.revision;
-    }
-  }, {
-    key: "lastEventId",
-    get: function get() {
-      return this.descriptor.last_event_id;
-    }
-  }, {
-    key: "dateExpires",
-    get: function get() {
-      return this.descriptor.date_expires;
-    }
-  }, {
-    key: "key",
-    get: function get() {
-      return this.descriptor.key;
-    }
-  }, {
-    key: "value",
-    get: function get() {
-      return this.descriptor.data;
-    }
-  }, {
-    key: "dateUpdated",
-    get: function get() {
-      return this.descriptor.date_updated;
-    }
-  }]);
-  return MapItem;
+
+    (0, _createClass3.default)(MapItem, [{
+        key: "update",
+
+        /**
+         * @private
+         */
+        value: function update(eventId, revision, value, dateUpdated) {
+            this.descriptor.last_event_id = eventId;
+            this.descriptor.revision = revision;
+            this.descriptor.data = value;
+            this.descriptor.date_updated = dateUpdated;
+            return this;
+        }
+        /**
+         * @private
+         */
+
+    }, {
+        key: "updateDateExpires",
+        value: function updateDateExpires(dateExpires) {
+            this.descriptor.date_expires = dateExpires;
+        }
+    }, {
+        key: "uri",
+        get: function get() {
+            return this.descriptor.url;
+        }
+    }, {
+        key: "revision",
+        get: function get() {
+            return this.descriptor.revision;
+        }
+    }, {
+        key: "lastEventId",
+        get: function get() {
+            return this.descriptor.last_event_id;
+        }
+    }, {
+        key: "dateExpires",
+        get: function get() {
+            return this.descriptor.date_expires;
+        }
+    }, {
+        key: "key",
+        get: function get() {
+            return this.descriptor.key;
+        }
+    }, {
+        key: "value",
+        get: function get() {
+            return this.descriptor.data;
+        }
+    }, {
+        key: "dateUpdated",
+        get: function get() {
+            return this.descriptor.date_updated;
+        }
+    }]);
+    return MapItem;
 }();
 
 exports.MapItem = MapItem;
 
-},{"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],245:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],240:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -20578,212 +20535,7 @@ var NamespacedMergingQueue = function () {
 
 exports.NamespacedMergingQueue = NamespacedMergingQueue;
 
-},{"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],246:[function(_dereq_,module,exports){
-"use strict";
-
-var _promise = _dereq_("babel-runtime/core-js/promise");
-
-var _promise2 = _interopRequireDefault(_promise);
-
-var _assign = _dereq_("babel-runtime/core-js/object/assign");
-
-var _assign2 = _interopRequireDefault(_assign);
-
-var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
-
-var _stringify2 = _interopRequireDefault(_stringify);
-
-var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var uuid = _dereq_("uuid");
-var logger_1 = _dereq_("./logger");
-var syncerror_1 = _dereq_("./syncerror");
-var syncNetworkError_1 = _dereq_("./syncNetworkError");
-var operation_retrier_1 = _dereq_("operation-retrier");
-var twilsock_1 = _dereq_("twilsock");
-var MINIMUM_RETRY_DELAY = 4000;
-var MAXIMUM_RETRY_DELAY = 60000;
-var MAXIMUM_ATTEMPTS_TIME = 90000;
-var RETRY_DELAY_RANDOMNESS = 0.2;
-function messageFromErrorBody(trasportError) {
-    if (trasportError.body) {
-        if (trasportError.body.message) {
-            return trasportError.body.message;
-        }
-    }
-    switch (trasportError.status) {
-        case 429:
-            return 'Throttled by server';
-        case 404:
-            return 'Not found from server';
-        default:
-            return 'Error from server';
-    }
-}
-function codeFromErrorBody(trasportError) {
-    if (trasportError.body) {
-        return trasportError.body.code;
-    }
-    return 0;
-}
-function mapTransportError(transportError) {
-    if (transportError.status === 409) {
-        return new syncNetworkError_1.SyncNetworkError(messageFromErrorBody(transportError), transportError.status, codeFromErrorBody(transportError), transportError.body);
-    } else if (transportError.status) {
-        return new syncerror_1.SyncError(messageFromErrorBody(transportError), transportError.status, codeFromErrorBody(transportError));
-    } else if (transportError instanceof twilsock_1.TransportUnavailableError) {
-        return transportError;
-    } else {
-        return new syncerror_1.SyncError(transportError.message, 0, 0);
-    }
-}
-/**
- * @classdesc Incapsulates network operations to make it possible to add some optimization/caching strategies
- */
-
-var Network = function () {
-    function Network(clientInfo, config, transport) {
-        (0, _classCallCheck3.default)(this, Network);
-
-        this.clientInfo = clientInfo;
-        this.config = config;
-        this.transport = transport;
-    }
-
-    (0, _createClass3.default)(Network, [{
-        key: "createHeaders",
-        value: function createHeaders() {
-            return {
-                'Content-Type': 'application/json',
-                'Twilio-Sync-Client-Info': (0, _stringify2.default)(this.clientInfo),
-                'Twilio-Request-Id': 'RQ' + uuid.v4().replace(/-/g, '')
-            };
-        }
-    }, {
-        key: "backoffConfig",
-        value: function backoffConfig() {
-            return (0, _assign2.default)({ min: MINIMUM_RETRY_DELAY,
-                max: MAXIMUM_RETRY_DELAY,
-                maxAttemptsTime: MAXIMUM_ATTEMPTS_TIME,
-                randomness: RETRY_DELAY_RANDOMNESS }, this.config.backoffConfig);
-        }
-    }, {
-        key: "executeWithRetry",
-        value: function executeWithRetry(request) {
-            var _this = this;
-
-            var retryWhenThrottled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-            return new _promise2.default(function (resolve, reject) {
-                var codesToRetryOn = [502, 503, 504];
-                if (retryWhenThrottled) {
-                    codesToRetryOn.push(429);
-                }
-                var retrier = new operation_retrier_1.default(_this.backoffConfig());
-                retrier.on('attempt', function () {
-                    request().then(function (result) {
-                        return retrier.succeeded(result);
-                    }).catch(function (err) {
-                        if (codesToRetryOn.includes(err.status)) {
-                            var delayOverride = parseInt(err.headers ? err.headers['Retry-After'] : null);
-                            retrier.failed(mapTransportError(err), isNaN(delayOverride) ? null : delayOverride * 1000);
-                        } else if (err.message === 'Twilsock disconnected') {
-                            // Ugly hack. We must make a proper exceptions for twilsock
-                            retrier.failed(mapTransportError(err));
-                        } else if (err.message && err.message.indexOf('Twilsock: request timeout') !== -1) {
-                            // Ugly hack. We must make a proper exceptions for twilsock
-                            retrier.failed(mapTransportError(err));
-                        } else {
-                            // Fatal error
-                            retrier.removeAllListeners();
-                            retrier.cancel();
-                            reject(mapTransportError(err));
-                        }
-                    });
-                });
-                retrier.on('succeeded', function (result) {
-                    resolve(result);
-                });
-                retrier.on('cancelled', function (err) {
-                    return reject(mapTransportError(err));
-                });
-                retrier.on('failed', function (err) {
-                    return reject(mapTransportError(err));
-                });
-                retrier.start();
-            });
-        }
-        /**
-         * Make a GET request by given URI
-         * @Returns Promise<Response> Result of successful get request
-         */
-
-    }, {
-        key: "get",
-        value: function get(uri) {
-            var _this2 = this;
-
-            var headers = this.createHeaders();
-            logger_1.default.debug('GET', uri, 'ID:', headers['Twilio-Request-Id']);
-            return this.executeWithRetry(function () {
-                return _this2.transport.get(uri, headers);
-            }, true);
-        }
-    }, {
-        key: "post",
-        value: function post(uri, body, revision, twilsockOnly) {
-            var _this3 = this;
-
-            var headers = this.createHeaders();
-            if (typeof revision !== 'undefined' && revision !== null) {
-                headers['If-Match'] = revision;
-            }
-            logger_1.default.debug('POST', uri, 'ID:', headers['Twilio-Request-Id']);
-            return this.executeWithRetry(function () {
-                return _this3.transport.post(uri, headers, body, twilsockOnly);
-            }, false);
-        }
-    }, {
-        key: "put",
-        value: function put(uri, body, revision) {
-            var _this4 = this;
-
-            var headers = this.createHeaders();
-            if (typeof revision !== 'undefined' && revision !== null) {
-                headers['If-Match'] = revision;
-            }
-            logger_1.default.debug('PUT', uri, 'ID:', headers['Twilio-Request-Id']);
-            return this.executeWithRetry(function () {
-                return _this4.transport.put(uri, headers, body);
-            }, false);
-        }
-    }, {
-        key: "delete",
-        value: function _delete(uri) {
-            var _this5 = this;
-
-            var headers = this.createHeaders();
-            logger_1.default.debug('DELETE', uri, 'ID:', headers['Twilio-Request-Id']);
-            return this.executeWithRetry(function () {
-                return _this5.transport.delete(uri, headers);
-            }, false);
-        }
-    }]);
-    return Network;
-}();
-
-exports.Network = Network;
-
-},{"./logger":243,"./syncNetworkError":252,"./syncerror":254,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"operation-retrier":206,"twilsock":269,"uuid":290}],247:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58}],241:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -20922,16 +20674,8 @@ var Paginator = function () {
 
 exports.Paginator = Paginator;
 
-},{"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],248:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58}],242:[function(_dereq_,module,exports){
 "use strict";
-
-var _regenerator = _dereq_("babel-runtime/regenerator");
-
-var _regenerator2 = _interopRequireDefault(_regenerator);
-
-var _asyncToGenerator2 = _dereq_("babel-runtime/helpers/asyncToGenerator");
-
-var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
 
@@ -20944,7 +20688,7 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var logger_1 = _dereq_("./logger");
+var logger_1 = _dereq_("./utils/logger");
 var SYNC_DOCUMENT_NOTIFICATION_TYPE = 'com.twilio.rtd.cds.document';
 var SYNC_LIST_NOTIFICATION_TYPE = 'com.twilio.rtd.cds.list';
 var SYNC_MAP_NOTIFICATION_TYPE = 'com.twilio.rtd.cds.map';
@@ -21002,58 +20746,18 @@ var Router = function () {
 
     }, {
         key: "subscribe",
-        value: function () {
-            var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(sid, entity) {
-                return _regenerator2.default.wrap(function _callee$(_context) {
-                    while (1) {
-                        switch (_context.prev = _context.next) {
-                            case 0:
-                                _context.next = 2;
-                                return this.subscriptions.add(sid, entity);
-
-                            case 2:
-                            case "end":
-                                return _context.stop();
-                        }
-                    }
-                }, _callee, this);
-            }));
-
-            function subscribe(_x, _x2) {
-                return _ref.apply(this, arguments);
-            }
-
-            return subscribe;
-        }()
+        value: function subscribe(sid, entity) {
+            this.subscriptions.add(sid, entity);
+        }
         /**
          * Unsubscribe from events
          */
 
     }, {
         key: "unsubscribe",
-        value: function () {
-            var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(sid, entity) {
-                return _regenerator2.default.wrap(function _callee2$(_context2) {
-                    while (1) {
-                        switch (_context2.prev = _context2.next) {
-                            case 0:
-                                _context2.next = 2;
-                                return this.subscriptions.remove(sid);
-
-                            case 2:
-                            case "end":
-                                return _context2.stop();
-                        }
-                    }
-                }, _callee2, this);
-            }));
-
-            function unsubscribe(_x3, _x4) {
-                return _ref2.apply(this, arguments);
-            }
-
-            return unsubscribe;
-        }()
+        value: function unsubscribe(sid) {
+            this.subscriptions.remove(sid);
+        }
         /**
          * Handle transport establishing event
          * If we have any subscriptions - we should check object for modifications
@@ -21071,7 +20775,212 @@ var Router = function () {
 exports.Router = Router;
 exports.default = Router;
 
-},{"./logger":243,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],249:[function(_dereq_,module,exports){
+},{"./utils/logger":250,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],243:[function(_dereq_,module,exports){
+"use strict";
+
+var _promise = _dereq_("babel-runtime/core-js/promise");
+
+var _promise2 = _interopRequireDefault(_promise);
+
+var _assign = _dereq_("babel-runtime/core-js/object/assign");
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var uuid = _dereq_("uuid");
+var syncerror_1 = _dereq_("../utils/syncerror");
+var logger_1 = _dereq_("../utils/logger");
+var operation_retrier_1 = _dereq_("operation-retrier");
+var twilsock_1 = _dereq_("twilsock");
+var MINIMUM_RETRY_DELAY = 4000;
+var MAXIMUM_RETRY_DELAY = 60000;
+var MAXIMUM_ATTEMPTS_TIME = 90000;
+var RETRY_DELAY_RANDOMNESS = 0.2;
+function messageFromErrorBody(transportError) {
+    if (transportError.body) {
+        if (transportError.body.message) {
+            return transportError.body.message;
+        }
+    }
+    switch (transportError.status) {
+        case 429:
+            return 'Throttled by server';
+        case 404:
+            return 'Not found from server';
+        default:
+            return 'Error from server';
+    }
+}
+function codeFromErrorBody(trasportError) {
+    if (trasportError.body) {
+        return trasportError.body.code;
+    }
+    return 0;
+}
+function mapTransportError(transportError) {
+    if (transportError.status === 409) {
+        return new syncerror_1.SyncNetworkError(messageFromErrorBody(transportError), transportError.status, codeFromErrorBody(transportError), transportError.body);
+    } else if (transportError.status) {
+        return new syncerror_1.SyncError(messageFromErrorBody(transportError), transportError.status, codeFromErrorBody(transportError));
+    } else if (transportError instanceof twilsock_1.TransportUnavailableError) {
+        return transportError;
+    } else {
+        return new syncerror_1.SyncError(transportError.message, 0, 0);
+    }
+}
+/**
+ * @classdesc Incapsulates network operations to make it possible to add some optimization/caching strategies
+ */
+
+var NetworkService = function () {
+    function NetworkService(clientInfo, config, transport) {
+        (0, _classCallCheck3.default)(this, NetworkService);
+
+        this.clientInfo = clientInfo;
+        this.config = config;
+        this.transport = transport;
+    }
+
+    (0, _createClass3.default)(NetworkService, [{
+        key: "createHeaders",
+        value: function createHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Twilio-Sync-Client-Info': (0, _stringify2.default)(this.clientInfo),
+                'Twilio-Request-Id': 'RQ' + uuid.v4().replace(/-/g, '')
+            };
+        }
+    }, {
+        key: "backoffConfig",
+        value: function backoffConfig() {
+            return (0, _assign2.default)({
+                min: MINIMUM_RETRY_DELAY,
+                max: MAXIMUM_RETRY_DELAY,
+                maxAttemptsTime: MAXIMUM_ATTEMPTS_TIME,
+                randomness: RETRY_DELAY_RANDOMNESS
+            }, this.config.backoffConfig);
+        }
+    }, {
+        key: "executeWithRetry",
+        value: function executeWithRetry(request) {
+            var _this = this;
+
+            var retryWhenThrottled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+            return new _promise2.default(function (resolve, reject) {
+                var codesToRetryOn = [502, 503, 504];
+                if (retryWhenThrottled) {
+                    codesToRetryOn.push(429);
+                }
+                var retrier = new operation_retrier_1.Retrier(_this.backoffConfig());
+                retrier.on('attempt', function () {
+                    request().then(function (result) {
+                        return retrier.succeeded(result);
+                    }).catch(function (err) {
+                        if (codesToRetryOn.includes(err.status)) {
+                            var delayOverride = parseInt(err.headers ? err.headers['Retry-After'] : null);
+                            retrier.failed(mapTransportError(err), isNaN(delayOverride) ? null : delayOverride * 1000);
+                        } else if (err.message === 'Twilsock disconnected') {
+                            // Ugly hack. We must make a proper exceptions for twilsock
+                            retrier.failed(mapTransportError(err));
+                        } else {
+                            // Fatal error
+                            retrier.removeAllListeners();
+                            retrier.cancel();
+                            reject(mapTransportError(err));
+                        }
+                    });
+                });
+                retrier.on('succeeded', function (result) {
+                    resolve(result);
+                });
+                retrier.on('cancelled', function (err) {
+                    return reject(mapTransportError(err));
+                });
+                retrier.on('failed', function (err) {
+                    return reject(mapTransportError(err));
+                });
+                retrier.start();
+            });
+        }
+        /**
+         * Make a GET request by given URI
+         * @Returns Promise<Response> Result of successful get request
+         */
+
+    }, {
+        key: "get",
+        value: function get(uri) {
+            var _this2 = this;
+
+            var headers = this.createHeaders();
+            logger_1.default.debug('GET', uri, 'ID:', headers['Twilio-Request-Id']);
+            return this.executeWithRetry(function () {
+                return _this2.transport.get(uri, headers);
+            }, true);
+        }
+    }, {
+        key: "post",
+        value: function post(uri, body, revision) {
+            var _this3 = this;
+
+            var retryWhenThrottled = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+            var headers = this.createHeaders();
+            if (typeof revision !== 'undefined' && revision !== null) {
+                headers['If-Match'] = revision;
+            }
+            logger_1.default.debug('POST', uri, 'ID:', headers['Twilio-Request-Id']);
+            return this.executeWithRetry(function () {
+                return _this3.transport.post(uri, headers, body);
+            }, retryWhenThrottled);
+        }
+    }, {
+        key: "put",
+        value: function put(uri, body, revision) {
+            var _this4 = this;
+
+            var headers = this.createHeaders();
+            if (typeof revision !== 'undefined' && revision !== null) {
+                headers['If-Match'] = revision;
+            }
+            logger_1.default.debug('PUT', uri, 'ID:', headers['Twilio-Request-Id']);
+            return this.executeWithRetry(function () {
+                return _this4.transport.put(uri, headers, body);
+            }, false);
+        }
+    }, {
+        key: "delete",
+        value: function _delete(uri) {
+            var _this5 = this;
+
+            var headers = this.createHeaders();
+            logger_1.default.debug('DELETE', uri, 'ID:', headers['Twilio-Request-Id']);
+            return this.executeWithRetry(function () {
+                return _this5.transport.delete(uri, headers);
+            }, false);
+        }
+    }]);
+    return NetworkService;
+}();
+
+exports.NetworkService = NetworkService;
+
+},{"../utils/logger":250,"../utils/syncerror":252,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"operation-retrier":202,"twilsock":266,"uuid":285}],244:[function(_dereq_,module,exports){
 "use strict";
 
 var _assign = _dereq_("babel-runtime/core-js/object/assign");
@@ -21195,8 +21104,12 @@ var SessionStorage = function () {
 
 exports.SessionStorage = SessionStorage;
 
-},{"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/assign":37,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],250:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/assign":37,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],245:[function(_dereq_,module,exports){
 "use strict";
+
+var _get2 = _dereq_("babel-runtime/helpers/get");
+
+var _get3 = _interopRequireDefault(_get2);
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
 
@@ -21230,30 +21143,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var entity_1 = _dereq_("../entity");
-var utils_1 = _dereq_("../utils");
-/**
- * @class
- * @alias Stream
- * @classdesc A Sync primitive for pub-sub messaging. Stream Messages are not persisted, exist
- *     only in transit, and will be dropped if (due to congestion or network anomalies) they
- *     cannot be delivered promptly. Use the {@link Client#stream} method to obtain a reference to a Sync Message Stream.
- * @property {String} sid The immutable system-assigned identifier of this stream. Never null.
- * @property {String} [uniqueName=null] A unique identifier optionally assigned to the stream on creation.
- *
- * @fires Stream#messagePublished
- * @fires Stream#removed
- */
+var sanitize_1 = _dereq_("../utils/sanitize");
+var closeable_1 = _dereq_("../closeable");
 
-var SyncStream = function (_entity_1$SyncEntity) {
-    (0, _inherits3.default)(SyncStream, _entity_1$SyncEntity);
+var SyncStreamImpl = function (_entity_1$SyncEntity) {
+    (0, _inherits3.default)(SyncStreamImpl, _entity_1$SyncEntity);
 
     /**
      * @private
      */
-    function SyncStream(services, descriptor, removalHandler) {
-        (0, _classCallCheck3.default)(this, SyncStream);
+    function SyncStreamImpl(services, descriptor, removalHandler) {
+        (0, _classCallCheck3.default)(this, SyncStreamImpl);
 
-        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncStream.__proto__ || (0, _getPrototypeOf2.default)(SyncStream)).call(this, services, removalHandler));
+        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncStreamImpl.__proto__ || (0, _getPrototypeOf2.default)(SyncStreamImpl)).call(this, services, removalHandler));
 
         _this.descriptor = descriptor;
         return _this;
@@ -21261,25 +21163,8 @@ var SyncStream = function (_entity_1$SyncEntity) {
     // private props
 
 
-    (0, _createClass3.default)(SyncStream, [{
+    (0, _createClass3.default)(SyncStreamImpl, [{
         key: "publishMessage",
-
-        /**
-         * Publish a Message to the Stream. The system will attempt delivery to all online subscribers.
-         * @param {Object} value The body of the dispatched message. Maximum size in serialized JSON: 4KB.
-         * A rate limit applies to this operation, refer to the [Sync API documentation]{@link https://www.twilio.com/docs/api/sync} for details.
-         * @return {Promise<StreamMessage>} A promise which resolves after the message is successfully published
-         *   to the Sync service. Resolves irrespective of ultimate delivery to any subscribers.
-         * @public
-         * @example
-         * stream.publishMessage({ x: 42, y: 123 })
-         *   .then(function(message) {
-         *     console.log('Stream publishMessage() successful, message SID:' + message.sid);
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Stream publishMessage() failed', error);
-         *   });
-         */
         value: function () {
             var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(value) {
                 var requestBody, response, responseBody, event;
@@ -21311,21 +21196,6 @@ var SyncStream = function (_entity_1$SyncEntity) {
 
             return publishMessage;
         }()
-        /**
-         * Update the time-to-live of the stream.
-         * @param {Number} ttl Specifies the TTL in seconds after which the stream is subject to automatic deletion. The value 0 means infinity.
-         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
-         * @public
-         * @example
-         * stream.setTtl(3600)
-         *   .then(function() {
-         *     console.log('Stream setTtl() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Stream setTtl() failed', error);
-         *   });
-         */
-
     }, {
         key: "setTtl",
         value: function () {
@@ -21335,7 +21205,7 @@ var SyncStream = function (_entity_1$SyncEntity) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
-                                utils_1.validateMandatoryTtl(ttl);
+                                sanitize_1.validateMandatoryTtl(ttl);
                                 _context2.prev = 1;
                                 requestBody = { ttl: ttl };
                                 _context2.next = 5;
@@ -21371,20 +21241,6 @@ var SyncStream = function (_entity_1$SyncEntity) {
 
             return setTtl;
         }()
-        /**
-         * Permanently delete this Stream.
-         * @return {Promise<void>} A promise which resolves after the Stream is successfully deleted.
-         * @public
-         * @example
-         * stream.removeStream()
-         *   .then(function() {
-         *     console.log('Stream removeStream() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Stream removeStream() failed', error);
-         *   });
-         */
-
     }, {
         key: "removeStream",
         value: function () {
@@ -21441,7 +21297,7 @@ var SyncStream = function (_entity_1$SyncEntity) {
                 sid: sid,
                 value: data
             };
-            this.emit('messagePublished', { message: event, isLocal: !remote });
+            this.broadcastEventToListeners('messagePublished', { message: event, isLocal: !remote });
             return event;
         }
     }, {
@@ -21449,7 +21305,7 @@ var SyncStream = function (_entity_1$SyncEntity) {
         value: function onRemoved(isLocal) {
             this._unsubscribe();
             this.removalHandler(this.type, this.sid, this.uniqueName);
-            this.emit('removed', { isLocal: isLocal });
+            this.broadcastEventToListeners('removed', { isLocal: isLocal });
         }
     }, {
         key: "uri",
@@ -21476,10 +21332,22 @@ var SyncStream = function (_entity_1$SyncEntity) {
         get: function get() {
             return null;
         }
+        // below properties are specific to Insights only
+
+    }, {
+        key: "indexName",
+        get: function get() {
+            return undefined;
+        }
+    }, {
+        key: "queryString",
+        get: function get() {
+            return undefined;
+        }
+        // public props, documented along with class description
+
     }, {
         key: "sid",
-
-        // public props, documented along with class description
         get: function get() {
             return this.descriptor.sid;
         }
@@ -21494,8 +21362,220 @@ var SyncStream = function (_entity_1$SyncEntity) {
             return 'stream';
         }
     }]);
-    return SyncStream;
+    return SyncStreamImpl;
 }(entity_1.SyncEntity);
+
+exports.SyncStreamImpl = SyncStreamImpl;
+/**
+ * @class
+ * @alias Stream
+ * @classdesc A Sync primitive for pub-sub messaging. Stream Messages are not persisted, exist
+ *     only in transit, and will be dropped if (due to congestion or network anomalies) they
+ *     cannot be delivered promptly. Use the {@link Client#stream} method to obtain a reference to a Sync Message Stream.
+ * @property {String} sid The immutable system-assigned identifier of this stream. Never null.
+ * @property {String} [uniqueName=null] A unique identifier optionally assigned to the stream on creation.
+ *
+ * @fires Stream#messagePublished
+ * @fires Stream#removed
+ */
+
+var SyncStream = function (_closeable_1$default) {
+    (0, _inherits3.default)(SyncStream, _closeable_1$default);
+    (0, _createClass3.default)(SyncStream, [{
+        key: "uri",
+
+        // private props
+        get: function get() {
+            return this.syncStreamImpl.uri;
+        }
+    }, {
+        key: "links",
+        get: function get() {
+            return this.syncStreamImpl.links;
+        }
+    }, {
+        key: "dateExpires",
+        get: function get() {
+            return this.syncStreamImpl.dateExpires;
+        }
+    }, {
+        key: "type",
+        get: function get() {
+            return SyncStreamImpl.type;
+        }
+    }, {
+        key: "lastEventId",
+        get: function get() {
+            return null;
+        }
+        // public props, documented along with class description
+
+    }, {
+        key: "sid",
+        get: function get() {
+            return this.syncStreamImpl.sid;
+        }
+    }, {
+        key: "uniqueName",
+        get: function get() {
+            return this.syncStreamImpl.uniqueName;
+        }
+    }], [{
+        key: "type",
+        get: function get() {
+            return SyncStreamImpl.type;
+        }
+    }]);
+
+    function SyncStream(syncStreamImpl) {
+        (0, _classCallCheck3.default)(this, SyncStream);
+
+        var _this2 = (0, _possibleConstructorReturn3.default)(this, (SyncStream.__proto__ || (0, _getPrototypeOf2.default)(SyncStream)).call(this));
+
+        _this2.syncStreamImpl = syncStreamImpl;
+        _this2.syncStreamImpl.attach(_this2);
+        return _this2;
+    }
+    /**
+     * Publish a Message to the Stream. The system will attempt delivery to all online subscribers.
+     * @param {Object} value The body of the dispatched message. Maximum size in serialized JSON: 4KB.
+     * A rate limit applies to this operation, refer to the [Sync API documentation]{@link https://www.twilio.com/docs/api/sync} for details.
+     * @return {Promise<StreamMessage>} A promise which resolves after the message is successfully published
+     *   to the Sync service. Resolves irrespective of ultimate delivery to any subscribers.
+     * @public
+     * @example
+     * stream.publishMessage({ x: 42, y: 123 })
+     *   .then(function(message) {
+     *     console.log('Stream publishMessage() successful, message SID:' + message.sid);
+     *   })
+     *   .catch(function(error) {
+     *     console.error('Stream publishMessage() failed', error);
+     *   });
+     */
+
+
+    (0, _createClass3.default)(SyncStream, [{
+        key: "publishMessage",
+        value: function () {
+            var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(value) {
+                return _regenerator2.default.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context4.abrupt("return", this.syncStreamImpl.publishMessage(value));
+
+                            case 2:
+                            case "end":
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
+            }));
+
+            function publishMessage(_x3) {
+                return _ref4.apply(this, arguments);
+            }
+
+            return publishMessage;
+        }()
+        /**
+         * Update the time-to-live of the stream.
+         * @param {Number} ttl Specifies the TTL in seconds after which the stream is subject to automatic deletion. The value 0 means infinity.
+         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
+         * @public
+         * @example
+         * stream.setTtl(3600)
+         *   .then(function() {
+         *     console.log('Stream setTtl() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Stream setTtl() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "setTtl",
+        value: function () {
+            var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(ttl) {
+                return _regenerator2.default.wrap(function _callee5$(_context5) {
+                    while (1) {
+                        switch (_context5.prev = _context5.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context5.abrupt("return", this.syncStreamImpl.setTtl(ttl));
+
+                            case 2:
+                            case "end":
+                                return _context5.stop();
+                        }
+                    }
+                }, _callee5, this);
+            }));
+
+            function setTtl(_x4) {
+                return _ref5.apply(this, arguments);
+            }
+
+            return setTtl;
+        }()
+        /**
+         * Permanently delete this Stream.
+         * @return {Promise<void>} A promise which resolves after the Stream is successfully deleted.
+         * @public
+         * @example
+         * stream.removeStream()
+         *   .then(function() {
+         *     console.log('Stream removeStream() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Stream removeStream() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "removeStream",
+        value: function () {
+            var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6() {
+                return _regenerator2.default.wrap(function _callee6$(_context6) {
+                    while (1) {
+                        switch (_context6.prev = _context6.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context6.abrupt("return", this.syncStreamImpl.removeStream());
+
+                            case 2:
+                            case "end":
+                                return _context6.stop();
+                        }
+                    }
+                }, _callee6, this);
+            }));
+
+            function removeStream() {
+                return _ref6.apply(this, arguments);
+            }
+
+            return removeStream;
+        }()
+        /**
+         * Conclude work with the stream instance and remove all event listeners attached to it.
+         * Any subsequent operation on this object will be rejected with error.
+         * Other local copies of this stream will continue operating and receiving events normally.
+         * @public
+         * @example
+         * stream.close();
+         */
+
+    }, {
+        key: "close",
+        value: function close() {
+            (0, _get3.default)(SyncStream.prototype.__proto__ || (0, _getPrototypeOf2.default)(SyncStream.prototype), "close", this).call(this);
+            this.syncStreamImpl.detach(this.listenerUuid);
+        }
+    }]);
+    return SyncStream;
+}(closeable_1.default);
 
 exports.SyncStream = SyncStream;
 exports.default = SyncStream;
@@ -21531,9 +21611,8 @@ exports.default = SyncStream;
  * });
  */
 
-},{"../entity":240,"../utils":257,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57}],251:[function(_dereq_,module,exports){
+},{"../closeable":232,"../entity":235,"../utils/sanitize":251,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/get":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58}],246:[function(_dereq_,module,exports){
 "use strict";
-/* eslint-disable key-spacing */
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
 
@@ -21570,9 +21649,9 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Backoff = _dereq_("backoff");
-var logger_1 = _dereq_("./logger");
-var syncerror_1 = _dereq_("./syncerror");
+var operation_retrier_1 = _dereq_("operation-retrier");
+var syncerror_1 = _dereq_("./utils/syncerror");
+var logger_1 = _dereq_("./utils/logger");
 var twilsock_1 = _dereq_("twilsock");
 /**
  * A data container used by the Subscriptions class to track subscribed entities' local
@@ -21592,8 +21671,8 @@ var SubscribedEntity = function () {
 
     (0, _createClass3.default)(SubscribedEntity, [{
         key: "update",
-        value: function update(event, isStrictlyOrderd) {
-            this.localObject._update(event, isStrictlyOrderd);
+        value: function update(event, isStrictlyOrdered) {
+            this.localObject._update(event, isStrictlyOrdered);
         }
     }, {
         key: "updatePending",
@@ -21607,7 +21686,7 @@ var SubscribedEntity = function () {
             this.updatePending(null, null);
             this.retryCount = 0;
             this.established = false;
-            this.localObject._setSubscriptionState('none');
+            this.setSubscriptionState('none');
         }
     }, {
         key: "markAsFailed",
@@ -21624,6 +21703,11 @@ var SubscribedEntity = function () {
             this.localObject._advanceLastEventId(eventId);
         }
     }, {
+        key: "setSubscriptionState",
+        value: function setSubscriptionState(newState) {
+            this.localObject._setSubscriptionState(newState);
+        }
+    }, {
         key: "sid",
         get: function get() {
             return this.localObject.sid;
@@ -21637,6 +21721,18 @@ var SubscribedEntity = function () {
         key: "lastEventId",
         get: function get() {
             return this.localObject.lastEventId;
+        }
+        // below properties are specific to Insights only
+
+    }, {
+        key: "indexName",
+        get: function get() {
+            return this.localObject.indexName;
+        }
+    }, {
+        key: "queryString",
+        get: function get() {
+            return this.localObject.queryString;
         }
     }, {
         key: "isEstablished",
@@ -21685,7 +21781,7 @@ var Subscriptions = function () {
             initialDelay: 100,
             maxDelay: 2 * 60 * 1000
         };
-        this.backoff = Backoff.exponential((0, _assign2.default)(defaultBackoffConfig, this.services.config.backoffConfig));
+        this.backoff = operation_retrier_1.Backoff.exponential((0, _assign2.default)(defaultBackoffConfig, this.services.config.backoffConfig));
         // This block is triggered by #_persist. Every request is executed in a series of (ideally 1)
         // backoff 'ready' event, at which point a new subscription set is calculated.
         this.backoff.on('ready', function () {
@@ -21705,7 +21801,7 @@ var Subscriptions = function () {
     (0, _createClass3.default)(Subscriptions, [{
         key: "getSubscriptionUpdateBatch",
         value: function getSubscriptionUpdateBatch() {
-            function substract(these, those, action, limit) {
+            function subtract(these, those, action, limit) {
                 var result = [];
                 var _iteratorNormalCompletion = true;
                 var _didIteratorError = false;
@@ -21745,11 +21841,11 @@ var Subscriptions = function () {
 
                 return result;
             }
-            var listToAdd = substract(this.subscriptions, this.persisted, 'establish', this.maxBatchSize);
+            var listToAdd = subtract(this.subscriptions, this.persisted, 'establish', this.maxBatchSize);
             if (listToAdd.length > 0) {
                 return { action: 'establish', subscriptions: listToAdd };
             }
-            var listToRemove = substract(this.persisted, this.subscriptions, 'cancel', this.maxBatchSize);
+            var listToRemove = subtract(this.persisted, this.subscriptions, 'cancel', this.maxBatchSize);
             if (listToRemove.length > 0) {
                 return { action: 'cancel', subscriptions: listToRemove };
             }
@@ -21758,9 +21854,7 @@ var Subscriptions = function () {
     }, {
         key: "persist",
         value: function persist() {
-            try {
-                this.backoff.backoff();
-            } catch (e) {} // eslint-disable-line no-empty
+            this.backoff.backoff();
         }
     }, {
         key: "applyNewSubscriptionUpdateBatch",
@@ -21872,7 +21966,7 @@ var Subscriptions = function () {
                                     requests.filter(function (r) {
                                         return r.pendingCorrelationId === correlationId;
                                     }).forEach(function (r) {
-                                        return r.localObject._setSubscriptionState('response_in_flight');
+                                        return r.setSubscriptionState('response_in_flight');
                                     });
                                 }
                                 this.backoff.reset();
@@ -21987,7 +22081,7 @@ var Subscriptions = function () {
     }, {
         key: "recordActionAttemptOn",
         value: function recordActionAttemptOn(attemptedSubscription, action, correlationId) {
-            attemptedSubscription.localObject._setSubscriptionState('request_in_flight');
+            attemptedSubscription.setSubscriptionState('request_in_flight');
             if (action === 'establish') {
                 this.persisted.set(attemptedSubscription.sid, attemptedSubscription);
                 attemptedSubscription.updatePending(action, correlationId);
@@ -22002,7 +22096,7 @@ var Subscriptions = function () {
     }, {
         key: "recordActionFailureOn",
         value: function recordActionFailureOn(attemptedSubscription, action) {
-            attemptedSubscription.localObject._setSubscriptionState('none');
+            attemptedSubscription.setSubscriptionState('none');
             attemptedSubscription.updatePending(null, null);
             if (action === 'establish') {
                 this.persisted.delete(attemptedSubscription.sid);
@@ -22015,14 +22109,15 @@ var Subscriptions = function () {
                 return {
                     object_sid: object.sid,
                     object_type: object.type,
-                    last_event_id: action === 'establish' ? object.lastEventId : undefined // eslint-disable-line no-undefined, camelcase
+                    last_event_id: action === 'establish' ? object.lastEventId : undefined,
+                    index_name: action === 'establish' ? object.indexName : undefined,
+                    query_string: action === 'establish' ? object.queryString : undefined
                 };
             });
             var retriedRequests = objects.filter(function (a) {
                 return a.retryCount > 0;
             }).length;
             logger_1.default.debug("Attempting '" + action + "' request (c:" + correlationId + "):", requests);
-            /* eslint-disable camelcase */
             var requestBody = {
                 event_protocol_version: 3,
                 action: action,
@@ -22034,8 +22129,7 @@ var Subscriptions = function () {
             if (reason === 'ttl') {
                 requestBody.reason = reason;
             }
-            /* eslint-enable camelcase */
-            return this.services.network.post(this.services.config.subscriptionsUri, requestBody, null, true);
+            return this.services.network.post(this.services.config.subscriptionsUri, requestBody);
         }
         /**
          * Establishes intent to be subscribed to this entity. That subscription will be effected
@@ -22055,7 +22149,7 @@ var Subscriptions = function () {
         value: function add(sid, entity) {
             logger_1.default.debug("Establishing intent to subscribe to " + sid);
             var existingSubscription = this.subscriptions.get(sid);
-            if (existingSubscription && existingSubscription.lastEventId === entity.lastEventId) {
+            if (existingSubscription && entity && existingSubscription.lastEventId === entity.lastEventId) {
                 // If last event id is the same as before - we're fine
                 return;
             }
@@ -22110,7 +22204,7 @@ var Subscriptions = function () {
                 case 'subscription_failed':
                     this.applySubscriptionFailedMessage(message.event, message.correlation_id);
                     break;
-                case (message.event_type.match(/^(?:map|list|document|stream)_/) || {}).input:
+                case (message.event_type.match(/^(?:map|list|document|stream|live_query)_/) || {}).input:
                     {
                         var typedSid = function typedSid() {
                             if (message.event_type.match(/^map_/)) {
@@ -22121,6 +22215,8 @@ var Subscriptions = function () {
                                 return message.event.document_sid;
                             } else if (message.event_type.match(/^stream_/)) {
                                 return message.event.stream_sid;
+                            } else if (message.event_type.match(/^live_query/)) {
+                                return message.event.query_id;
                             } else {
                                 return undefined;
                             }
@@ -22148,7 +22244,7 @@ var Subscriptions = function () {
                     logger_1.default.debug("Event Replay for subscription to " + sid + " (c:" + correlationId + ") completed. Subscription is ready.");
                     subscriptionIntent.complete(message.last_event_id);
                     this.persisted.set(message.object_sid, subscriptionIntent);
-                    subscriptionIntent.localObject._setSubscriptionState('established');
+                    subscriptionIntent.setSubscriptionState('established');
                     this.backoff.reset();
                 }
             } else {
@@ -22162,7 +22258,7 @@ var Subscriptions = function () {
             var persistedSubscription = this.persisted.get(message.object_sid);
             if (persistedSubscription && persistedSubscription.pendingCorrelationId === correlationId) {
                 persistedSubscription.updatePending(null, null);
-                persistedSubscription.localObject._setSubscriptionState('none');
+                persistedSubscription.setSubscriptionState('none');
                 this.persisted.delete(message.object_sid);
             } else {
                 logger_1.default.debug("Late message for " + message.object_sid + " (c:" + correlationId + ") dropped.");
@@ -22179,11 +22275,11 @@ var Subscriptions = function () {
                 if (subscription.pendingCorrelationId === correlationId) {
                     logger_1.default.error("Failed to subscribe on " + subscription.sid, message.error);
                     subscription.markAsFailed(message);
-                    subscription.localObject._setSubscriptionState('none');
+                    subscription.setSubscriptionState('none');
                 }
             } else if (!subscriptionIntent && subscription) {
                 this.persisted.delete(sid);
-                subscription.localObject._setSubscriptionState('none');
+                subscription.setSubscriptionState('none');
             }
             this.persist();
         }
@@ -22249,7 +22345,7 @@ var Subscriptions = function () {
             try {
                 for (var _iterator4 = (0, _getIterator3.default)(this.persisted.values()), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
                     var it = _step4.value;
-                    // eslint-disable-line no-unused-vars
+
                     it.reset();
                     if (it.rejectedWithError) {
                         failedSubscriptions.push(it);
@@ -22314,53 +22410,12 @@ var Subscriptions = function () {
 
 exports.Subscriptions = Subscriptions;
 
-},{"./logger":243,"./syncerror":254,"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/assign":37,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/slicedToArray":54,"babel-runtime/regenerator":57,"backoff":58,"twilsock":269}],252:[function(_dereq_,module,exports){
+},{"./utils/logger":250,"./utils/syncerror":252,"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/assign":37,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/slicedToArray":55,"babel-runtime/regenerator":58,"operation-retrier":202,"twilsock":266}],247:[function(_dereq_,module,exports){
 "use strict";
 
-var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
+var _get2 = _dereq_("babel-runtime/helpers/get");
 
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _possibleConstructorReturn2 = _dereq_("babel-runtime/helpers/possibleConstructorReturn");
-
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-var _inherits2 = _dereq_("babel-runtime/helpers/inherits");
-
-var _inherits3 = _interopRequireDefault(_inherits2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var syncerror_1 = _dereq_("./syncerror");
-
-var SyncNetworkError = function (_syncerror_1$SyncErro) {
-    (0, _inherits3.default)(SyncNetworkError, _syncerror_1$SyncErro);
-
-    function SyncNetworkError(message) {
-        var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-        var code = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-        var body = arguments[3];
-        (0, _classCallCheck3.default)(this, SyncNetworkError);
-
-        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncNetworkError.__proto__ || (0, _getPrototypeOf2.default)(SyncNetworkError)).call(this, message, status, code));
-
-        _this.body = body;
-        return _this;
-    }
-
-    return SyncNetworkError;
-}(syncerror_1.SyncError);
-
-exports.SyncNetworkError = SyncNetworkError;
-exports.default = SyncNetworkError;
-
-},{"./syncerror":254,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],253:[function(_dereq_,module,exports){
-"use strict";
+var _get3 = _interopRequireDefault(_get2);
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
 
@@ -22401,36 +22456,23 @@ var _inherits3 = _interopRequireDefault(_inherits2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var logger_1 = _dereq_("./logger");
+var syncerror_1 = _dereq_("./utils/syncerror");
+var sanitize_1 = _dereq_("./utils/sanitize");
+var logger_1 = _dereq_("./utils/logger");
 var entity_1 = _dereq_("./entity");
-var utils_1 = _dereq_("./utils");
 var mergingqueue_1 = _dereq_("./mergingqueue");
-var syncerror_1 = _dereq_("./syncerror");
-/**
- * @class
- * @alias Document
- * @classdesc Represents a Sync Document, the contents of which is a single JSON object.
- * Use the {@link Client#document} method to obtain a reference to a Sync Document.
- * @property {String} sid The immutable identifier of this document, assigned by the system.
- * @property {String} [uniqueName=null] An optional immutable identifier that may be assigned by the programmer
- * to this document during creation. Globally unique among other Documents.
- * @property {Date} dateUpdated Date when the Document was last updated.
- * @property {Object} value The contents of this document.
- *
- * @fires Document#removed
- * @fires Document#updated
- */
+var closeable_1 = _dereq_("./closeable");
 
-var SyncDocument = function (_entity_1$SyncEntity) {
-    (0, _inherits3.default)(SyncDocument, _entity_1$SyncEntity);
+var SyncDocumentImpl = function (_entity_1$SyncEntity) {
+    (0, _inherits3.default)(SyncDocumentImpl, _entity_1$SyncEntity);
 
     /**
      * @private
      */
-    function SyncDocument(services, descriptor, removalHandler) {
-        (0, _classCallCheck3.default)(this, SyncDocument);
+    function SyncDocumentImpl(services, descriptor, removalHandler) {
+        (0, _classCallCheck3.default)(this, SyncDocumentImpl);
 
-        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncDocument.__proto__ || (0, _getPrototypeOf2.default)(SyncDocument)).call(this, services, removalHandler));
+        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncDocumentImpl.__proto__ || (0, _getPrototypeOf2.default)(SyncDocumentImpl)).call(this, services, removalHandler));
 
         _this.isDeleted = false;
         var updateRequestReducer = function updateRequestReducer(acc, input) {
@@ -22445,7 +22487,7 @@ var SyncDocument = function (_entity_1$SyncEntity) {
     // private props
 
 
-    (0, _createClass3.default)(SyncDocument, [{
+    (0, _createClass3.default)(SyncDocumentImpl, [{
         key: "_update",
 
         /**
@@ -22461,7 +22503,7 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                         this.descriptor.revision = update.document_revision;
                         this.descriptor.date_updated = update.date_created;
                         this.descriptor.data = update.document_data;
-                        this.emit('updated', { value: update.document_data, isLocal: false });
+                        this.broadcastEventToListeners('updated', { value: update.document_data, isLocal: false });
                         this.services.storage.update(this.type, this.sid, this.uniqueName, {
                             last_event_id: update.id,
                             revision: update.document_revision,
@@ -22477,24 +22519,6 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                     break;
             }
         }
-        /**
-         * Assign new contents to this document. The current value will be overwritten.
-         * @param {Object} value The new contents to assign.
-         * @param {Document#Metadata} [metadataUpdates] New document metadata.
-         * @returns {Promise<Object>} A promise resolving to the new value of the document.
-         * @public
-         * @example
-         * // Say, the Document value is { name: 'John Smith', age: 34 }
-         * document.set({ name: 'Barbara Oaks' }, { ttl: 86400 })
-         *   .then(function(newValue) {
-         *     // Now the Document value is { name: 'Barbara Oaks' }
-         *     console.log('Document set() successful, new value:', newValue);
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Document set() failed', error);
-         *   });
-         */
-
     }, {
         key: "set",
         value: function () {
@@ -22508,7 +22532,7 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                             case 0:
                                 input = metadataUpdates || {};
 
-                                utils_1.validateOptionalTtl(input.ttl);
+                                sanitize_1.validateOptionalTtl(input.ttl);
                                 return _context.abrupt("return", this.updateMergingQueue.squashAndAdd(input, function (input) {
                                     return _this2._setUnconditionally(value, input.ttl);
                                 }));
@@ -22527,30 +22551,6 @@ var SyncDocument = function (_entity_1$SyncEntity) {
 
             return set;
         }()
-        /**
-         * Schedules a modification to this document that will apply a mutation function.
-         * @param {Document~Mutator} mutator A function that outputs a new value based on the existing value.
-         * May be called multiple times, particularly if this Document is modified concurrently by remote code.
-         * If the mutation ultimately succeeds, the Document will have made the particular transition described
-         * by this function.
-         * @param {Document#Metadata} [metadataUpdates] New document metadata.
-         * @return {Promise<Object>} Resolves with the most recent Document state, whether the output of a
-         *    successful mutation or a state that prompted graceful cancellation (mutator returned <code>null</code>).
-         * @public
-         * @example
-         * var mutatorFunction = function(currentValue) {
-         *     currentValue.viewCount = (currentValue.viewCount || 0) + 1;
-         *     return currentValue;
-         * };
-         * document.mutate(mutatorFunction, { ttl: 86400 }))
-         *   .then(function(newValue) {
-         *     console.log('Document mutate() successful, new value:', newValue);
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Document mutate() failed', error);
-         *   });
-         */
-
     }, {
         key: "mutate",
         value: function () {
@@ -22564,7 +22564,7 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                             case 0:
                                 input = metadataUpdates || {};
 
-                                utils_1.validateOptionalTtl(input.ttl);
+                                sanitize_1.validateOptionalTtl(input.ttl);
                                 return _context2.abrupt("return", this.updateMergingQueue.add(input, function (input) {
                                     return _this3._setWithIfMatch(mutator, input.ttl);
                                 }));
@@ -22583,30 +22583,6 @@ var SyncDocument = function (_entity_1$SyncEntity) {
 
             return mutate;
         }()
-        /**
-         * Modify a document by appending new fields (or by overwriting existing ones) with the values from the provided Object.
-         * This is equivalent to
-         * <pre>
-         * document.mutate(function(currentValue) {
-         *   return Object.assign(currentValue, obj));
-         * });
-         * </pre>
-         * @param {Object} obj Specifies the particular (top-level) attributes that will receive new values.
-         * @param {Document#Metadata} [metadataUpdates] New document metadata.
-         * @return {Promise<Object>} A promise resolving to the new value of the document.
-         * @public
-         * @example
-         * // Say, the Document value is { name: 'John Smith' }
-         * document.update({ age: 34 }, { ttl: 86400 })
-         *   .then(function(newValue) {
-         *     // Now the Document value is { name: 'John Smith', age: 34 }
-         *     console.log('Document update() successful, new value:', newValue);
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Document update() failed', error);
-         *   });
-         */
-
     }, {
         key: "update",
         value: function () {
@@ -22633,21 +22609,6 @@ var SyncDocument = function (_entity_1$SyncEntity) {
 
             return update;
         }()
-        /**
-         * Update the time-to-live of the document.
-         * @param {Number} ttl Specifies the time-to-live in seconds after which the document is subject to automatic deletion. The value 0 means infinity.
-         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
-         * @public
-         * @example
-         * document.setTtl(3600)
-         *   .then(function() {
-         *     console.log('Document setTtl() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Document setTtl() failed', error);
-         *   });
-         */
-
     }, {
         key: "setTtl",
         value: function () {
@@ -22657,7 +22618,7 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
-                                utils_1.validateMandatoryTtl(ttl);
+                                sanitize_1.validateMandatoryTtl(ttl);
                                 _context4.next = 3;
                                 return this._postUpdateToServer({ ttl: ttl });
 
@@ -22729,7 +22690,7 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                     while (1) {
                         switch (_context6.prev = _context6.next) {
                             case 0:
-                                data = mutatorFunction(utils_1.deepClone(this.value));
+                                data = mutatorFunction(sanitize_1.deepClone(this.value));
 
                                 if (!data) {
                                     _context6.next = 22;
@@ -22806,7 +22767,7 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                     date_updated: result.date_updated,
                     data: result.data
                 });
-                this.emit('updated', { value: this.value, isLocal: true });
+                this.broadcastEventToListeners('updated', { value: this.value, isLocal: true });
             }
         }
         /**
@@ -22900,7 +22861,7 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                                         id: response.body.last_event_id,
                                         document_revision: response.body.revision,
                                         document_data: response.body.data,
-                                        date_created: response.body.date_updated // eslint-disable-line camelcase
+                                        date_created: response.body.date_updated
                                     };
                                     _this4._update(event);
                                     return _this4;
@@ -22935,23 +22896,9 @@ var SyncDocument = function (_entity_1$SyncEntity) {
                 this.isDeleted = true;
                 this._unsubscribe();
                 this.removalHandler(this.type, this.sid, this.uniqueName);
-                this.emit('removed', { isLocal: locally });
+                this.broadcastEventToListeners('removed', { isLocal: locally });
             }
         }
-        /**
-         * Delete a document.
-         * @return {Promise<void>} A promise which resolves if (and only if) the document is ultimately deleted.
-         * @public
-         * @example
-         * document.removeDocument()
-         *   .then(function() {
-         *     console.log('Document removeDocument() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Document removeDocument() failed', error);
-         *   });
-         */
-
     }, {
         key: "removeDocument",
         value: function () {
@@ -23015,6 +22962,18 @@ var SyncDocument = function (_entity_1$SyncEntity) {
         get: function get() {
             return 'document';
         }
+        // below properties are specific to Insights only
+
+    }, {
+        key: "indexName",
+        get: function get() {
+            return undefined;
+        }
+    }, {
+        key: "queryString",
+        get: function get() {
+            return undefined;
+        }
         // public props, documented along with class description
 
     }, {
@@ -23043,8 +23002,331 @@ var SyncDocument = function (_entity_1$SyncEntity) {
             return 'document';
         }
     }]);
-    return SyncDocument;
+    return SyncDocumentImpl;
 }(entity_1.SyncEntity);
+
+exports.SyncDocumentImpl = SyncDocumentImpl;
+/**
+ * @class
+ * @alias Document
+ * @classdesc Represents a Sync Document, the contents of which is a single JSON object.
+ * Use the {@link Client#document} method to obtain a reference to a Sync Document.
+ * @property {String} sid The immutable identifier of this document, assigned by the system.
+ * @property {String} [uniqueName=null] An optional immutable identifier that may be assigned by the programmer
+ * to this document during creation. Globally unique among other Documents.
+ * @property {Date} dateUpdated Date when the Document was last updated.
+ * @property {Object} value The contents of this document.
+ *
+ * @fires Document#removed
+ * @fires Document#updated
+ */
+
+var SyncDocument = function (_closeable_1$default) {
+    (0, _inherits3.default)(SyncDocument, _closeable_1$default);
+    (0, _createClass3.default)(SyncDocument, [{
+        key: "uri",
+
+        // private props
+        get: function get() {
+            return this.syncDocumentImpl.uri;
+        }
+    }, {
+        key: "revision",
+        get: function get() {
+            return this.syncDocumentImpl.revision;
+        }
+    }, {
+        key: "lastEventId",
+        get: function get() {
+            return this.syncDocumentImpl.lastEventId;
+        }
+    }, {
+        key: "dateExpires",
+        get: function get() {
+            return this.syncDocumentImpl.dateExpires;
+        }
+    }, {
+        key: "type",
+        get: function get() {
+            return SyncDocumentImpl.type;
+        }
+        // public props, documented along with class description
+
+    }, {
+        key: "sid",
+        get: function get() {
+            return this.syncDocumentImpl.sid;
+        }
+    }, {
+        key: "value",
+        get: function get() {
+            return this.syncDocumentImpl.value;
+        }
+    }, {
+        key: "dateUpdated",
+        get: function get() {
+            return this.syncDocumentImpl.dateUpdated;
+        }
+    }, {
+        key: "uniqueName",
+        get: function get() {
+            return this.syncDocumentImpl.uniqueName;
+        }
+    }], [{
+        key: "type",
+        get: function get() {
+            return SyncDocumentImpl.type;
+        }
+    }]);
+
+    function SyncDocument(syncDocumentImpl) {
+        (0, _classCallCheck3.default)(this, SyncDocument);
+
+        var _this5 = (0, _possibleConstructorReturn3.default)(this, (SyncDocument.__proto__ || (0, _getPrototypeOf2.default)(SyncDocument)).call(this));
+
+        _this5.syncDocumentImpl = syncDocumentImpl;
+        _this5.syncDocumentImpl.attach(_this5);
+        return _this5;
+    }
+    /**
+     * Assign new contents to this document. The current value will be overwritten.
+     * @param {Object} value The new contents to assign.
+     * @param {Document#Metadata} [metadataUpdates] New document metadata.
+     * @returns {Promise<Object>} A promise resolving to the new value of the document.
+     * @public
+     * @example
+     * // Say, the Document value is { name: 'John Smith', age: 34 }
+     * document.set({ name: 'Barbara Oaks' }, { ttl: 86400 })
+     *   .then(function(newValue) {
+     *     // Now the Document value is { name: 'Barbara Oaks' }
+     *     console.log('Document set() successful, new value:', newValue);
+     *   })
+     *   .catch(function(error) {
+     *     console.error('Document set() failed', error);
+     *   });
+     */
+
+
+    (0, _createClass3.default)(SyncDocument, [{
+        key: "set",
+        value: function () {
+            var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(value, metadataUpdates) {
+                return _regenerator2.default.wrap(function _callee10$(_context10) {
+                    while (1) {
+                        switch (_context10.prev = _context10.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context10.abrupt("return", this.syncDocumentImpl.set(value, metadataUpdates));
+
+                            case 2:
+                            case "end":
+                                return _context10.stop();
+                        }
+                    }
+                }, _callee10, this);
+            }));
+
+            function set(_x13, _x14) {
+                return _ref10.apply(this, arguments);
+            }
+
+            return set;
+        }()
+        /**
+         * Schedules a modification to this document that will apply a mutation function.
+         * @param {Document~Mutator} mutator A function that outputs a new value based on the existing value.
+         * May be called multiple times, particularly if this Document is modified concurrently by remote code.
+         * If the mutation ultimately succeeds, the Document will have made the particular transition described
+         * by this function.
+         * @param {Document#Metadata} [metadataUpdates] New document metadata.
+         * @return {Promise<Object>} Resolves with the most recent Document state, whether the output of a
+         *    successful mutation or a state that prompted graceful cancellation (mutator returned <code>null</code>).
+         * @public
+         * @example
+         * var mutatorFunction = function(currentValue) {
+         *     currentValue.viewCount = (currentValue.viewCount || 0) + 1;
+         *     return currentValue;
+         * };
+         * document.mutate(mutatorFunction, { ttl: 86400 }))
+         *   .then(function(newValue) {
+         *     console.log('Document mutate() successful, new value:', newValue);
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Document mutate() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "mutate",
+        value: function () {
+            var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(mutator, metadataUpdates) {
+                return _regenerator2.default.wrap(function _callee11$(_context11) {
+                    while (1) {
+                        switch (_context11.prev = _context11.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context11.abrupt("return", this.syncDocumentImpl.mutate(mutator, metadataUpdates));
+
+                            case 2:
+                            case "end":
+                                return _context11.stop();
+                        }
+                    }
+                }, _callee11, this);
+            }));
+
+            function mutate(_x15, _x16) {
+                return _ref11.apply(this, arguments);
+            }
+
+            return mutate;
+        }()
+        /**
+         * Modify a document by appending new fields (or by overwriting existing ones) with the values from the provided Object.
+         * This is equivalent to
+         * <pre>
+         * document.mutate(function(currentValue) {
+         *   return Object.assign(currentValue, obj));
+         * });
+         * </pre>
+         * @param {Object} obj Specifies the particular (top-level) attributes that will receive new values.
+         * @param {Document#Metadata} [metadataUpdates] New document metadata.
+         * @return {Promise<Object>} A promise resolving to the new value of the document.
+         * @public
+         * @example
+         * // Say, the Document value is { name: 'John Smith' }
+         * document.update({ age: 34 }, { ttl: 86400 })
+         *   .then(function(newValue) {
+         *     // Now the Document value is { name: 'John Smith', age: 34 }
+         *     console.log('Document update() successful, new value:', newValue);
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Document update() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "update",
+        value: function () {
+            var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(obj, metadataUpdates) {
+                return _regenerator2.default.wrap(function _callee12$(_context12) {
+                    while (1) {
+                        switch (_context12.prev = _context12.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context12.abrupt("return", this.syncDocumentImpl.update(obj, metadataUpdates));
+
+                            case 2:
+                            case "end":
+                                return _context12.stop();
+                        }
+                    }
+                }, _callee12, this);
+            }));
+
+            function update(_x17, _x18) {
+                return _ref12.apply(this, arguments);
+            }
+
+            return update;
+        }()
+        /**
+         * Update the time-to-live of the document.
+         * @param {Number} ttl Specifies the time-to-live in seconds after which the document is subject to automatic deletion. The value 0 means infinity.
+         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
+         * @public
+         * @example
+         * document.setTtl(3600)
+         *   .then(function() {
+         *     console.log('Document setTtl() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Document setTtl() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "setTtl",
+        value: function () {
+            var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13(ttl) {
+                return _regenerator2.default.wrap(function _callee13$(_context13) {
+                    while (1) {
+                        switch (_context13.prev = _context13.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context13.abrupt("return", this.syncDocumentImpl.setTtl(ttl));
+
+                            case 2:
+                            case "end":
+                                return _context13.stop();
+                        }
+                    }
+                }, _callee13, this);
+            }));
+
+            function setTtl(_x19) {
+                return _ref13.apply(this, arguments);
+            }
+
+            return setTtl;
+        }()
+        /**
+         * Delete a document.
+         * @return {Promise<void>} A promise which resolves if (and only if) the document is ultimately deleted.
+         * @public
+         * @example
+         * document.removeDocument()
+         *   .then(function() {
+         *     console.log('Document removeDocument() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Document removeDocument() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "removeDocument",
+        value: function () {
+            var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee14() {
+                return _regenerator2.default.wrap(function _callee14$(_context14) {
+                    while (1) {
+                        switch (_context14.prev = _context14.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context14.abrupt("return", this.syncDocumentImpl.removeDocument());
+
+                            case 2:
+                            case "end":
+                                return _context14.stop();
+                        }
+                    }
+                }, _callee14, this);
+            }));
+
+            function removeDocument() {
+                return _ref14.apply(this, arguments);
+            }
+
+            return removeDocument;
+        }()
+        /**
+         * Conclude work with the document instance and remove all event listeners attached to it.
+         * Any subsequent operation on this object will be rejected with error.
+         * Other local copies of this document will continue operating and receiving events normally.
+         * @public
+         * @example
+         * document.close();
+         */
+
+    }, {
+        key: "close",
+        value: function close() {
+            (0, _get3.default)(SyncDocument.prototype.__proto__ || (0, _getPrototypeOf2.default)(SyncDocument.prototype), "close", this).call(this);
+            this.syncDocumentImpl.detach(this.listenerUuid);
+        }
+    }]);
+    return SyncDocument;
+}(closeable_1.default);
 
 exports.SyncDocument = SyncDocument;
 exports.default = SyncDocument;
@@ -23085,98 +23367,12 @@ exports.default = SyncDocument;
  * });
  */
 
-},{"./entity":240,"./logger":243,"./mergingqueue":245,"./syncerror":254,"./utils":257,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57}],254:[function(_dereq_,module,exports){
+},{"./closeable":232,"./entity":235,"./mergingqueue":240,"./utils/logger":250,"./utils/sanitize":251,"./utils/syncerror":252,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/get":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58}],248:[function(_dereq_,module,exports){
 "use strict";
 
-var _create = _dereq_("babel-runtime/core-js/object/create");
+var _get2 = _dereq_("babel-runtime/helpers/get");
 
-var _create2 = _interopRequireDefault(_create);
-
-var _setPrototypeOf = _dereq_("babel-runtime/core-js/object/set-prototype-of");
-
-var _setPrototypeOf2 = _interopRequireDefault(_setPrototypeOf);
-
-var _from = _dereq_("babel-runtime/core-js/array/from");
-
-var _from2 = _interopRequireDefault(_from);
-
-var _construct = _dereq_("babel-runtime/core-js/reflect/construct");
-
-var _construct2 = _interopRequireDefault(_construct);
-
-var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
-
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _possibleConstructorReturn2 = _dereq_("babel-runtime/helpers/possibleConstructorReturn");
-
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-var _inherits2 = _dereq_("babel-runtime/helpers/inherits");
-
-var _inherits3 = _interopRequireDefault(_inherits2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _extendableBuiltin(cls) {
-    function ExtendableBuiltin() {
-        var instance = (0, _construct2.default)(cls, (0, _from2.default)(arguments));
-        (0, _setPrototypeOf2.default)(instance, (0, _getPrototypeOf2.default)(this));
-        return instance;
-    }
-
-    ExtendableBuiltin.prototype = (0, _create2.default)(cls.prototype, {
-        constructor: {
-            value: cls,
-            enumerable: false,
-            writable: true,
-            configurable: true
-        }
-    });
-
-    if (_setPrototypeOf2.default) {
-        (0, _setPrototypeOf2.default)(ExtendableBuiltin, cls);
-    } else {
-        ExtendableBuiltin.__proto__ = cls;
-    }
-
-    return ExtendableBuiltin;
-}
-
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Generic SyncLibrary error class
- */
-
-var SyncError = function (_extendableBuiltin2) {
-    (0, _inherits3.default)(SyncError, _extendableBuiltin2);
-
-    function SyncError(message) {
-        var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-        var code = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-        (0, _classCallCheck3.default)(this, SyncError);
-
-        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncError.__proto__ || (0, _getPrototypeOf2.default)(SyncError)).call(this));
-
-        _this.name = _this.constructor.name;
-        _this.message = message + " (status: " + status + ", code: " + code + ")";
-        _this.status = status;
-        _this.code = code;
-        return _this;
-    }
-
-    return SyncError;
-}(_extendableBuiltin(Error));
-
-exports.SyncError = SyncError;
-exports.default = SyncError;
-
-},{"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/create":38,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/object/set-prototype-of":42,"babel-runtime/core-js/reflect/construct":44,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],255:[function(_dereq_,module,exports){
-"use strict";
+var _get3 = _interopRequireDefault(_get2);
 
 var _assign = _dereq_("babel-runtime/core-js/object/assign");
 
@@ -23213,39 +23409,27 @@ var _inherits3 = _interopRequireDefault(_inherits2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = _dereq_("./utils");
-var logger_1 = _dereq_("./logger");
+var sanitize_1 = _dereq_("./utils/sanitize");
+var uri_1 = _dereq_("./utils/uri");
+var syncerror_1 = _dereq_("./utils/syncerror");
+var logger_1 = _dereq_("./utils/logger");
 var entity_1 = _dereq_("./entity");
 var listitem_1 = _dereq_("./listitem");
 var paginator_1 = _dereq_("./paginator");
 var cache_1 = _dereq_("./cache");
 var mergingqueue_1 = _dereq_("./mergingqueue");
-var syncerror_1 = _dereq_("./syncerror");
-/**
- * @class
- * @alias List
- * @classdesc Represents a Sync List, which stores an ordered list of values.
- * Use the {@link Client#list} method to obtain a reference to a Sync List.
- * @property {String} sid - List unique id, immutable identifier assigned by the system.
- * @property {String} [uniqueName=null] - List unique name, immutable identifier that can be assigned to list during creation.
- * @property {Date} dateUpdated Date when the List was last updated.
- *
- * @fires List#removed
- * @fires List#itemAdded
- * @fires List#itemRemoved
- * @fires List#itemUpdated
- */
+var closeable_1 = _dereq_("./closeable");
 
-var SyncList = function (_entity_1$SyncEntity) {
-    (0, _inherits3.default)(SyncList, _entity_1$SyncEntity);
+var SyncListImpl = function (_entity_1$SyncEntity) {
+    (0, _inherits3.default)(SyncListImpl, _entity_1$SyncEntity);
 
     /**
      * @private
      */
-    function SyncList(services, descriptor, removalHandler) {
-        (0, _classCallCheck3.default)(this, SyncList);
+    function SyncListImpl(services, descriptor, removalHandler) {
+        (0, _classCallCheck3.default)(this, SyncListImpl);
 
-        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncList.__proto__ || (0, _getPrototypeOf2.default)(SyncList)).call(this, services, removalHandler));
+        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncListImpl.__proto__ || (0, _getPrototypeOf2.default)(SyncListImpl)).call(this, services, removalHandler));
 
         var updateRequestReducer = function updateRequestReducer(acc, input) {
             return typeof input.ttl === 'number' ? { ttl: input.ttl } : acc;
@@ -23259,7 +23443,7 @@ var SyncList = function (_entity_1$SyncEntity) {
     // private props
 
 
-    (0, _createClass3.default)(SyncList, [{
+    (0, _createClass3.default)(SyncListImpl, [{
         key: "_addOrUpdateItemOnServer",
         value: function () {
             var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(url, data, ifMatch, ttl) {
@@ -23297,22 +23481,6 @@ var SyncList = function (_entity_1$SyncEntity) {
 
             return _addOrUpdateItemOnServer;
         }()
-        /**
-         * Add a new item to the list.
-         * @param {Object} value Value to be added.
-         * @param {List#ItemMetadata} [itemMetadata] Item metadata.
-         * @returns {Promise<ListItem>} A newly added item.
-         * @public
-         * @example
-         * list.push({ name: 'John Smith' }, { ttl: 86400 })
-         *   .then(function(item) {
-         *     console.log('List Item push() successful, item index:' + item.index + ', value: ', item.value)
-         *   })
-         *   .catch(function(error) {
-         *     console.error('List Item push() failed', error);
-         *   });
-         */
-
     }, {
         key: "push",
         value: function () {
@@ -23324,7 +23492,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                             case 0:
                                 ttl = (itemMetadata || {}).ttl;
 
-                                utils_1.validateOptionalTtl(ttl);
+                                sanitize_1.validateOptionalTtl(ttl);
                                 _context2.next = 4;
                                 return this._addOrUpdateItemOnServer(this.links.items, value, undefined, ttl);
 
@@ -23349,24 +23517,6 @@ var SyncList = function (_entity_1$SyncEntity) {
 
             return push;
         }()
-        /**
-         * Assign new value to an existing item, given its index.
-         * @param {Number} index Index of the item to be updated.
-         * @param {Object} value New value to be assigned to an item.
-         * @param {List#ItemMetadata} [itemMetadataUpdates] New item metadata.
-         * @returns {Promise<ListItem>} A promise with updated item containing latest known value.
-         * The promise will be rejected if the item does not exist.
-         * @public
-         * @example
-         * list.set(42, { name: 'John Smith' }, { ttl: 86400 })
-         *   .then(function(item) {
-         *     console.log('List Item set() successful, item value:', item.value)
-         *   })
-         *   .catch(function(error) {
-         *     console.error('List Item set() failed', error);
-         *   });
-         */
-
     }, {
         key: "set",
         value: function () {
@@ -23380,7 +23530,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                             case 0:
                                 input = itemMetadataUpdates || {};
 
-                                utils_1.validateOptionalTtl(input.ttl);
+                                sanitize_1.validateOptionalTtl(input.ttl);
                                 return _context3.abrupt("return", this.updateMergingQueue.squashAndAdd(index, input, function (input) {
                                     return _this2._updateItemUnconditionally(index, value, input.ttl);
                                 }));
@@ -23450,7 +23600,7 @@ var SyncList = function (_entity_1$SyncEntity) {
 
                             case 2:
                                 existingItem = _context5.sent;
-                                data = mutatorFunction(utils_1.deepClone(existingItem.value));
+                                data = mutatorFunction(sanitize_1.deepClone(existingItem.value));
 
                                 if (!data) {
                                     _context5.next = 25;
@@ -23507,29 +23657,6 @@ var SyncList = function (_entity_1$SyncEntity) {
 
             return _updateItemWithIfMatch;
         }()
-        /**
-         * Modify an existing item by applying a mutation function to it.
-         * @param {Number} index Index of an item to be changed.
-         * @param {List~Mutator} mutator A function that outputs a new value based on the existing value.
-         * @param {List#ItemMetadata} [itemMetadataUpdates] New item metadata.
-         * @returns {Promise<ListItem>} Resolves with the most recent item state, the output of a successful
-         *    mutation or a state that prompted graceful cancellation (mutator returned <code>null</code>). This promise
-         *    will be rejected if the indicated item does not already exist.
-         * @public
-         * @example
-         * var mutatorFunction = function(currentValue) {
-         *     currentValue.viewCount = (currentValue.viewCount || 0) + 1;
-         *     return currentValue;
-         * };
-         * list.mutate(42, mutatorFunction, { ttl: 86400 })
-         *   .then(function(item) {
-         *     console.log('List Item mutate() successful, new value:', item.value)
-         *   })
-         *   .catch(function(error) {
-         *     console.error('List Item mutate() failed', error);
-         *   });
-         */
-
     }, {
         key: "mutate",
         value: function () {
@@ -23543,7 +23670,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                             case 0:
                                 input = itemMetadataUpdates || {};
 
-                                utils_1.validateOptionalTtl(input.ttl);
+                                sanitize_1.validateOptionalTtl(input.ttl);
                                 return _context6.abrupt("return", this.updateMergingQueue.add(index, input, function (input) {
                                     return _this3._updateItemWithIfMatch(index, mutator, input.ttl);
                                 }));
@@ -23562,32 +23689,6 @@ var SyncList = function (_entity_1$SyncEntity) {
 
             return mutate;
         }()
-        /**
-         * Modify an existing item by appending new fields (or overwriting existing ones) with the values from Object.
-         * This is equivalent to
-         * <pre>
-         * list.mutate(42, function(currentValue) {
-         *   return Object.assign(currentValue, obj));
-         * });
-         * </pre>
-         * @param {Number} index Index of an item to be changed.
-         * @param {Object} obj Set of fields to update.
-         * @param {List#ItemMetadata} [itemMetadataUpdates] New item metadata.
-         * @returns {Promise<ListItem>} A promise with a modified item containing latest known value.
-         * The promise will be rejected if an item was not found.
-         * @public
-         * @example
-         * // Say, the List Item (index: 42) value is { name: 'John Smith' }
-         * list.update(42, { age: 34 }, { ttl: 86400 })
-         *   .then(function(item) {
-         *     // Now the List Item value is { name: 'John Smith', age: 34 }
-         *     console.log('List Item update() successful, new value:', item.value);
-         *   })
-         *   .catch(function(error) {
-         *     console.error('List Item update() failed', error);
-         *   });
-         */
-
     }, {
         key: "update",
         value: function () {
@@ -23614,22 +23715,6 @@ var SyncList = function (_entity_1$SyncEntity) {
 
             return update;
         }()
-        /**
-         * Delete an item, given its index.
-         * @param {Number} index Index of an item to be removed.
-         * @returns {Promise<void>} A promise to remove an item.
-         * A promise will be rejected if an item was not found.
-         * @public
-         * @example
-         * list.remove(42)
-         *   .then(function() {
-         *     console.log('List Item remove() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('List Item remove() failed', error);
-         *   });
-         */
-
     }, {
         key: "remove",
         value: function () {
@@ -23666,22 +23751,6 @@ var SyncList = function (_entity_1$SyncEntity) {
 
             return remove;
         }()
-        /**
-         * Retrieve an item by List index.
-         * @param {Number} index Item index in a List.
-         * @returns {Promise<ListItem>} A promise with an item containing latest known value.
-         * A promise will be rejected if an item was not found.
-         * @public
-         * @example
-         * list.get(42)
-         *   .then(function(item) {
-         *     console.log('List Item get() successful, item value:', item.value)
-         *   })
-         *   .catch(function(error) {
-         *     console.error('List Item get() failed', error);
-         *   });
-         */
-
     }, {
         key: "get",
         value: function () {
@@ -23773,7 +23842,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                         switch (_context11.prev = _context11.next) {
                             case 0:
                                 arg = arg || {};
-                                url = new utils_1.UriBuilder(this.links.items).queryParam('From', arg.from).queryParam('PageSize', arg.limit).queryParam('Index', arg.index).queryParam('PageToken', arg.pageToken).queryParam('Order', arg.order).build();
+                                url = new uri_1.UriBuilder(this.links.items).queryParam('From', arg.from).queryParam('PageSize', arg.limit).queryParam('Index', arg.index).queryParam('PageToken', arg.pageToken).queryParam('Order', arg.order).build();
                                 _context11.next = 4;
                                 return this.services.network.get(url);
 
@@ -23785,13 +23854,15 @@ var SyncList = function (_entity_1$SyncEntity) {
                                     if (itemInCache) {
                                         _this4._handleItemMutated(el.index, el.url, el.last_event_id, el.revision, el.data, el.date_updated, el.date_expires, false, true);
                                     } else {
-                                        _this4.cache.store(Number(el.index), new listitem_1.ListItem({ index: Number(el.index),
+                                        _this4.cache.store(Number(el.index), new listitem_1.ListItem({
+                                            index: Number(el.index),
                                             uri: el.url,
                                             revision: el.revision,
                                             lastEventId: el.last_event_id,
                                             dateUpdated: el.date_updated,
                                             dateExpires: el.date_expires,
-                                            value: el.data }), el.last_event_id);
+                                            value: el.data
+                                        }), el.last_event_id);
                                     }
                                     return _this4.cache.get(el.index);
                                 });
@@ -23814,30 +23885,6 @@ var SyncList = function (_entity_1$SyncEntity) {
 
             return queryItems;
         }()
-        /**
-         * Query a list of items from collection.
-         * @param {Object} [args] Arguments for query
-         * @param {Number} [args.from] Item index, which should be used as the offset.
-         * If undefined, starts from the beginning or end depending on args.order.
-         * @param {Number} [args.pageSize=50] Results page size.
-         * @param {'asc'|'desc'} [args.order='asc'] Numeric order of results.
-         * @returns {Promise<Paginator<ListItem>>}
-         * @public
-         * @example
-         * var pageHandler = function(paginator) {
-         *   paginator.items.forEach(function(item) {
-         *     console.log('Item ' + item.index + ': ', item.value);
-         *   });
-         *   return paginator.hasNextPage ? paginator.nextPage().then(pageHandler)
-         *                                : null;
-         * };
-         * list.getItems({ from: 0, order: 'asc' })
-         *   .then(pageHandler)
-         *   .catch(function(error) {
-         *     console.error('List getItems() failed', error);
-         *   });
-         */
-
     }, {
         key: "getItems",
         value: function () {
@@ -23847,7 +23894,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                         switch (_context12.prev = _context12.next) {
                             case 0:
                                 args = args || {};
-                                utils_1.validatePageSize(args.pageSize);
+                                sanitize_1.validatePageSize(args.pageSize);
                                 args.limit = args.pageSize || args.limit || 50;
                                 args.order = args.order || 'asc';
                                 return _context12.abrupt("return", this.queryItems(args));
@@ -23911,21 +23958,6 @@ var SyncList = function (_entity_1$SyncEntity) {
 
             return getContext;
         }()
-        /**
-         * Update the time-to-live of the list.
-         * @param {Number} ttl Specifies the TTL in seconds after which the list is subject to automatic deletion. The value 0 means infinity.
-         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
-         * @public
-         * @example
-         * list.setTtl(3600)
-         *   .then(function() {
-         *     console.log('List setTtl() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('List setTtl() failed', error);
-         *   });
-         */
-
     }, {
         key: "setTtl",
         value: function () {
@@ -23935,7 +23967,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                     while (1) {
                         switch (_context14.prev = _context14.next) {
                             case 0:
-                                utils_1.validateMandatoryTtl(ttl);
+                                sanitize_1.validateMandatoryTtl(ttl);
                                 _context14.prev = 1;
                                 requestBody = { ttl: ttl };
                                 _context14.next = 5;
@@ -23971,22 +24003,6 @@ var SyncList = function (_entity_1$SyncEntity) {
 
             return setTtl;
         }()
-        /**
-         * Update the time-to-live of a list item.
-         * @param {Number} index Item index.
-         * @param {Number} ttl Specifies the TTL in seconds after which the list item is subject to automatic deletion. The value 0 means infinity.
-         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
-         * @public
-         * @example
-         * list.setItemTtl(42, 86400)
-         *   .then(function() {
-         *     console.log('List setItemTtl() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('List setItemTtl() failed', error);
-         *   });
-         */
-
     }, {
         key: "setItemTtl",
         value: function () {
@@ -23996,7 +24012,7 @@ var SyncList = function (_entity_1$SyncEntity) {
                     while (1) {
                         switch (_context15.prev = _context15.next) {
                             case 0:
-                                utils_1.validateMandatoryTtl(ttl);
+                                sanitize_1.validateMandatoryTtl(ttl);
                                 _context15.next = 3;
                                 return this.get(index);
 
@@ -24025,20 +24041,6 @@ var SyncList = function (_entity_1$SyncEntity) {
 
             return setItemTtl;
         }()
-        /**
-         * Delete this list. It will be impossible to restore it.
-         * @return {Promise<void>} A promise that resolves when the list has been deleted.
-         * @public
-         * @example
-         * list.removeList()
-         *   .then(function() {
-         *     console.log('List removeList() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('List removeList() failed', error);
-         *   });
-         */
-
     }, {
         key: "removeList",
         value: function () {
@@ -24072,7 +24074,7 @@ var SyncList = function (_entity_1$SyncEntity) {
         value: function onRemoved(locally) {
             this._unsubscribe();
             this.removalHandler(this.type, this.sid, this.uniqueName);
-            this.emit('removed', { isLocal: locally });
+            this.broadcastEventToListeners('removed', { isLocal: locally });
         }
     }, {
         key: "shouldIgnoreEvent",
@@ -24165,7 +24167,7 @@ var SyncList = function (_entity_1$SyncEntity) {
         key: "emitItemMutationEvent",
         value: function emitItemMutationEvent(item, remote, added) {
             var eventName = added ? 'itemAdded' : 'itemUpdated';
-            this.emit(eventName, { item: item, isLocal: !remote });
+            this.broadcastEventToListeners(eventName, { item: item, isLocal: !remote });
         }
         /**
          * @private
@@ -24176,7 +24178,7 @@ var SyncList = function (_entity_1$SyncEntity) {
         value: function _handleItemRemoved(index, eventId, oldData, dateUpdated, remote) {
             this._updateRootDateUpdated(dateUpdated);
             this.cache.delete(index, eventId);
-            this.emit('itemRemoved', { index: index, isLocal: !remote, value: oldData });
+            this.broadcastEventToListeners('itemRemoved', { index: index, isLocal: !remote, value: oldData });
         }
         /**
          * @private
@@ -24187,7 +24189,7 @@ var SyncList = function (_entity_1$SyncEntity) {
         value: function _handleContextUpdate(data, eventId, dateUpdated) {
             this._updateRootDateUpdated(dateUpdated);
             if (this._updateContextIfRequired(data, eventId)) {
-                this.emit('contextUpdated', { context: data, isLocal: false });
+                this.broadcastEventToListeners('contextUpdated', { context: data, isLocal: false });
             }
         }
         /**
@@ -24236,6 +24238,18 @@ var SyncList = function (_entity_1$SyncEntity) {
         get: function get() {
             return 'list';
         }
+        // below properties are specific to Insights only
+
+    }, {
+        key: "indexName",
+        get: function get() {
+            return undefined;
+        }
+    }, {
+        key: "queryString",
+        get: function get() {
+            return undefined;
+        }
         // public props, documented along with class description
 
     }, {
@@ -24259,8 +24273,576 @@ var SyncList = function (_entity_1$SyncEntity) {
             return 'list';
         }
     }]);
-    return SyncList;
+    return SyncListImpl;
 }(entity_1.SyncEntity);
+
+exports.SyncListImpl = SyncListImpl;
+/**
+ * @class
+ * @alias List
+ * @classdesc Represents a Sync List, which stores an ordered list of values.
+ * Use the {@link Client#list} method to obtain a reference to a Sync List.
+ * @property {String} sid - List unique id, immutable identifier assigned by the system.
+ * @property {String} [uniqueName=null] - List unique name, immutable identifier that can be assigned to list during creation.
+ * @property {Date} dateUpdated Date when the List was last updated.
+ *
+ * @fires List#removed
+ * @fires List#itemAdded
+ * @fires List#itemRemoved
+ * @fires List#itemUpdated
+ */
+
+var SyncList = function (_closeable_1$default) {
+    (0, _inherits3.default)(SyncList, _closeable_1$default);
+    (0, _createClass3.default)(SyncList, [{
+        key: "uri",
+
+        // private props
+        get: function get() {
+            return this.syncListImpl.uri;
+        }
+    }, {
+        key: "revision",
+        get: function get() {
+            return this.syncListImpl.revision;
+        }
+    }, {
+        key: "lastEventId",
+        get: function get() {
+            return this.syncListImpl.lastEventId;
+        }
+    }, {
+        key: "links",
+        get: function get() {
+            return this.syncListImpl.links;
+        }
+    }, {
+        key: "dateExpires",
+        get: function get() {
+            return this.syncListImpl.dateExpires;
+        }
+    }, {
+        key: "type",
+        get: function get() {
+            return SyncListImpl.type;
+        }
+        // public props, documented along with class description
+
+    }, {
+        key: "sid",
+        get: function get() {
+            return this.syncListImpl.sid;
+        }
+    }, {
+        key: "uniqueName",
+        get: function get() {
+            return this.syncListImpl.uniqueName;
+        }
+    }, {
+        key: "dateUpdated",
+        get: function get() {
+            return this.syncListImpl.dateUpdated;
+        }
+    }], [{
+        key: "type",
+        get: function get() {
+            return SyncListImpl.type;
+        }
+    }]);
+
+    function SyncList(syncListImpl) {
+        (0, _classCallCheck3.default)(this, SyncList);
+
+        var _this5 = (0, _possibleConstructorReturn3.default)(this, (SyncList.__proto__ || (0, _getPrototypeOf2.default)(SyncList)).call(this));
+
+        _this5.syncListImpl = syncListImpl;
+        _this5.syncListImpl.attach(_this5);
+        return _this5;
+    }
+    /**
+     * Add a new item to the list.
+     * @param {Object} value Value to be added.
+     * @param {List#ItemMetadata} [itemMetadata] Item metadata.
+     * @returns {Promise<ListItem>} A newly added item.
+     * @public
+     * @example
+     * list.push({ name: 'John Smith' }, { ttl: 86400 })
+     *   .then(function(item) {
+     *     console.log('List Item push() successful, item index:' + item.index + ', value: ', item.value)
+     *   })
+     *   .catch(function(error) {
+     *     console.error('List Item push() failed', error);
+     *   });
+     */
+
+
+    (0, _createClass3.default)(SyncList, [{
+        key: "push",
+        value: function () {
+            var _ref17 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee17(value, itemMetadata) {
+                return _regenerator2.default.wrap(function _callee17$(_context17) {
+                    while (1) {
+                        switch (_context17.prev = _context17.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context17.abrupt("return", this.syncListImpl.push(value, itemMetadata));
+
+                            case 2:
+                            case "end":
+                                return _context17.stop();
+                        }
+                    }
+                }, _callee17, this);
+            }));
+
+            function push(_x30, _x31) {
+                return _ref17.apply(this, arguments);
+            }
+
+            return push;
+        }()
+        /**
+         * Assign new value to an existing item, given its index.
+         * @param {Number} index Index of the item to be updated.
+         * @param {Object} value New value to be assigned to an item.
+         * @param {List#ItemMetadata} [itemMetadataUpdates] New item metadata.
+         * @returns {Promise<ListItem>} A promise with updated item containing latest known value.
+         * The promise will be rejected if the item does not exist.
+         * @public
+         * @example
+         * list.set(42, { name: 'John Smith' }, { ttl: 86400 })
+         *   .then(function(item) {
+         *     console.log('List Item set() successful, item value:', item.value)
+         *   })
+         *   .catch(function(error) {
+         *     console.error('List Item set() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "set",
+        value: function () {
+            var _ref18 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee18(index, value, itemMetadataUpdates) {
+                return _regenerator2.default.wrap(function _callee18$(_context18) {
+                    while (1) {
+                        switch (_context18.prev = _context18.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context18.abrupt("return", this.syncListImpl.set(index, value, itemMetadataUpdates));
+
+                            case 2:
+                            case "end":
+                                return _context18.stop();
+                        }
+                    }
+                }, _callee18, this);
+            }));
+
+            function set(_x32, _x33, _x34) {
+                return _ref18.apply(this, arguments);
+            }
+
+            return set;
+        }()
+        /**
+         * Modify an existing item by applying a mutation function to it.
+         * @param {Number} index Index of an item to be changed.
+         * @param {List~Mutator} mutator A function that outputs a new value based on the existing value.
+         * @param {List#ItemMetadata} [itemMetadataUpdates] New item metadata.
+         * @returns {Promise<ListItem>} Resolves with the most recent item state, the output of a successful
+         *    mutation or a state that prompted graceful cancellation (mutator returned <code>null</code>). This promise
+         *    will be rejected if the indicated item does not already exist.
+         * @public
+         * @example
+         * var mutatorFunction = function(currentValue) {
+         *     currentValue.viewCount = (currentValue.viewCount || 0) + 1;
+         *     return currentValue;
+         * };
+         * list.mutate(42, mutatorFunction, { ttl: 86400 })
+         *   .then(function(item) {
+         *     console.log('List Item mutate() successful, new value:', item.value)
+         *   })
+         *   .catch(function(error) {
+         *     console.error('List Item mutate() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "mutate",
+        value: function () {
+            var _ref19 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee19(index, mutator, itemMetadataUpdates) {
+                return _regenerator2.default.wrap(function _callee19$(_context19) {
+                    while (1) {
+                        switch (_context19.prev = _context19.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context19.abrupt("return", this.syncListImpl.mutate(index, mutator, itemMetadataUpdates));
+
+                            case 2:
+                            case "end":
+                                return _context19.stop();
+                        }
+                    }
+                }, _callee19, this);
+            }));
+
+            function mutate(_x35, _x36, _x37) {
+                return _ref19.apply(this, arguments);
+            }
+
+            return mutate;
+        }()
+        /**
+         * Modify an existing item by appending new fields (or overwriting existing ones) with the values from Object.
+         * This is equivalent to
+         * <pre>
+         * list.mutate(42, function(currentValue) {
+         *   return Object.assign(currentValue, obj));
+         * });
+         * </pre>
+         * @param {Number} index Index of an item to be changed.
+         * @param {Object} obj Set of fields to update.
+         * @param {List#ItemMetadata} [itemMetadataUpdates] New item metadata.
+         * @returns {Promise<ListItem>} A promise with a modified item containing latest known value.
+         * The promise will be rejected if an item was not found.
+         * @public
+         * @example
+         * // Say, the List Item (index: 42) value is { name: 'John Smith' }
+         * list.update(42, { age: 34 }, { ttl: 86400 })
+         *   .then(function(item) {
+         *     // Now the List Item value is { name: 'John Smith', age: 34 }
+         *     console.log('List Item update() successful, new value:', item.value);
+         *   })
+         *   .catch(function(error) {
+         *     console.error('List Item update() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "update",
+        value: function () {
+            var _ref20 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee20(index, obj, itemMetadataUpdates) {
+                return _regenerator2.default.wrap(function _callee20$(_context20) {
+                    while (1) {
+                        switch (_context20.prev = _context20.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context20.abrupt("return", this.syncListImpl.update(index, obj, itemMetadataUpdates));
+
+                            case 2:
+                            case "end":
+                                return _context20.stop();
+                        }
+                    }
+                }, _callee20, this);
+            }));
+
+            function update(_x38, _x39, _x40) {
+                return _ref20.apply(this, arguments);
+            }
+
+            return update;
+        }()
+        /**
+         * Delete an item, given its index.
+         * @param {Number} index Index of an item to be removed.
+         * @returns {Promise<void>} A promise to remove an item.
+         * A promise will be rejected if an item was not found.
+         * @public
+         * @example
+         * list.remove(42)
+         *   .then(function() {
+         *     console.log('List Item remove() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('List Item remove() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "remove",
+        value: function () {
+            var _ref21 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee21(index) {
+                return _regenerator2.default.wrap(function _callee21$(_context21) {
+                    while (1) {
+                        switch (_context21.prev = _context21.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context21.abrupt("return", this.syncListImpl.remove(index));
+
+                            case 2:
+                            case "end":
+                                return _context21.stop();
+                        }
+                    }
+                }, _callee21, this);
+            }));
+
+            function remove(_x41) {
+                return _ref21.apply(this, arguments);
+            }
+
+            return remove;
+        }()
+        /**
+         * Retrieve an item by List index.
+         * @param {Number} index Item index in a List.
+         * @returns {Promise<ListItem>} A promise with an item containing latest known value.
+         * A promise will be rejected if an item was not found.
+         * @public
+         * @example
+         * list.get(42)
+         *   .then(function(item) {
+         *     console.log('List Item get() successful, item value:', item.value)
+         *   })
+         *   .catch(function(error) {
+         *     console.error('List Item get() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "get",
+        value: function () {
+            var _ref22 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee22(index) {
+                return _regenerator2.default.wrap(function _callee22$(_context22) {
+                    while (1) {
+                        switch (_context22.prev = _context22.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context22.abrupt("return", this.syncListImpl.get(index));
+
+                            case 2:
+                            case "end":
+                                return _context22.stop();
+                        }
+                    }
+                }, _callee22, this);
+            }));
+
+            function get(_x42) {
+                return _ref22.apply(this, arguments);
+            }
+
+            return get;
+        }()
+        /**
+         * Retrieve a List context
+         * @returns {Promise<Object>} A promise with a List's context
+         * @ignore
+         */
+
+    }, {
+        key: "getContext",
+        value: function () {
+            var _ref23 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee23() {
+                return _regenerator2.default.wrap(function _callee23$(_context23) {
+                    while (1) {
+                        switch (_context23.prev = _context23.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context23.abrupt("return", this.syncListImpl.getContext());
+
+                            case 2:
+                            case "end":
+                                return _context23.stop();
+                        }
+                    }
+                }, _callee23, this);
+            }));
+
+            function getContext() {
+                return _ref23.apply(this, arguments);
+            }
+
+            return getContext;
+        }()
+        /**
+         * Query a list of items from collection.
+         * @param {Object} [args] Arguments for query
+         * @param {Number} [args.from] Item index, which should be used as the offset.
+         * If undefined, starts from the beginning or end depending on args.order.
+         * @param {Number} [args.pageSize=50] Results page size.
+         * @param {'asc'|'desc'} [args.order='asc'] Numeric order of results.
+         * @returns {Promise<Paginator<ListItem>>}
+         * @public
+         * @example
+         * var pageHandler = function(paginator) {
+         *   paginator.items.forEach(function(item) {
+         *     console.log('Item ' + item.index + ': ', item.value);
+         *   });
+         *   return paginator.hasNextPage ? paginator.nextPage().then(pageHandler)
+         *                                : null;
+         * };
+         * list.getItems({ from: 0, order: 'asc' })
+         *   .then(pageHandler)
+         *   .catch(function(error) {
+         *     console.error('List getItems() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "getItems",
+        value: function () {
+            var _ref24 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee24(args) {
+                return _regenerator2.default.wrap(function _callee24$(_context24) {
+                    while (1) {
+                        switch (_context24.prev = _context24.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context24.abrupt("return", this.syncListImpl.getItems(args));
+
+                            case 2:
+                            case "end":
+                                return _context24.stop();
+                        }
+                    }
+                }, _callee24, this);
+            }));
+
+            function getItems(_x43) {
+                return _ref24.apply(this, arguments);
+            }
+
+            return getItems;
+        }()
+        /**
+         * Update the time-to-live of the list.
+         * @param {Number} ttl Specifies the TTL in seconds after which the list is subject to automatic deletion. The value 0 means infinity.
+         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
+         * @public
+         * @example
+         * list.setTtl(3600)
+         *   .then(function() {
+         *     console.log('List setTtl() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('List setTtl() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "setTtl",
+        value: function () {
+            var _ref25 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee25(ttl) {
+                return _regenerator2.default.wrap(function _callee25$(_context25) {
+                    while (1) {
+                        switch (_context25.prev = _context25.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context25.abrupt("return", this.syncListImpl.setTtl(ttl));
+
+                            case 2:
+                            case "end":
+                                return _context25.stop();
+                        }
+                    }
+                }, _callee25, this);
+            }));
+
+            function setTtl(_x44) {
+                return _ref25.apply(this, arguments);
+            }
+
+            return setTtl;
+        }()
+        /**
+         * Update the time-to-live of a list item.
+         * @param {Number} index Item index.
+         * @param {Number} ttl Specifies the TTL in seconds after which the list item is subject to automatic deletion. The value 0 means infinity.
+         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
+         * @public
+         * @example
+         * list.setItemTtl(42, 86400)
+         *   .then(function() {
+         *     console.log('List setItemTtl() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('List setItemTtl() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "setItemTtl",
+        value: function () {
+            var _ref26 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee26(index, ttl) {
+                return _regenerator2.default.wrap(function _callee26$(_context26) {
+                    while (1) {
+                        switch (_context26.prev = _context26.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context26.abrupt("return", this.syncListImpl.setItemTtl(index, ttl));
+
+                            case 2:
+                            case "end":
+                                return _context26.stop();
+                        }
+                    }
+                }, _callee26, this);
+            }));
+
+            function setItemTtl(_x45, _x46) {
+                return _ref26.apply(this, arguments);
+            }
+
+            return setItemTtl;
+        }()
+        /**
+         * Delete this list. It will be impossible to restore it.
+         * @return {Promise<void>} A promise that resolves when the list has been deleted.
+         * @public
+         * @example
+         * list.removeList()
+         *   .then(function() {
+         *     console.log('List removeList() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('List removeList() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "removeList",
+        value: function () {
+            var _ref27 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee27() {
+                return _regenerator2.default.wrap(function _callee27$(_context27) {
+                    while (1) {
+                        switch (_context27.prev = _context27.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context27.abrupt("return", this.syncListImpl.removeList());
+
+                            case 2:
+                            case "end":
+                                return _context27.stop();
+                        }
+                    }
+                }, _callee27, this);
+            }));
+
+            function removeList() {
+                return _ref27.apply(this, arguments);
+            }
+
+            return removeList;
+        }()
+        /**
+         * Conclude work with the list instance and remove all event listeners attached to it.
+         * Any subsequent operation on this object will be rejected with error.
+         * Other local copies of this list will continue operating and receiving events normally.
+         * @public
+         * @example
+         * list.close();
+         */
+
+    }, {
+        key: "close",
+        value: function close() {
+            (0, _get3.default)(SyncList.prototype.__proto__ || (0, _getPrototypeOf2.default)(SyncList.prototype), "close", this).call(this);
+            this.syncListImpl.detach(this.listenerUuid);
+        }
+    }]);
+    return SyncList;
+}(closeable_1.default);
 
 exports.SyncList = SyncList;
 exports.default = SyncList;
@@ -24329,8 +24911,12 @@ exports.default = SyncList;
  * });
  */
 
-},{"./cache":235,"./entity":240,"./listitem":242,"./logger":243,"./mergingqueue":245,"./paginator":247,"./syncerror":254,"./utils":257,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57}],256:[function(_dereq_,module,exports){
+},{"./cache":229,"./closeable":232,"./entity":235,"./listitem":237,"./mergingqueue":240,"./paginator":241,"./utils/logger":250,"./utils/sanitize":251,"./utils/syncerror":252,"./utils/uri":254,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/get":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58}],249:[function(_dereq_,module,exports){
 "use strict";
+
+var _get2 = _dereq_("babel-runtime/helpers/get");
+
+var _get3 = _interopRequireDefault(_get2);
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
 
@@ -24371,40 +24957,27 @@ var _inherits3 = _interopRequireDefault(_inherits2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = _dereq_("./utils");
-var logger_1 = _dereq_("./logger");
+var sanitize_1 = _dereq_("./utils/sanitize");
+var uri_1 = _dereq_("./utils/uri");
+var syncerror_1 = _dereq_("./utils/syncerror");
+var logger_1 = _dereq_("./utils/logger");
 var entity_1 = _dereq_("./entity");
 var mapitem_1 = _dereq_("./mapitem");
 var paginator_1 = _dereq_("./paginator");
 var cache_1 = _dereq_("./cache");
 var mergingqueue_1 = _dereq_("./mergingqueue");
-var syncerror_1 = _dereq_("./syncerror");
-/**
- * @class
- * @alias Map
- * @classdesc Represents a Sync Map, which stores an unordered set of key:value pairs.
- * Use the {@link Client#map} method to obtain a reference to a Sync Map.
- * @property {String} sid An immutable identifier (a SID) assigned by the system on creation.
- * @property {String} [uniqueName=null] - An optional immutable identifier that may be assigned by the
- * programmer to this map on creation. Unique among other Maps.
- * @property {Date} dateUpdated Date when the Map was last updated.
- *
- * @fires Map#removed
- * @fires Map#itemAdded
- * @fires Map#itemRemoved
- * @fires Map#itemUpdated
- */
+var closeable_1 = _dereq_("./closeable");
 
-var SyncMap = function (_entity_1$SyncEntity) {
-    (0, _inherits3.default)(SyncMap, _entity_1$SyncEntity);
+var SyncMapImpl = function (_entity_1$SyncEntity) {
+    (0, _inherits3.default)(SyncMapImpl, _entity_1$SyncEntity);
 
     /**
      * @private
      */
-    function SyncMap(services, descriptor, removalHandler) {
-        (0, _classCallCheck3.default)(this, SyncMap);
+    function SyncMapImpl(services, descriptor, removalHandler) {
+        (0, _classCallCheck3.default)(this, SyncMapImpl);
 
-        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncMap.__proto__ || (0, _getPrototypeOf2.default)(SyncMap)).call(this, services, removalHandler));
+        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncMapImpl.__proto__ || (0, _getPrototypeOf2.default)(SyncMapImpl)).call(this, services, removalHandler));
 
         var updateRequestReducer = function updateRequestReducer(acc, input) {
             return typeof input.ttl === 'number' ? { ttl: input.ttl } : acc;
@@ -24424,25 +24997,8 @@ var SyncMap = function (_entity_1$SyncEntity) {
     // private props
 
 
-    (0, _createClass3.default)(SyncMap, [{
+    (0, _createClass3.default)(SyncMapImpl, [{
         key: "set",
-
-        /**
-         * Add a new item to the map with the given key:value pair. Overwrites any value that might already exist at that key.
-         * @param {String} key Unique item identifier.
-         * @param {Object} value Value to be set.
-         * @param {Map#ItemMetadata} [itemMetadataUpdates] New item metadata.
-         * @returns {Promise<MapItem>} Newly added item, or modified one if already exists, with the latest known value.
-         * @public
-         * @example
-         * map.set('myKey', { name: 'John Smith' }, { ttl: 86400 })
-         *   .then(function(item) {
-         *     console.log('Map Item set() successful, item value:', item.value);
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Map Item set() failed', error);
-         *   });
-         */
         value: function () {
             var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(key, value, itemMetadataUpdates) {
                 var _this2 = this;
@@ -24454,7 +25010,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                             case 0:
                                 input = itemMetadataUpdates || {};
 
-                                utils_1.validateOptionalTtl(input.ttl);
+                                sanitize_1.validateOptionalTtl(input.ttl);
                                 return _context.abrupt("return", this.updateMergingQueue.squashAndAdd(key, input, function (input) {
                                     return _this2._putItemUnconditionally(key, value, input.ttl);
                                 }));
@@ -24473,22 +25029,6 @@ var SyncMap = function (_entity_1$SyncEntity) {
 
             return set;
         }()
-        /**
-         * Retrieve an item by key.
-         * @param {String} key Identifies the desired item.
-         * @returns {Promise<MapItem>} A promise that resolves when the item has been fetched.
-         * This promise will be rejected if item was not found.
-         * @public
-         * @example
-         * map.get('myKey')
-         *   .then(function(item) {
-         *     console.log('Map Item get() successful, item value:', item.value)
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Map Item get() failed', error);
-         *   });
-         */
-
     }, {
         key: "get",
         value: function () {
@@ -24560,32 +25100,6 @@ var SyncMap = function (_entity_1$SyncEntity) {
 
             return _getItemFromServer;
         }()
-        /**
-         * Schedules a modification to this Map Item that will apply a mutation function.
-         * If no Item with the given key exists, it will first be created, having the default value (<code>{}</code>).
-         * @param {String} key Selects the map item to be mutated.
-         * @param {Map~Mutator} mutator A function that outputs a new value based on the existing value.
-         * May be called multiple times, particularly if this Map Item is modified concurrently by remote code.
-         * If the mutation ultimately succeeds, the Map Item will have made the particular transition described
-         * by this function.
-         * @param {Map#ItemMetadata} [itemMetadataUpdates] New item metadata.
-         * @returns {Promise<MapItem>} Resolves with the most recent item state, the output of a successful
-         * mutation or a state that prompted graceful cancellation (mutator returned <code>null</code>).
-         * @public
-         * @example
-         * var mutatorFunction = function(currentValue) {
-         *     currentValue.viewCount = (currentValue.viewCount || 0) + 1;
-         *     return currentValue;
-         * };
-         * map.mutate('myKey', mutatorFunction, { ttl: 86400 })
-         *   .then(function(item) {
-         *     console.log('Map Item mutate() successful, new value:', item.value)
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Map Item mutate() failed', error);
-         *   });
-         */
-
     }, {
         key: "mutate",
         value: function () {
@@ -24599,7 +25113,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                             case 0:
                                 input = itemMetadataUpdates || {};
 
-                                utils_1.validateOptionalTtl(input.ttl);
+                                sanitize_1.validateOptionalTtl(input.ttl);
                                 return _context4.abrupt("return", this.updateMergingQueue.add(key, input, function (input) {
                                     return _this3._putItemWithIfMatch(key, mutator, input.ttl);
                                 }));
@@ -24618,33 +25132,6 @@ var SyncMap = function (_entity_1$SyncEntity) {
 
             return mutate;
         }()
-        /**
-         * Modify a map item by appending new fields (or by overwriting existing ones) with the values from
-         * the provided Object. Creates a new item if no item by this key exists, copying all given fields and values
-         * into it.
-         * This is equivalent to
-         * <pre>
-         * map.mutate('myKey', function(currentValue) {
-         *   return Object.assign(currentValue, obj));
-         * });
-         * </pre>
-         * @param {String} key Selects the map item to update.
-         * @param {Object} obj Specifies the particular (top-level) attributes that will receive new values.
-         * @param {Map#ItemMetadata} [itemMetadataUpdates] New item metadata.
-         * @returns {Promise<MapItem>} A promise resolving to the modified item in its new state.
-         * @public
-         * @example
-         * // Say, the Map Item (key: 'myKey') value is { name: 'John Smith' }
-         * map.update('myKey', { age: 34 }, { ttl: 86400 })
-         *   .then(function(item) {
-         *     // Now the Map Item value is { name: 'John Smith', age: 34 }
-         *     console.log('Map Item update() successful, new value:', item.value);
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Map Item update() failed', error);
-         *   });
-         */
-
     }, {
         key: "update",
         value: function () {
@@ -24725,7 +25212,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
 
                             case 2:
                                 currentItem = _context7.sent;
-                                data = mutatorFunction(utils_1.deepClone(currentItem.value));
+                                data = mutatorFunction(sanitize_1.deepClone(currentItem.value));
 
                                 if (!data) {
                                     _context7.next = 26;
@@ -24792,7 +25279,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                     while (1) {
                         switch (_context8.prev = _context8.next) {
                             case 0:
-                                url = new utils_1.UriBuilder(this.links.items).pathSegment(key).build();
+                                url = new uri_1.UriBuilder(this.links.items).pathSegment(key).build();
                                 requestBody = { data: data };
 
                                 if (typeof ttl === 'number') {
@@ -24834,22 +25321,6 @@ var SyncMap = function (_entity_1$SyncEntity) {
 
             return _putItemToServer;
         }()
-        /**
-         * Delete an item, given its key.
-         * @param {String} key Selects the item to delete.
-         * @returns {Promise<void>} A promise to remove an item.
-         * The promise will be rejected if 'key' is undefined or an item was not found.
-         * @public
-         * @example
-         * map.remove('myKey')
-         *   .then(function() {
-         *     console.log('Map Item remove() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Map Item remove() failed', error);
-         *   });
-         */
-
     }, {
         key: "remove",
         value: function () {
@@ -24910,7 +25381,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                         switch (_context10.prev = _context10.next) {
                             case 0:
                                 args = args || {};
-                                uri = new utils_1.UriBuilder(this.links.items).queryParam('From', args.from).queryParam('PageSize', args.limit).queryParam('Key', args.key).queryParam('PageToken', args.pageToken).queryParam('Order', args.order).build();
+                                uri = new uri_1.UriBuilder(this.links.items).queryParam('From', args.from).queryParam('PageSize', args.limit).queryParam('Key', args.key).queryParam('PageToken', args.pageToken).queryParam('Order', args.order).build();
                                 _context10.next = 4;
                                 return this.services.network.get(uri);
 
@@ -24945,29 +25416,6 @@ var SyncMap = function (_entity_1$SyncEntity) {
 
             return queryItems;
         }()
-        /**
-         * Get a complete list of items from the map.
-         * @param {Object} [args] Arguments for query.
-         * @param {String} [args.from] Item key, which should be used as the offset. If undefined, starts from the beginning or end depending on args.order.
-         * @param {Number} [args.pageSize=50] Result page size.
-         * @param {'asc'|'desc'} [args.order='asc'] Lexicographical order of results.
-         * @return {Promise<Paginator<MapItem>>}
-         * @public
-         * @example
-         * var pageHandler = function(paginator) {
-         *   paginator.items.forEach(function(item) {
-         *     console.log('Item ' + item.key + ': ', item.value);
-         *   });
-         *   return paginator.hasNextPage ? paginator.nextPage().then(pageHandler)
-         *                                : null;
-         * };
-         * map.getItems({ from: 'myKey', order: 'asc' })
-         *   .then(pageHandler)
-         *   .catch(function(error) {
-         *     console.error('Map getItems() failed', error);
-         *   });
-         */
-
     }, {
         key: "getItems",
         value: function () {
@@ -24977,7 +25425,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                         switch (_context11.prev = _context11.next) {
                             case 0:
                                 args = args || {};
-                                utils_1.validatePageSize(args.pageSize);
+                                sanitize_1.validatePageSize(args.pageSize);
                                 args.limit = args.pageSize || args.limit || 50;
                                 args.order = args.order || 'asc';
                                 return _context11.abrupt("return", this.queryItems(args));
@@ -25104,7 +25552,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
         key: "emitItemMutationEvent",
         value: function emitItemMutationEvent(item, remote, added) {
             var eventName = added ? 'itemAdded' : 'itemUpdated';
-            this.emit(eventName, { item: item, isLocal: !remote });
+            this.broadcastEventToListeners(eventName, { item: item, isLocal: !remote });
         }
         /**
          * @private
@@ -25115,32 +25563,15 @@ var SyncMap = function (_entity_1$SyncEntity) {
         value: function _handleItemRemoved(key, eventId, oldData, dateUpdated, remote) {
             this._updateRootDateUpdated(dateUpdated);
             this.cache.delete(key, eventId);
-            this.emit('itemRemoved', { key: key, isLocal: !remote, value: oldData });
+            this.broadcastEventToListeners('itemRemoved', { key: key, isLocal: !remote, value: oldData });
         }
     }, {
         key: "onRemoved",
         value: function onRemoved(locally) {
             this._unsubscribe();
             this.removalHandler(this.type, this.sid, this.uniqueName);
-            //
-            // Should also do some cleanup here
-            this.emit('removed', { isLocal: locally });
+            this.broadcastEventToListeners('removed', { isLocal: locally });
         }
-        /**
-         * Update the time-to-live of the map.
-         * @param {Number} ttl Specifies the TTL in seconds after which the map is subject to automatic deletion. The value 0 means infinity.
-         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
-         * @public
-         * @example
-         * map.setTtl(3600)
-         *   .then(function() {
-         *     console.log('Map setTtl() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Map setTtl() failed', error);
-         *   });
-         */
-
     }, {
         key: "setTtl",
         value: function () {
@@ -25150,7 +25581,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                     while (1) {
                         switch (_context12.prev = _context12.next) {
                             case 0:
-                                utils_1.validateMandatoryTtl(ttl);
+                                sanitize_1.validateMandatoryTtl(ttl);
                                 _context12.prev = 1;
                                 requestBody = { ttl: ttl };
                                 _context12.next = 5;
@@ -25186,22 +25617,6 @@ var SyncMap = function (_entity_1$SyncEntity) {
 
             return setTtl;
         }()
-        /**
-         * Update the time-to-live of a map item.
-         * @param {Number} key Item key.
-         * @param {Number} ttl Specifies the TTL in seconds after which the map item is subject to automatic deletion. The value 0 means infinity.
-         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
-         * @public
-         * @example
-         * map.setItemTtl('myKey', 86400)
-         *   .then(function() {
-         *     console.log('Map setItemTtl() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Map setItemTtl() failed', error);
-         *   });
-         */
-
     }, {
         key: "setItemTtl",
         value: function () {
@@ -25211,7 +25626,7 @@ var SyncMap = function (_entity_1$SyncEntity) {
                     while (1) {
                         switch (_context13.prev = _context13.next) {
                             case 0:
-                                utils_1.validateMandatoryTtl(ttl);
+                                sanitize_1.validateMandatoryTtl(ttl);
                                 _context13.next = 3;
                                 return this.get(key);
 
@@ -25240,20 +25655,6 @@ var SyncMap = function (_entity_1$SyncEntity) {
 
             return setItemTtl;
         }()
-        /**
-         * Delete this map. It will be impossible to restore it.
-         * @return {Promise<void>} A promise that resolves when the map has been deleted.
-         * @public
-         * @example
-         * map.removeMap()
-         *   .then(function() {
-         *     console.log('Map removeMap() successful');
-         *   })
-         *   .catch(function(error) {
-         *     console.error('Map removeMap() failed', error);
-         *   });
-         */
-
     }, {
         key: "removeMap",
         value: function () {
@@ -25312,6 +25713,18 @@ var SyncMap = function (_entity_1$SyncEntity) {
         get: function get() {
             return 'map';
         }
+        // below properties are specific to Insights only
+
+    }, {
+        key: "indexName",
+        get: function get() {
+            return undefined;
+        }
+    }, {
+        key: "queryString",
+        get: function get() {
+            return undefined;
+        }
         // public props, documented along with class description
 
     }, {
@@ -25335,8 +25748,522 @@ var SyncMap = function (_entity_1$SyncEntity) {
             return 'map';
         }
     }]);
-    return SyncMap;
+    return SyncMapImpl;
 }(entity_1.SyncEntity);
+
+exports.SyncMapImpl = SyncMapImpl;
+/**
+ * @class
+ * @alias Map
+ * @classdesc Represents a Sync Map, which stores an unordered set of key:value pairs.
+ * Use the {@link Client#map} method to obtain a reference to a Sync Map.
+ * @property {String} sid An immutable identifier (a SID) assigned by the system on creation.
+ * @property {String} [uniqueName=null] - An optional immutable identifier that may be assigned by the
+ * programmer to this map on creation. Unique among other Maps.
+ * @property {Date} dateUpdated Date when the Map was last updated.
+ *
+ * @fires Map#removed
+ * @fires Map#itemAdded
+ * @fires Map#itemRemoved
+ * @fires Map#itemUpdated
+ */
+
+var SyncMap = function (_closeable_1$Closeabl) {
+    (0, _inherits3.default)(SyncMap, _closeable_1$Closeabl);
+    (0, _createClass3.default)(SyncMap, [{
+        key: "uri",
+
+        // private props
+        get: function get() {
+            return this.syncMapImpl.uri;
+        }
+    }, {
+        key: "links",
+        get: function get() {
+            return this.syncMapImpl.links;
+        }
+    }, {
+        key: "revision",
+        get: function get() {
+            return this.syncMapImpl.revision;
+        }
+    }, {
+        key: "lastEventId",
+        get: function get() {
+            return this.syncMapImpl.lastEventId;
+        }
+    }, {
+        key: "dateExpires",
+        get: function get() {
+            return this.syncMapImpl.dateExpires;
+        }
+    }, {
+        key: "type",
+        get: function get() {
+            return SyncMapImpl.type;
+        }
+        // public props, documented along with class description
+
+    }, {
+        key: "sid",
+        get: function get() {
+            return this.syncMapImpl.sid;
+        }
+    }, {
+        key: "uniqueName",
+        get: function get() {
+            return this.syncMapImpl.uniqueName;
+        }
+    }, {
+        key: "dateUpdated",
+        get: function get() {
+            return this.syncMapImpl.dateUpdated;
+        }
+    }], [{
+        key: "type",
+        get: function get() {
+            return SyncMapImpl.type;
+        }
+    }]);
+
+    function SyncMap(syncMapImpl) {
+        (0, _classCallCheck3.default)(this, SyncMap);
+
+        var _this6 = (0, _possibleConstructorReturn3.default)(this, (SyncMap.__proto__ || (0, _getPrototypeOf2.default)(SyncMap)).call(this));
+
+        _this6.syncMapImpl = syncMapImpl;
+        _this6.syncMapImpl.attach(_this6);
+        return _this6;
+    }
+    /**
+     * Add a new item to the map with the given key:value pair. Overwrites any value that might already exist at that key.
+     * @param {String} key Unique item identifier.
+     * @param {Object} value Value to be set.
+     * @param {Map#ItemMetadata} [itemMetadataUpdates] New item metadata.
+     * @returns {Promise<MapItem>} Newly added item, or modified one if already exists, with the latest known value.
+     * @public
+     * @example
+     * map.set('myKey', { name: 'John Smith' }, { ttl: 86400 })
+     *   .then(function(item) {
+     *     console.log('Map Item set() successful, item value:', item.value);
+     *   })
+     *   .catch(function(error) {
+     *     console.error('Map Item set() failed', error);
+     *   });
+     */
+
+
+    (0, _createClass3.default)(SyncMap, [{
+        key: "set",
+        value: function () {
+            var _ref15 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee15(key, value, itemMetadataUpdates) {
+                return _regenerator2.default.wrap(function _callee15$(_context15) {
+                    while (1) {
+                        switch (_context15.prev = _context15.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context15.abrupt("return", this.syncMapImpl.set(key, value, itemMetadataUpdates));
+
+                            case 2:
+                            case "end":
+                                return _context15.stop();
+                        }
+                    }
+                }, _callee15, this);
+            }));
+
+            function set(_x28, _x29, _x30) {
+                return _ref15.apply(this, arguments);
+            }
+
+            return set;
+        }()
+        /**
+         * Retrieve an item by key.
+         * @param {String} key Identifies the desired item.
+         * @returns {Promise<MapItem>} A promise that resolves when the item has been fetched.
+         * This promise will be rejected if item was not found.
+         * @public
+         * @example
+         * map.get('myKey')
+         *   .then(function(item) {
+         *     console.log('Map Item get() successful, item value:', item.value)
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Map Item get() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "get",
+        value: function () {
+            var _ref16 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee16(key) {
+                return _regenerator2.default.wrap(function _callee16$(_context16) {
+                    while (1) {
+                        switch (_context16.prev = _context16.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context16.abrupt("return", this.syncMapImpl.get(key));
+
+                            case 2:
+                            case "end":
+                                return _context16.stop();
+                        }
+                    }
+                }, _callee16, this);
+            }));
+
+            function get(_x31) {
+                return _ref16.apply(this, arguments);
+            }
+
+            return get;
+        }()
+        /**
+         * Schedules a modification to this Map Item that will apply a mutation function.
+         * If no Item with the given key exists, it will first be created, having the default value (<code>{}</code>).
+         * @param {String} key Selects the map item to be mutated.
+         * @param {Map~Mutator} mutator A function that outputs a new value based on the existing value.
+         * May be called multiple times, particularly if this Map Item is modified concurrently by remote code.
+         * If the mutation ultimately succeeds, the Map Item will have made the particular transition described
+         * by this function.
+         * @param {Map#ItemMetadata} [itemMetadataUpdates] New item metadata.
+         * @returns {Promise<MapItem>} Resolves with the most recent item state, the output of a successful
+         * mutation or a state that prompted graceful cancellation (mutator returned <code>null</code>).
+         * @public
+         * @example
+         * var mutatorFunction = function(currentValue) {
+         *     currentValue.viewCount = (currentValue.viewCount || 0) + 1;
+         *     return currentValue;
+         * };
+         * map.mutate('myKey', mutatorFunction, { ttl: 86400 })
+         *   .then(function(item) {
+         *     console.log('Map Item mutate() successful, new value:', item.value)
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Map Item mutate() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "mutate",
+        value: function () {
+            var _ref17 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee17(key, mutator, itemMetadataUpdates) {
+                return _regenerator2.default.wrap(function _callee17$(_context17) {
+                    while (1) {
+                        switch (_context17.prev = _context17.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context17.abrupt("return", this.syncMapImpl.mutate(key, mutator, itemMetadataUpdates));
+
+                            case 2:
+                            case "end":
+                                return _context17.stop();
+                        }
+                    }
+                }, _callee17, this);
+            }));
+
+            function mutate(_x32, _x33, _x34) {
+                return _ref17.apply(this, arguments);
+            }
+
+            return mutate;
+        }()
+        /**
+         * Modify a map item by appending new fields (or by overwriting existing ones) with the values from
+         * the provided Object. Creates a new item if no item by this key exists, copying all given fields and values
+         * into it.
+         * This is equivalent to
+         * <pre>
+         * map.mutate('myKey', function(currentValue) {
+         *   return Object.assign(currentValue, obj));
+         * });
+         * </pre>
+         * @param {String} key Selects the map item to update.
+         * @param {Object} obj Specifies the particular (top-level) attributes that will receive new values.
+         * @param {Map#ItemMetadata} [itemMetadataUpdates] New item metadata.
+         * @returns {Promise<MapItem>} A promise resolving to the modified item in its new state.
+         * @public
+         * @example
+         * // Say, the Map Item (key: 'myKey') value is { name: 'John Smith' }
+         * map.update('myKey', { age: 34 }, { ttl: 86400 })
+         *   .then(function(item) {
+         *     // Now the Map Item value is { name: 'John Smith', age: 34 }
+         *     console.log('Map Item update() successful, new value:', item.value);
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Map Item update() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "update",
+        value: function () {
+            var _ref18 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee18(key, obj, itemMetadataUpdates) {
+                return _regenerator2.default.wrap(function _callee18$(_context18) {
+                    while (1) {
+                        switch (_context18.prev = _context18.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context18.abrupt("return", this.syncMapImpl.update(key, obj, itemMetadataUpdates));
+
+                            case 2:
+                            case "end":
+                                return _context18.stop();
+                        }
+                    }
+                }, _callee18, this);
+            }));
+
+            function update(_x35, _x36, _x37) {
+                return _ref18.apply(this, arguments);
+            }
+
+            return update;
+        }()
+        /**
+         * Delete an item, given its key.
+         * @param {String} key Selects the item to delete.
+         * @returns {Promise<void>} A promise to remove an item.
+         * The promise will be rejected if 'key' is undefined or an item was not found.
+         * @public
+         * @example
+         * map.remove('myKey')
+         *   .then(function() {
+         *     console.log('Map Item remove() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Map Item remove() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "remove",
+        value: function () {
+            var _ref19 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee19(key) {
+                return _regenerator2.default.wrap(function _callee19$(_context19) {
+                    while (1) {
+                        switch (_context19.prev = _context19.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context19.abrupt("return", this.syncMapImpl.remove(key));
+
+                            case 2:
+                            case "end":
+                                return _context19.stop();
+                        }
+                    }
+                }, _callee19, this);
+            }));
+
+            function remove(_x38) {
+                return _ref19.apply(this, arguments);
+            }
+
+            return remove;
+        }()
+        /**
+         * Get a complete list of items from the map.
+         * @param {Object} [args] Arguments for query.
+         * @param {String} [args.from] Item key, which should be used as the offset. If undefined, starts from the beginning or end depending on args.order.
+         * @param {Number} [args.pageSize=50] Result page size.
+         * @param {'asc'|'desc'} [args.order='asc'] Lexicographical order of results.
+         * @return {Promise<Paginator<MapItem>>}
+         * @public
+         * @example
+         * var pageHandler = function(paginator) {
+         *   paginator.items.forEach(function(item) {
+         *     console.log('Item ' + item.key + ': ', item.value);
+         *   });
+         *   return paginator.hasNextPage ? paginator.nextPage().then(pageHandler)
+         *                                : null;
+         * };
+         * map.getItems({ from: 'myKey', order: 'asc' })
+         *   .then(pageHandler)
+         *   .catch(function(error) {
+         *     console.error('Map getItems() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "getItems",
+        value: function () {
+            var _ref20 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee20(args) {
+                return _regenerator2.default.wrap(function _callee20$(_context20) {
+                    while (1) {
+                        switch (_context20.prev = _context20.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context20.abrupt("return", this.syncMapImpl.getItems(args));
+
+                            case 2:
+                            case "end":
+                                return _context20.stop();
+                        }
+                    }
+                }, _callee20, this);
+            }));
+
+            function getItems(_x39) {
+                return _ref20.apply(this, arguments);
+            }
+
+            return getItems;
+        }()
+        /**
+         * Enumerate all items in this Map.
+         * This always triggers server interaction when being called for the first time on a Map; this may be latent.
+         * This method not supported now and not meant to be used externally.
+         * @param {Function} handler Function to handle each argument.
+         * @private
+         */
+
+    }, {
+        key: "forEach",
+        value: function forEach(handler) {
+            this.ensureNotClosed();
+            this.syncMapImpl.forEach(handler);
+        }
+        /**
+         * Update the time-to-live of the map.
+         * @param {Number} ttl Specifies the TTL in seconds after which the map is subject to automatic deletion. The value 0 means infinity.
+         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
+         * @public
+         * @example
+         * map.setTtl(3600)
+         *   .then(function() {
+         *     console.log('Map setTtl() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Map setTtl() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "setTtl",
+        value: function () {
+            var _ref21 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee21(ttl) {
+                return _regenerator2.default.wrap(function _callee21$(_context21) {
+                    while (1) {
+                        switch (_context21.prev = _context21.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context21.abrupt("return", this.syncMapImpl.setTtl(ttl));
+
+                            case 2:
+                            case "end":
+                                return _context21.stop();
+                        }
+                    }
+                }, _callee21, this);
+            }));
+
+            function setTtl(_x40) {
+                return _ref21.apply(this, arguments);
+            }
+
+            return setTtl;
+        }()
+        /**
+         * Update the time-to-live of a map item.
+         * @param {Number} key Item key.
+         * @param {Number} ttl Specifies the TTL in seconds after which the map item is subject to automatic deletion. The value 0 means infinity.
+         * @return {Promise<void>} A promise that resolves after the TTL update was successful.
+         * @public
+         * @example
+         * map.setItemTtl('myKey', 86400)
+         *   .then(function() {
+         *     console.log('Map setItemTtl() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Map setItemTtl() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "setItemTtl",
+        value: function () {
+            var _ref22 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee22(key, ttl) {
+                return _regenerator2.default.wrap(function _callee22$(_context22) {
+                    while (1) {
+                        switch (_context22.prev = _context22.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                return _context22.abrupt("return", this.syncMapImpl.setItemTtl(key, ttl));
+
+                            case 2:
+                            case "end":
+                                return _context22.stop();
+                        }
+                    }
+                }, _callee22, this);
+            }));
+
+            function setItemTtl(_x41, _x42) {
+                return _ref22.apply(this, arguments);
+            }
+
+            return setItemTtl;
+        }()
+        /**
+         * Delete this map. It will be impossible to restore it.
+         * @return {Promise<void>} A promise that resolves when the map has been deleted.
+         * @public
+         * @example
+         * map.removeMap()
+         *   .then(function() {
+         *     console.log('Map removeMap() successful');
+         *   })
+         *   .catch(function(error) {
+         *     console.error('Map removeMap() failed', error);
+         *   });
+         */
+
+    }, {
+        key: "removeMap",
+        value: function () {
+            var _ref23 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee23() {
+                return _regenerator2.default.wrap(function _callee23$(_context23) {
+                    while (1) {
+                        switch (_context23.prev = _context23.next) {
+                            case 0:
+                                this.ensureNotClosed();
+                                _context23.next = 3;
+                                return this.syncMapImpl.removeMap();
+
+                            case 3:
+                            case "end":
+                                return _context23.stop();
+                        }
+                    }
+                }, _callee23, this);
+            }));
+
+            function removeMap() {
+                return _ref23.apply(this, arguments);
+            }
+
+            return removeMap;
+        }()
+        /**
+         * Conclude work with the map instance and remove all event listeners attached to it.
+         * Any subsequent operation on this object will be rejected with error.
+         * Other local copies of this map will continue operating and receiving events normally.
+         * @public
+         * @example
+         * map.close();
+         */
+
+    }, {
+        key: "close",
+        value: function close() {
+            (0, _get3.default)(SyncMap.prototype.__proto__ || (0, _getPrototypeOf2.default)(SyncMap.prototype), "close", this).call(this);
+            this.syncMapImpl.detach(this.listenerUuid);
+        }
+    }]);
+    return SyncMap;
+}(closeable_1.Closeable);
 
 exports.SyncMap = SyncMap;
 exports.default = SyncMap;
@@ -25405,16 +26332,63 @@ exports.default = SyncMap;
  * });
  */
 
-},{"./cache":235,"./entity":240,"./logger":243,"./mapitem":244,"./mergingqueue":245,"./paginator":247,"./syncerror":254,"./utils":257,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57}],257:[function(_dereq_,module,exports){
+},{"./cache":229,"./closeable":232,"./entity":235,"./mapitem":239,"./mergingqueue":240,"./paginator":241,"./utils/logger":250,"./utils/sanitize":251,"./utils/syncerror":252,"./utils/uri":254,"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/get":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58}],250:[function(_dereq_,module,exports){
 "use strict";
 
-var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
+var _from = _dereq_("babel-runtime/core-js/array/from");
 
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _from2 = _interopRequireDefault(_from);
 
-var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _createClass3 = _interopRequireDefault(_createClass2);
+Object.defineProperty(exports, "__esModule", { value: true });
+var log = _dereq_("loglevel");
+function prepareLine(prefix, args) {
+    return [new Date().toISOString() + " Sync " + prefix + ":"].concat((0, _from2.default)(args));
+}
+exports.default = {
+    setLevel: function setLevel(level) {
+        log.setLevel(level);
+    },
+    trace: function trace() {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        log.trace.apply(null, prepareLine('T', args));
+    },
+    debug: function debug() {
+        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            args[_key2] = arguments[_key2];
+        }
+
+        log.debug.apply(null, prepareLine('D', args));
+    },
+    info: function info() {
+        for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+            args[_key3] = arguments[_key3];
+        }
+
+        log.info.apply(null, prepareLine('I', args));
+    },
+    warn: function warn() {
+        for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+            args[_key4] = arguments[_key4];
+        }
+
+        log.warn.apply(null, prepareLine('W', args));
+    },
+    error: function error() {
+        for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+            args[_key5] = arguments[_key5];
+        }
+
+        log.error.apply(null, prepareLine('E', args));
+    }
+};
+
+},{"babel-runtime/core-js/array/from":31,"loglevel":200}],251:[function(_dereq_,module,exports){
+"use strict";
 
 var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
 
@@ -25464,6 +26438,796 @@ function isPositiveInteger(number) {
 function isNonNegativeInteger(number) {
     return isInteger(number) && number >= 0;
 }
+
+},{"./syncerror":252,"babel-runtime/core-js/json/stringify":34}],252:[function(_dereq_,module,exports){
+"use strict";
+
+var _create = _dereq_("babel-runtime/core-js/object/create");
+
+var _create2 = _interopRequireDefault(_create);
+
+var _setPrototypeOf = _dereq_("babel-runtime/core-js/object/set-prototype-of");
+
+var _setPrototypeOf2 = _interopRequireDefault(_setPrototypeOf);
+
+var _from = _dereq_("babel-runtime/core-js/array/from");
+
+var _from2 = _interopRequireDefault(_from);
+
+var _construct = _dereq_("babel-runtime/core-js/reflect/construct");
+
+var _construct2 = _interopRequireDefault(_construct);
+
+var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = _dereq_("babel-runtime/helpers/possibleConstructorReturn");
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = _dereq_("babel-runtime/helpers/inherits");
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _extendableBuiltin(cls) {
+    function ExtendableBuiltin() {
+        var instance = (0, _construct2.default)(cls, (0, _from2.default)(arguments));
+        (0, _setPrototypeOf2.default)(instance, (0, _getPrototypeOf2.default)(this));
+        return instance;
+    }
+
+    ExtendableBuiltin.prototype = (0, _create2.default)(cls.prototype, {
+        constructor: {
+            value: cls,
+            enumerable: false,
+            writable: true,
+            configurable: true
+        }
+    });
+
+    if (_setPrototypeOf2.default) {
+        (0, _setPrototypeOf2.default)(ExtendableBuiltin, cls);
+    } else {
+        ExtendableBuiltin.__proto__ = cls;
+    }
+
+    return ExtendableBuiltin;
+}
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Generic SyncLibrary error class
+ */
+
+var SyncError = function (_extendableBuiltin2) {
+    (0, _inherits3.default)(SyncError, _extendableBuiltin2);
+
+    function SyncError(message) {
+        var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+        var code = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+        (0, _classCallCheck3.default)(this, SyncError);
+
+        var _this = (0, _possibleConstructorReturn3.default)(this, (SyncError.__proto__ || (0, _getPrototypeOf2.default)(SyncError)).call(this));
+
+        _this.name = _this.constructor.name;
+        _this.message = message + " (status: " + status + ", code: " + code + ")";
+        _this.status = status;
+        _this.code = code;
+        return _this;
+    }
+
+    return SyncError;
+}(_extendableBuiltin(Error));
+
+exports.SyncError = SyncError;
+
+var SyncNetworkError = function (_SyncError) {
+    (0, _inherits3.default)(SyncNetworkError, _SyncError);
+
+    function SyncNetworkError(message) {
+        var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+        var code = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+        var body = arguments[3];
+        (0, _classCallCheck3.default)(this, SyncNetworkError);
+
+        var _this2 = (0, _possibleConstructorReturn3.default)(this, (SyncNetworkError.__proto__ || (0, _getPrototypeOf2.default)(SyncNetworkError)).call(this, message, status, code));
+
+        _this2.body = body;
+        return _this2;
+    }
+
+    return SyncNetworkError;
+}(SyncError);
+
+exports.SyncNetworkError = SyncNetworkError;
+exports.default = SyncError;
+
+},{"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/create":38,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/object/set-prototype-of":43,"babel-runtime/core-js/reflect/construct":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],253:[function(_dereq_,module,exports){
+"use strict";
+
+var _regenerator = _dereq_("babel-runtime/regenerator");
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _getIterator2 = _dereq_("babel-runtime/core-js/get-iterator");
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+var _iterator2 = _dereq_("babel-runtime/core-js/symbol/iterator");
+
+var _iterator3 = _interopRequireDefault(_iterator2);
+
+var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
+var Node = function () {
+    function Node(key, value) {
+        (0, _classCallCheck3.default)(this, Node);
+
+        this.balanceFactor = 0;
+        this.key = key;
+        this.value = value;
+        this.parent = null;
+        this.left = null;
+        this.right = null;
+    }
+
+    (0, _createClass3.default)(Node, [{
+        key: "update",
+        value: function update(value) {
+            this.value = value;
+        }
+    }, {
+        key: "replace",
+        value: function replace(target, replacement) {
+            if (!target) {
+                return;
+            }
+            if (this.left === replacement) {
+                this.left = replacement;
+            } else if (this.right === replacement) {
+                this.right = replacement;
+            }
+        }
+    }, {
+        key: "isRoot",
+        get: function get() {
+            return this.parent === null;
+        }
+    }, {
+        key: "isLeaf",
+        get: function get() {
+            return this.left === null && this.right === null;
+        }
+    }, {
+        key: "isLeftChild",
+        get: function get() {
+            return this.parent.left === this;
+        }
+    }]);
+    return Node;
+}();
+/**
+ * @property length
+ */
+
+
+var TreeMap = function () {
+    function TreeMap(less, equal) {
+        (0, _classCallCheck3.default)(this, TreeMap);
+
+        this.isLessThan = less || function (x, y) {
+            return x < y;
+        };
+        this.isEqual = equal || function (x, y) {
+            return x === y;
+        };
+        this.root = null;
+        this.count = null;
+    }
+
+    (0, _createClass3.default)(TreeMap, [{
+        key: "clear",
+        value: function clear() {
+            this.root = null;
+            this.count = 0;
+        }
+    }, {
+        key: "set",
+        value: function set(key, value) {
+            var node = this.getNode(key);
+            if (node) {
+                node.update(value);
+            } else {
+                this.insert(key, value);
+            }
+            // return node;
+        }
+    }, {
+        key: "insert",
+        value: function insert(key, value) {
+            var node = new Node(key, value);
+            this.count++;
+            if (!this.root) {
+                this.root = node;
+                // return node;
+                return;
+            }
+            var currNode = this.root;
+            for (;;) {
+                if (this.isLessThan(key, currNode.key)) {
+                    if (currNode.left) {
+                        currNode = currNode.left;
+                    } else {
+                        currNode.left = node;
+                        break;
+                    }
+                } else {
+                    if (currNode.right) {
+                        // eslint-disable-line no-lonely-if
+                        currNode = currNode.right;
+                    } else {
+                        currNode.right = node;
+                        break;
+                    }
+                }
+            }
+            node.parent = currNode;
+            currNode = node;
+            while (currNode.parent) {
+                var parent = currNode.parent;
+                var prevBalanceFactor = parent.balanceFactor;
+                if (currNode.isLeftChild) {
+                    parent.balanceFactor++;
+                } else {
+                    parent.balanceFactor--;
+                }
+                if (Math.abs(parent.balanceFactor) < Math.abs(prevBalanceFactor)) {
+                    break;
+                }
+                if (parent.balanceFactor < -1 || parent.balanceFactor > 1) {
+                    this.rebalance(parent);
+                    break;
+                }
+                currNode = parent;
+            }
+            // return node;
+        }
+    }, {
+        key: "get",
+        value: function get(key) {
+            var currentNode = this.root;
+            while (currentNode) {
+                if (this.isEqual(key, currentNode.key)) {
+                    return currentNode.value;
+                }
+                if (this.isLessThan(key, currentNode.key)) {
+                    currentNode = currentNode.left;
+                } else {
+                    currentNode = currentNode.right;
+                }
+            }
+            return null;
+        }
+    }, {
+        key: "delete",
+        value: function _delete(key) {
+            // update this algorithm and remove any
+            var node = this.getNode(key);
+            if (!node || node.key !== key) {
+                return null;
+            }
+            var parent = node.parent;
+            var left = node.left;
+            var right = node.right;
+            if (!!left !== !!right) {
+                // one child
+                var child = left || right;
+                if (!parent && !child) {
+                    this.root = null;
+                } else if (parent && !child) {
+                    this.root = child;
+                } else {
+                    parent.replace(node, null);
+                    this.rebalance(parent);
+                }
+            } else {
+                // two children
+                var maxLeft = node.left;
+                while (maxLeft.right) {
+                    maxLeft = maxLeft.right;
+                }
+                if (node.left === maxLeft) {
+                    if (node.isRoot) {
+                        this.root = maxLeft;
+                        maxLeft.parent = null;
+                    } else {
+                        if (node.isLeftChild) {
+                            node.parent.left = maxLeft;
+                        } else {
+                            node.parent.right = maxLeft;
+                        }
+                        maxLeft.parent = node.parent;
+                    }
+                    maxLeft.right = node.right;
+                    maxLeft.right.parent = maxLeft;
+                    maxLeft.balanceFactor = node.balanceFactor;
+                    node = {
+                        parent: maxLeft, isLeftChild: true
+                    };
+                } else {
+                    var mlParent = maxLeft.parent;
+                    var mlLeft = maxLeft.left;
+                    mlParent.right = mlLeft;
+                    if (mlLeft) {
+                        mlLeft.parent = mlParent;
+                    }
+                    if (node.isRoot) {
+                        this.root = maxLeft;
+                        maxLeft.parent = null;
+                    } else {
+                        if (node.isLeftChild) {
+                            node.parent.left = maxLeft;
+                        } else {
+                            node.parent.right = maxLeft;
+                        }
+                        maxLeft.parent = node.parent;
+                    }
+                    maxLeft.right = node.right;
+                    maxLeft.right.parent = maxLeft;
+                    maxLeft.left = node.left;
+                    maxLeft.left.parent = maxLeft;
+                    maxLeft.balanceFactor = node.balanceFactor;
+                    node = {
+                        parent: mlParent, isLeftChild: false
+                    };
+                }
+            }
+            this.count--;
+            while (node.parent) {
+                var _parent = node.parent;
+                var prevBalanceFactor = _parent.balanceFactor;
+                if (node.isLeftChild) {
+                    _parent.balanceFactor -= 1;
+                } else {
+                    _parent.balanceFactor += 1;
+                }
+                if (Math.abs(_parent.balanceFactor) > Math.abs(prevBalanceFactor)) {
+                    if (_parent.balanceFactor < -1 || _parent.balanceFactor > 1) {
+                        this.rebalance(_parent);
+                        if (_parent.parent.balanceFactor === 0) {
+                            node = _parent.parent;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                } else {
+                    node = _parent;
+                }
+            }
+            return null;
+        }
+    }, {
+        key: "getNode",
+        value: function getNode(key) {
+            var currentNode = this.root;
+            while (currentNode) {
+                if (this.isEqual(key, currentNode.key)) {
+                    return currentNode;
+                }
+                if (this.isLessThan(key, currentNode.key)) {
+                    currentNode = currentNode.left;
+                } else {
+                    currentNode = currentNode.right;
+                }
+            }
+            return null;
+        }
+    }, {
+        key: "rebalance",
+        value: function rebalance(node) {
+            if (node.balanceFactor < 0) {
+                if (node.right.balanceFactor > 0) {
+                    this.rotateRight(node.right);
+                    this.rotateLeft(node);
+                } else {
+                    this.rotateLeft(node);
+                }
+            } else if (node.balanceFactor > 0) {
+                if (node.left.balanceFactor < 0) {
+                    this.rotateLeft(node.left);
+                    this.rotateRight(node);
+                } else {
+                    this.rotateRight(node);
+                }
+            }
+        }
+    }, {
+        key: "rotateLeft",
+        value: function rotateLeft(pivot) {
+            var root = pivot.right;
+            pivot.right = root.left;
+            if (root.left !== null) {
+                root.left.parent = pivot;
+            }
+            root.parent = pivot.parent;
+            if (root.parent === null) {
+                this.root = root;
+            } else if (pivot.isLeftChild) {
+                root.parent.left = root;
+            } else {
+                root.parent.right = root;
+            }
+            root.left = pivot;
+            pivot.parent = root;
+            pivot.balanceFactor = pivot.balanceFactor + 1 - Math.min(root.balanceFactor, 0);
+            root.balanceFactor = root.balanceFactor + 1 - Math.max(pivot.balanceFactor, 0);
+        }
+    }, {
+        key: "rotateRight",
+        value: function rotateRight(pivot) {
+            var root = pivot.left;
+            pivot.left = root.right;
+            if (root.right !== null) {
+                root.right.parent = pivot;
+            }
+            root.parent = pivot.parent;
+            if (root.parent === null) {
+                this.root = root;
+            } else if (pivot.isLeftChild) {
+                root.parent.left = root;
+            } else {
+                root.parent.right = root;
+            }
+            root.right = pivot;
+            pivot.parent = root;
+            pivot.balanceFactor = pivot.balanceFactor - 1 - Math.min(root.balanceFactor, 0);
+            root.balanceFactor = root.balanceFactor - 1 - Math.max(pivot.balanceFactor, 0);
+        }
+    }, {
+        key: _iterator3.default,
+        value: /*#__PURE__*/_regenerator2.default.mark(function value() {
+            var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, iter;
+
+            return _regenerator2.default.wrap(function value$(_context) {
+                while (1) {
+                    switch (_context.prev = _context.next) {
+                        case 0:
+                            _iteratorNormalCompletion = true;
+                            _didIteratorError = false;
+                            _iteratorError = undefined;
+                            _context.prev = 3;
+                            _iterator = (0, _getIterator3.default)(this.getIterator());
+
+                        case 5:
+                            if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+                                _context.next = 12;
+                                break;
+                            }
+
+                            iter = _step.value;
+                            _context.next = 9;
+                            return iter;
+
+                        case 9:
+                            _iteratorNormalCompletion = true;
+                            _context.next = 5;
+                            break;
+
+                        case 12:
+                            _context.next = 18;
+                            break;
+
+                        case 14:
+                            _context.prev = 14;
+                            _context.t0 = _context["catch"](3);
+                            _didIteratorError = true;
+                            _iteratorError = _context.t0;
+
+                        case 18:
+                            _context.prev = 18;
+                            _context.prev = 19;
+
+                            if (!_iteratorNormalCompletion && _iterator.return) {
+                                _iterator.return();
+                            }
+
+                        case 21:
+                            _context.prev = 21;
+
+                            if (!_didIteratorError) {
+                                _context.next = 24;
+                                break;
+                            }
+
+                            throw _iteratorError;
+
+                        case 24:
+                            return _context.finish(21);
+
+                        case 25:
+                            return _context.finish(18);
+
+                        case 26:
+                        case "end":
+                            return _context.stop();
+                    }
+                }
+            }, value, this, [[3, 14, 18, 26], [19,, 21, 25]]);
+        })
+    }, {
+        key: "getIterator",
+        value: /*#__PURE__*/_regenerator2.default.mark(function getIterator() {
+            var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+            var currentNode, fromleft;
+            return _regenerator2.default.wrap(function getIterator$(_context2) {
+                while (1) {
+                    switch (_context2.prev = _context2.next) {
+                        case 0:
+                            currentNode = this.root;
+
+                        case 1:
+                            if (!currentNode) {
+                                _context2.next = 7;
+                                break;
+                            }
+
+                            if (!(this.isEqual(key, currentNode.key) || key === null && !currentNode.left)) {
+                                _context2.next = 4;
+                                break;
+                            }
+
+                            return _context2.abrupt("break", 7);
+
+                        case 4:
+                            if (this.isLessThan(key, currentNode.key) || key === null) {
+                                currentNode = currentNode.left;
+                            } else {
+                                currentNode = currentNode.right;
+                            }
+                            _context2.next = 1;
+                            break;
+
+                        case 7:
+                            if (currentNode) {
+                                _context2.next = 9;
+                                break;
+                            }
+
+                            return _context2.abrupt("return", null);
+
+                        case 9:
+                            fromleft = true;
+
+                        case 10:
+                            if (!fromleft) {
+                                _context2.next = 28;
+                                break;
+                            }
+
+                            _context2.next = 13;
+                            return [currentNode.key, currentNode.value];
+
+                        case 13:
+                            fromleft = false;
+
+                            if (!currentNode.right) {
+                                _context2.next = 20;
+                                break;
+                            }
+
+                            currentNode = currentNode.right;
+                            while (currentNode.left) {
+                                currentNode = currentNode.left;
+                            }
+                            fromleft = true;
+                            _context2.next = 26;
+                            break;
+
+                        case 20:
+                            if (!currentNode.parent) {
+                                _context2.next = 25;
+                                break;
+                            }
+
+                            fromleft = currentNode.parent.left === currentNode;
+                            currentNode = currentNode.parent;
+                            _context2.next = 26;
+                            break;
+
+                        case 25:
+                            return _context2.abrupt("break", 36);
+
+                        case 26:
+                            _context2.next = 34;
+                            break;
+
+                        case 28:
+                            if (!currentNode.parent) {
+                                _context2.next = 33;
+                                break;
+                            }
+
+                            fromleft = currentNode.parent.left === currentNode;
+                            currentNode = currentNode.parent;
+                            _context2.next = 34;
+                            break;
+
+                        case 33:
+                            return _context2.abrupt("break", 36);
+
+                        case 34:
+                            _context2.next = 10;
+                            break;
+
+                        case 36:
+                            return _context2.abrupt("return", null);
+
+                        case 37:
+                        case "end":
+                            return _context2.stop();
+                    }
+                }
+            }, getIterator, this);
+        })
+    }, {
+        key: "getReverseIterator",
+        value: /*#__PURE__*/_regenerator2.default.mark(function getReverseIterator() {
+            var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+            var currentNode, fromright;
+            return _regenerator2.default.wrap(function getReverseIterator$(_context3) {
+                while (1) {
+                    switch (_context3.prev = _context3.next) {
+                        case 0:
+                            currentNode = this.root;
+
+                        case 1:
+                            if (!currentNode) {
+                                _context3.next = 7;
+                                break;
+                            }
+
+                            if (!(this.isEqual(key, currentNode.key) || key === null && !currentNode.right)) {
+                                _context3.next = 4;
+                                break;
+                            }
+
+                            return _context3.abrupt("break", 7);
+
+                        case 4:
+                            if (!this.isLessThan(key, currentNode.key) || key === null) {
+                                currentNode = currentNode.right;
+                            } else {
+                                currentNode = currentNode.left;
+                            }
+                            _context3.next = 1;
+                            break;
+
+                        case 7:
+                            if (currentNode) {
+                                _context3.next = 9;
+                                break;
+                            }
+
+                            return _context3.abrupt("return", null);
+
+                        case 9:
+                            fromright = true;
+
+                        case 10:
+                            if (!fromright) {
+                                _context3.next = 28;
+                                break;
+                            }
+
+                            _context3.next = 13;
+                            return [currentNode.key, currentNode.value];
+
+                        case 13:
+                            fromright = false;
+
+                            if (!currentNode.left) {
+                                _context3.next = 20;
+                                break;
+                            }
+
+                            currentNode = currentNode.left;
+                            while (currentNode.right) {
+                                currentNode = currentNode.right;
+                            }
+                            fromright = true;
+                            _context3.next = 26;
+                            break;
+
+                        case 20:
+                            if (!currentNode.parent) {
+                                _context3.next = 25;
+                                break;
+                            }
+
+                            fromright = currentNode.parent.right === currentNode;
+                            currentNode = currentNode.parent;
+                            _context3.next = 26;
+                            break;
+
+                        case 25:
+                            return _context3.abrupt("break", 36);
+
+                        case 26:
+                            _context3.next = 34;
+                            break;
+
+                        case 28:
+                            if (!currentNode.parent) {
+                                _context3.next = 33;
+                                break;
+                            }
+
+                            fromright = currentNode.parent.right === currentNode;
+                            currentNode = currentNode.parent;
+                            _context3.next = 34;
+                            break;
+
+                        case 33:
+                            return _context3.abrupt("break", 36);
+
+                        case 34:
+                            _context3.next = 10;
+                            break;
+
+                        case 36:
+                            return _context3.abrupt("return", null);
+
+                        case 37:
+                        case "end":
+                            return _context3.stop();
+                    }
+                }
+            }, getReverseIterator, this);
+        })
+    }, {
+        key: "size",
+        get: function get() {
+            return this.count;
+        }
+    }]);
+    return TreeMap;
+}();
+
+exports.TreeMap = TreeMap;
+
+},{"babel-runtime/core-js/get-iterator":32,"babel-runtime/core-js/symbol/iterator":48,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58}],254:[function(_dereq_,module,exports){
+"use strict";
+
+var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = _dereq_("babel-runtime/helpers/createClass");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Construct URI with query parameters
  */
@@ -25509,30 +27273,30 @@ var UriBuilder = function () {
 
 exports.UriBuilder = UriBuilder;
 
-},{"./syncerror":254,"babel-runtime/core-js/json/stringify":34,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],258:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],255:[function(_dereq_,module,exports){
 module.exports={
-  "_from": "twilio-sync@^0.8.6",
-  "_id": "twilio-sync@0.8.6",
+  "_from": "twilio-sync@^0.11.2",
+  "_id": "twilio-sync@0.11.2",
   "_inBundle": false,
-  "_integrity": "sha512-aArH5T6v1QSgdajIMeUi40SzexmAktxxgcpJzHzsipwXHZKETudjyszh9tnPHiKqGaNDur9wT9dxSRlLsNC+XQ==",
+  "_integrity": "sha512-HkiuvmO/9UmFLWaRsPiRvcO0OQN2uA2lDkVl8Rrezl251/31IbNM1IM9L/VVGjhG9Rb2UQfE/K5ilDgQCtGEBg==",
   "_location": "/twilio-sync",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "twilio-sync@^0.8.6",
+    "raw": "twilio-sync@^0.11.2",
     "name": "twilio-sync",
     "escapedName": "twilio-sync",
-    "rawSpec": "^0.8.6",
+    "rawSpec": "^0.11.2",
     "saveSpec": null,
-    "fetchSpec": "^0.8.6"
+    "fetchSpec": "^0.11.2"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.8.6.tgz",
-  "_shasum": "9b3a819db09abec4df3d0dd51c954e905c10fe9a",
-  "_spec": "twilio-sync@^0.8.6",
+  "_resolved": "https://registry.npmjs.org/twilio-sync/-/twilio-sync-0.11.2.tgz",
+  "_shasum": "38d271b9b3176a25b82e1c24fef162b2638fe295",
+  "_spec": "twilio-sync@^0.11.2",
   "_where": "/home/travis/build/twilio/twilio-chat.js",
   "author": {
     "name": "Twilio"
@@ -25544,75 +27308,75 @@ module.exports={
   },
   "bundleDependencies": false,
   "dependencies": {
-    "backoff": "^2.5.0",
-    "karibu": "^2.0.0",
-    "loglevel": "^1.6.1",
-    "operation-retrier": "^2.0.0",
+    "loglevel": "^1.6.3",
+    "operation-retrier": "^3.0.0",
     "platform": "^1.3.5",
-    "rfc6902": "^2.2.2",
-    "twilio-notifications": "^0.5.3",
-    "twilsock": "^0.5.6",
+    "twilio-notifications": "^0.5.7",
+    "twilsock": "^0.5.10",
     "update": "^0.7.4",
-    "uuid": "^3.2.1"
+    "uuid": "^3.3.2"
   },
   "deprecated": false,
   "description": "Twilio Sync client library",
   "devDependencies": {
-    "@types/chai": "^4.1.2",
+    "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "7.1.0",
-    "@types/mocha": "^2.2.48",
-    "@types/node": "^8.9.1",
-    "@types/sinon": "^4.1.3",
-    "@types/sinon-chai": "^2.7.29",
+    "@types/chai-string": "^1.4.1",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.4",
+    "@types/sinon": "^7.0.12",
+    "@types/sinon-chai": "^3.2.2",
     "async-test-tools": "^1.0.7",
     "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.3",
     "babel-plugin-transform-builtin-extend": "^1.1.2",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "babel-runtime": "^6.26.0",
     "babelify": "^8.0.0",
-    "browserify": "^16.0.0",
-    "chai": "^4.1.2",
+    "browserify": "^16.2.3",
+    "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "chai-string": "^1.5.0",
     "cheerio": "^1.0.0-rc.2",
-    "del": "^3.0.0",
-    "gulp": "^4.0.0",
+    "cross-env": "^5.2.0",
+    "del": "^4.1.1",
+    "fancy-log": "^1.3.3",
+    "fs": "0.0.2",
+    "gulp": "^4.0.2",
     "gulp-babel": "^7.0.1",
     "gulp-derequire": "^2.1.0",
-    "gulp-exit": "0.0.2",
+    "gulp-if": "^2.0.2",
     "gulp-insert": "^0.5.0",
-    "gulp-istanbul": "^1.1.3",
-    "gulp-mocha": "^5.0.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-replace": "^0.6.1",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.5",
     "gulp-tap": "^1.0.1",
-    "gulp-tslint": "^8.1.2",
-    "gulp-typescript": "^4.0.1",
-    "gulp-uglify-es": "^1.0.0",
+    "gulp-tslint": "^8.1.4",
+    "gulp-typescript": "^5.0.1",
+    "gulp-uglify-es": "^1.0.4",
     "ink-docstrap": "^1.3.2",
-    "isparta": "^4.0.0",
-    "jsdoc": "^3.5.5",
-    "jsonwebtoken": "^8.1.1",
-    "karma": "^2.0.0",
-    "karma-browserify": "^5.2.0",
-    "karma-browserstack-launcher": "^1.3.0",
+    "jsdoc": "~3.5.5",
+    "jsonwebtoken": "^8.5.1",
+    "karma": "^4.1.0",
+    "karma-browserify": "^6.0.0",
+    "karma-browserstack-launcher": "^1.5.1",
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.5",
-    "mocha": "^5.0.0",
-    "run-sequence": "^2.2.1",
-    "sinon": "^4.2.2",
-    "sinon-chai": "^2.14.0",
-    "ts-node": "^4.1.0",
-    "tslint": "^5.9.1",
-    "twilio": "^3.15.0",
-    "typescript": "^2.8.1",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
+    "path": "^0.12.7",
+    "sinon": "^7.3.2",
+    "sinon-chai": "^3.3.0",
+    "source-map-explorer": "^1.8.0",
+    "ts-node": "^8.2.0",
+    "tslint": "^5.17.0",
+    "twilio": "^3.31.1",
+    "typescript": "^3.5.1",
     "uglify-es": "^3.3.10",
     "uglify-save-license": "^0.4.1",
-    "underscore": "^1.8.3",
+    "underscore": "^1.9.1",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
-    "watchify": "^3.10.0"
+    "watchify": "^3.11.1"
   },
   "engines": {
     "node": ">=8"
@@ -25620,15 +27384,11 @@ module.exports={
   "license": "MIT",
   "main": "lib/index.js",
   "name": "twilio-sync",
-  "scripts": {
-    "prepare": "gulp build",
-    "test": "gulp unit-test"
-  },
   "types": "./lib/index.d.ts",
-  "version": "0.8.6"
+  "version": "0.11.2"
 }
 
-},{}],259:[function(_dereq_,module,exports){
+},{}],256:[function(_dereq_,module,exports){
 (function (global){
 "use strict";
 
@@ -25769,7 +27529,7 @@ var Transport = function () {
 exports.Transport = Transport;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./transporterror":260,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"xmlhttprequest":64}],260:[function(_dereq_,module,exports){
+},{"./transporterror":257,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"xmlhttprequest":59}],257:[function(_dereq_,module,exports){
 "use strict";
 
 var _create = _dereq_("babel-runtime/core-js/object/create");
@@ -25853,7 +27613,7 @@ var TransportError = function (_extendableBuiltin2) {
 
 exports.TransportError = TransportError;
 
-},{"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/create":38,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/object/set-prototype-of":42,"babel-runtime/core-js/reflect/construct":44,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],261:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/create":38,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/object/set-prototype-of":43,"babel-runtime/core-js/reflect/construct":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],258:[function(_dereq_,module,exports){
 "use strict";
 
 var _assign = _dereq_("babel-runtime/core-js/object/assign");
@@ -26001,7 +27761,7 @@ var BackoffRetrier = function (_events_1$EventEmitte) {
 
             this.cleanRetrier();
             var retryPolicy = this.getRetryPolicy();
-            this.retrier = new operation_retrier_1.default(retryPolicy);
+            this.retrier = new operation_retrier_1.Retrier(retryPolicy);
             this.retrier.once('attempt', function () {
                 _this2.retrier.on('attempt', function () {
                     return _this2.emit('attempt');
@@ -26021,7 +27781,7 @@ var BackoffRetrier = function (_events_1$EventEmitte) {
 
 exports.BackoffRetrier = BackoffRetrier;
 
-},{"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"events":199,"operation-retrier":206}],262:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/object/assign":37,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"events":196,"operation-retrier":202}],259:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -26052,6 +27812,10 @@ var _possibleConstructorReturn2 = _dereq_("babel-runtime/helpers/possibleConstru
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
+var _get3 = _dereq_("babel-runtime/helpers/get");
+
+var _get4 = _interopRequireDefault(_get3);
+
 var _inherits2 = _dereq_("babel-runtime/helpers/inherits");
 
 var _inherits3 = _interopRequireDefault(_inherits2);
@@ -26075,14 +27839,20 @@ var tokenStorage_1 = _dereq_("./tokenStorage");
  * @alias Twilsock
  * @classdesc Client library for the Twilsock service
  * It allows to recevie service-generated updates as well as bi-directional transport
+ * @fires Twilsock#message
+ * @fires Twilsock#connected
+ * @fires Twilsock#disconnected
+ * @fires Twilsock#tokenAboutToExpire
+ * @fires Twilsock#stateChanged
+ * @fires Twilsock#connectionError
  */
 
 var TwilsockClient = function (_events_1$EventEmitte) {
     (0, _inherits3.default)(TwilsockClient, _events_1$EventEmitte);
 
     /**
-     * @param {string} Token Twilio access token
-     * @param {string} ProductId Product identifier. Should be the same as a grant name in token
+     * @param {string} token Twilio access token
+     * @param {string} productId Product identifier. Should be the same as a grant name in token
      */
     function TwilsockClient(token, productId) {
         var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -26107,6 +27877,16 @@ var TwilsockClient = function (_events_1$EventEmitte) {
                 return _this.emit('message', type, message);
             }, 0);
         });
+        _this.channel.on('stateChanged', function (state) {
+            return setTimeout(function () {
+                return _this.emit('stateChanged', state);
+            }, 0);
+        });
+        _this.channel.on('connectionError', function (connectionError) {
+            return setTimeout(function () {
+                return _this.emit('connectionError', connectionError);
+            }, 0);
+        });
         _this.channel.on('tokenAboutToExpire', function () {
             return setTimeout(function () {
                 return _this.emit('tokenAboutToExpire');
@@ -26128,6 +27908,13 @@ var TwilsockClient = function (_events_1$EventEmitte) {
                 return _this.emit('connected');
             }, 0);
         });
+        _this.channel.on('initialized', function (initReply) {
+            _this.handleStorageId(productId, initReply);
+            tokenStorage_1.TokenStorage.storeToken(initReply.continuationToken, productId);
+            setTimeout(function () {
+                return _this.emit('initialized', initReply);
+            }, 0);
+        });
         _this.channel.on('disconnected', function () {
             return setTimeout(function () {
                 return _this.emit('disconnected');
@@ -26136,23 +27923,28 @@ var TwilsockClient = function (_events_1$EventEmitte) {
         _this.channel.on('disconnected', function () {
             return _this.upstream.rejectPendingMessages();
         });
-        _this.channel.on('stateChanged', function (state) {
-            return setTimeout(function () {
-                return _this.emit('stateChanged', state);
-            }, 0);
-        });
         _this.channel.on('disconnected', function () {
             return _this.offlineStorageDeferred.fail(new index_1.TwilsockError('Client disconnected'));
-        });
-        _this.channel.on('initialized', function (initReply) {
-            _this.handleStorageId(productId, initReply);
-            tokenStorage_1.TokenStorage.storeToken(initReply.continuationToken, productId);
         });
         _this.offlineStorageDeferred.promise.catch(function () {});
         return _this;
     }
 
     (0, _createClass3.default)(TwilsockClient, [{
+        key: "emit",
+        value: function emit(event) {
+            var _get2;
+
+            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                args[_key - 1] = arguments[_key];
+            }
+
+            logger_1.log.debug("Emitting " + event.toString() + "(" + args.map(function (a) {
+                return (0, _stringify2.default)(a);
+            }).join(', ') + ")");
+            return (_get2 = (0, _get4.default)(TwilsockClient.prototype.__proto__ || (0, _getPrototypeOf2.default)(TwilsockClient.prototype), "emit", this)).call.apply(_get2, [this, event].concat(args));
+        }
+    }, {
         key: "handleStorageId",
         value: function handleStorageId(productId, initReply) {
             if (!initReply.offlineStorage) {
@@ -26168,6 +27960,11 @@ var TwilsockClient = function (_events_1$EventEmitte) {
                 this.offlineStorageDeferred.fail(new index_1.TwilsockError("No offline storage id for '" + productId + "' product: " + (0, _stringify2.default)(initReply.offlineStorage)));
             }
         }
+        /**
+         * Get offline storage ID
+         * @returns {Promise<OfflineProductStorage>}
+         */
+
     }, {
         key: "storageId",
         value: function storageId() {
@@ -26175,6 +27972,7 @@ var TwilsockClient = function (_events_1$EventEmitte) {
         }
         /**
          * Indicates if twilsock is connected now
+         * @returns {Boolean}
          */
 
     }, {
@@ -26183,6 +27981,7 @@ var TwilsockClient = function (_events_1$EventEmitte) {
         /**
          * Update token
          * @param {String} token
+         * @returns {Promise<void>}
          */
         value: function () {
             var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(token) {
@@ -26244,8 +28043,9 @@ var TwilsockClient = function (_events_1$EventEmitte) {
         }
         /**
          * Connect to the server
-         * @fires TwilsockClient#connected
+         * @fires Twilsock#connected
          * @public
+         * @returns {Promise<void>}
          */
 
     }, {
@@ -26255,8 +28055,9 @@ var TwilsockClient = function (_events_1$EventEmitte) {
         }
         /**
          * Disconnect from the server
-         * @fires TwilsockClient#disconnected
+         * @fires Twilsock#disconnected
          * @public
+         * @returns {Promise<void>}
          */
 
     }, {
@@ -26268,6 +28069,7 @@ var TwilsockClient = function (_events_1$EventEmitte) {
          * Get HTTP request to upstream service
          * @param {string} url Upstream service url
          * @param {headers} headers Set of custom headers
+         * @returns {Promise}
          */
 
     }, {
@@ -26280,6 +28082,7 @@ var TwilsockClient = function (_events_1$EventEmitte) {
          * @param {string} url Upstream service url
          * @param {headers} headers Set of custom headers
          * @param {body} body Body to send
+         * @returns {Promise}
          */
 
     }, {
@@ -26292,6 +28095,7 @@ var TwilsockClient = function (_events_1$EventEmitte) {
          * @param {string} url Upstream service url
          * @param {headers} headers Set of custom headers
          * @param {body} body Body to send
+         * @returns {Promise}
          */
 
     }, {
@@ -26303,6 +28107,7 @@ var TwilsockClient = function (_events_1$EventEmitte) {
          * Delete HTTP request to upstream service
          * @param {string} url Upstream service url
          * @param {headers} headers Set of custom headers
+         * @returns {Promise}
          */
 
     }, {
@@ -26315,6 +28120,11 @@ var TwilsockClient = function (_events_1$EventEmitte) {
         get: function get() {
             return this.channel.isConnected;
         }
+        /**
+         * Current state
+         * @returns {String}
+         */
+
     }, {
         key: "state",
         get: function get() {
@@ -26326,8 +28136,54 @@ var TwilsockClient = function (_events_1$EventEmitte) {
 
 exports.TwilsockClient = TwilsockClient;
 exports.Twilsock = TwilsockClient;
+/**
+ * Twilsock destination address descriptor
+ * @typedef {Object} Twilsock#Address
+ * @property {String} method - HTTP method. (POST, PUT, etc)
+ * @property {String} host - host name without path. (e.g. my.company.com)
+ * @property {String} path - path on the host (e.g. /my/app/to/call.php)
+ */
+/**
+ * Twilsock upstream message
+ * @typedef {Object} Twilsock#Message
+ * @property {Twilsock#Address} to - destination address
+ * @property {Object} headers - HTTP headers
+ * @property {Object} body - Body
+ */
+/**
+ * Fired when new message received
+ * @param {Twilsock#Message} message
+ * @event Twilsock#message
+ */
+/**
+ * Fired when socket connected
+ * @param {String} URI of endpoint
+ * @event Twilsock#connected
+ */
+/**
+ * Fired when socket disconnected
+ * @event Twilsock#disconnected
+ */
+/**
+ * Fired when token is about to expire and should be updated
+ * @event Twilsock#tokenAboutToExpire
+ */
+/**
+* Fired when socket connected
+* @param {('connecting'|'connected'|'rejected'|'disconnecting'|'disconnected')} state - general twilsock state
+* @event Twilsock#stateChanged
+*/
+/**
+ * Fired when connection is interrupted by unexpected reason
+ * @type {Object}
+ * @property {Boolean} terminal - twilsock will stop connection attempts
+ * @property {String} message - root cause
+ * @property {Number} [httpStatusCode] - http status code if available
+ * @property {Number} [errorCode] - Twilio public error code if available
+ * @event Twilsock#connectionError
+ */
 
-},{"./configuration":263,"./deferred":264,"./index":269,"./logger":270,"./offlinestorage":272,"./packetinterface":273,"./services/registrations":283,"./services/upstream":284,"./tokenStorage":285,"./twilsock":286,"./websocketchannel":287,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199}],263:[function(_dereq_,module,exports){
+},{"./configuration":260,"./deferred":261,"./index":266,"./logger":267,"./offlinestorage":269,"./packetinterface":270,"./services/registrations":280,"./services/upstream":281,"./tokenStorage":282,"./twilsock":283,"./websocketchannel":284,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/get":52,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196}],260:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -26341,7 +28197,7 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var packageVersion = '0.5.6';
+var packageVersion = '0.5.10';
 /**
  * Settings container for the Twilsock client library
  */
@@ -26371,6 +28227,7 @@ var Configuration = function () {
         this.clientMetadata = options.clientMetadata ? options.clientMetadata : {};
         this.clientMetadata.ver = packageVersion;
         this.initRegistrations = options.initRegistrations ? options.initRegistrations : null;
+        this.tweaks = options.tweaks ? options.tweaks : null;
     }
 
     (0, _createClass3.default)(Configuration, [{
@@ -26399,7 +28256,7 @@ var Configuration = function () {
 
 exports.Configuration = Configuration;
 
-},{"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],264:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],261:[function(_dereq_,module,exports){
 "use strict";
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
@@ -26457,7 +28314,7 @@ var Deferred = function () {
 
 exports.Deferred = Deferred;
 
-},{"babel-runtime/core-js/promise":43,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],265:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/promise":44,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],262:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -26494,7 +28351,7 @@ var TransportUnavailableError = function (_twilsockerror_1$Twil) {
 
 exports.TransportUnavailableError = TransportUnavailableError;
 
-},{"./twilsockerror":266,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],266:[function(_dereq_,module,exports){
+},{"./twilsockerror":263,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],263:[function(_dereq_,module,exports){
 "use strict";
 
 var _create = _dereq_("babel-runtime/core-js/object/create");
@@ -26571,7 +28428,7 @@ var TwilsockError = function (_extendableBuiltin2) {
 
 exports.TwilsockError = TwilsockError;
 
-},{"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/create":38,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/object/set-prototype-of":42,"babel-runtime/core-js/reflect/construct":44,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],267:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/array/from":31,"babel-runtime/core-js/object/create":38,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/object/set-prototype-of":43,"babel-runtime/core-js/reflect/construct":45,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],264:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -26612,7 +28469,7 @@ var TwilsockReplyError = function (_twilsockerror_1$Twil) {
 
 exports.TwilsockReplyError = TwilsockReplyError;
 
-},{"./twilsockerror":266,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],268:[function(_dereq_,module,exports){
+},{"./twilsockerror":263,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],265:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -26655,7 +28512,7 @@ var TwilsockUpstreamError = function (_twilsockerror_1$Twil) {
 
 exports.TwilsockUpstreamError = TwilsockUpstreamError;
 
-},{"./twilsockerror":266,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],269:[function(_dereq_,module,exports){
+},{"./twilsockerror":263,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],266:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -26667,7 +28524,7 @@ exports.TwilsockError = twilsockerror_1.TwilsockError;
 var transportunavailableerror_1 = _dereq_("./error/transportunavailableerror");
 exports.TransportUnavailableError = transportunavailableerror_1.TransportUnavailableError;
 
-},{"./client":262,"./error/transportunavailableerror":265,"./error/twilsockerror":266}],270:[function(_dereq_,module,exports){
+},{"./client":259,"./error/transportunavailableerror":262,"./error/twilsockerror":263}],267:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -26806,7 +28663,7 @@ exports.Logger = Logger;
 var logInstance = new Logger('');
 exports.log = logInstance;
 
-},{"babel-runtime/core-js/array/from":31,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"loglevel":205}],271:[function(_dereq_,module,exports){
+},{"babel-runtime/core-js/array/from":31,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"loglevel":200}],268:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -26855,7 +28712,7 @@ var Metadata = function () {
 
 exports.Metadata = Metadata;
 
-},{"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"platform":207}],272:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"platform":204}],269:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -26893,7 +28750,7 @@ var OfflineProductStorage = function () {
 
 exports.OfflineProductStorage = OfflineProductStorage;
 
-},{"./index":269,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],273:[function(_dereq_,module,exports){
+},{"./index":266,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],270:[function(_dereq_,module,exports){
 "use strict";
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
@@ -27035,13 +28892,13 @@ var PacketInterface = function () {
                             case 0:
                                 logger_1.log.trace('sendInit');
                                 metadata = metadata_1.Metadata.getMetadata(this.config);
-                                message = new Messages.Init(this.config.token, this.config.continuationToken, metadata, this.config.initRegistrations);
+                                message = new Messages.Init(this.config.token, this.config.continuationToken, metadata, this.config.initRegistrations, this.config.tweaks);
                                 _context.next = 5;
                                 return this.sendWithReply(message);
 
                             case 5:
                                 response = _context.sent;
-                                return _context.abrupt("return", new Messages.InitReply(response.id, response.header.continuation_token, response.header.continuation_token_status, response.header.offline_storage, response.header.init_registrations));
+                                return _context.abrupt("return", new Messages.InitReply(response.id, response.header.continuation_token, response.header.continuation_token_status, response.header.offline_storage, response.header.init_registrations, response.header.debug_info));
 
                             case 7:
                             case "end":
@@ -27098,7 +28955,7 @@ var PacketInterface = function () {
 
 exports.PacketInterface = PacketInterface;
 
-},{"./error/twilsockerror":266,"./error/twilsockreplyerror":267,"./logger":270,"./metadata":271,"./parser":274,"./protocol/messages":277,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/typeof":56,"babel-runtime/regenerator":57,"uuid":290}],274:[function(_dereq_,module,exports){
+},{"./error/twilsockerror":263,"./error/twilsockreplyerror":264,"./logger":267,"./metadata":268,"./parser":271,"./protocol/messages":274,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/map":35,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/typeof":57,"babel-runtime/regenerator":58,"uuid":285}],271:[function(_dereq_,module,exports){
 "use strict";
 
 var _stringify = _dereq_("babel-runtime/core-js/json/stringify");
@@ -27235,7 +29092,7 @@ var Parser = function () {
 
 exports.Parser = Parser;
 
-},{"./logger":270,"babel-runtime/core-js/json/stringify":34,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],275:[function(_dereq_,module,exports){
+},{"./logger":267,"babel-runtime/core-js/json/stringify":34,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],272:[function(_dereq_,module,exports){
 "use strict";
 
 var _classCallCheck2 = _dereq_("babel-runtime/helpers/classCallCheck");
@@ -27255,7 +29112,7 @@ var AbstractMessage = function AbstractMessage(id) {
 
 exports.AbstractMessage = AbstractMessage;
 
-},{"babel-runtime/helpers/classCallCheck":49,"uuid":290}],276:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"uuid":285}],273:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -27296,7 +29153,7 @@ var Close = function (_abstractmessage_1$Ab) {
 
 exports.Close = Close;
 
-},{"./abstractmessage":275,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],277:[function(_dereq_,module,exports){
+},{"./abstractmessage":272,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],274:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -27313,7 +29170,7 @@ exports.Reply = reply_1.Reply;
 var close_1 = _dereq_("./close");
 exports.Close = close_1.Close;
 
-},{"./close":276,"./init":278,"./initReply":279,"./message":280,"./reply":281,"./update":282}],278:[function(_dereq_,module,exports){
+},{"./close":273,"./init":275,"./initReply":276,"./message":277,"./reply":278,"./update":279}],275:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -27342,6 +29199,7 @@ var Init = function (_abstractmessage_1$Ab) {
 
     function Init(token, continuationToken, metadata) {
         var registrations = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+        var tweaks = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
         (0, _classCallCheck3.default)(this, Init);
 
         var _this = (0, _possibleConstructorReturn3.default)(this, (Init.__proto__ || (0, _getPrototypeOf2.default)(Init)).call(this));
@@ -27351,6 +29209,7 @@ var Init = function (_abstractmessage_1$Ab) {
         _this.continuation_token = continuationToken;
         _this.metadata = metadata;
         _this.registrations = registrations;
+        _this.tweaks = tweaks;
         _this.capabilities = ['client_update', 'offline_storage'];
         return _this;
     }
@@ -27360,7 +29219,7 @@ var Init = function (_abstractmessage_1$Ab) {
 
 exports.Init = Init;
 
-},{"./abstractmessage":275,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],279:[function(_dereq_,module,exports){
+},{"./abstractmessage":272,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],276:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -27393,7 +29252,7 @@ exports.ContinuationTokenStatus = ContinuationTokenStatus;
 var InitReply = function (_abstractmessage_1$Ab) {
     (0, _inherits3.default)(InitReply, _abstractmessage_1$Ab);
 
-    function InitReply(id, continuationToken, continuationTokenStatus, offlineStorage, initRegistrations) {
+    function InitReply(id, continuationToken, continuationTokenStatus, offlineStorage, initRegistrations, debugInfo) {
         (0, _classCallCheck3.default)(this, InitReply);
 
         var _this = (0, _possibleConstructorReturn3.default)(this, (InitReply.__proto__ || (0, _getPrototypeOf2.default)(InitReply)).call(this, id));
@@ -27402,6 +29261,7 @@ var InitReply = function (_abstractmessage_1$Ab) {
         _this.continuationTokenStatus = continuationTokenStatus;
         _this.offlineStorage = offlineStorage;
         _this.initRegistrations = initRegistrations;
+        _this.debugInfo = debugInfo;
         return _this;
     }
 
@@ -27410,7 +29270,7 @@ var InitReply = function (_abstractmessage_1$Ab) {
 
 exports.InitReply = InitReply;
 
-},{"./abstractmessage":275,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],280:[function(_dereq_,module,exports){
+},{"./abstractmessage":272,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],277:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -27454,7 +29314,7 @@ var Message = function (_abstractmessage_1$Ab) {
 
 exports.Message = Message;
 
-},{"./abstractmessage":275,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],281:[function(_dereq_,module,exports){
+},{"./abstractmessage":272,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],278:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -27497,7 +29357,7 @@ var Reply = function (_abstractmessage_1$Ab) {
 
 exports.Reply = Reply;
 
-},{"./abstractmessage":275,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],282:[function(_dereq_,module,exports){
+},{"./abstractmessage":272,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],279:[function(_dereq_,module,exports){
 "use strict";
 
 var _getPrototypeOf = _dereq_("babel-runtime/core-js/object/get-prototype-of");
@@ -27539,7 +29399,7 @@ var Update = function (_abstractmessage_1$Ab) {
 
 exports.Update = Update;
 
-},{"./abstractmessage":275,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53}],283:[function(_dereq_,module,exports){
+},{"./abstractmessage":272,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54}],280:[function(_dereq_,module,exports){
 "use strict";
 
 var _set = _dereq_("babel-runtime/core-js/set");
@@ -27789,7 +29649,7 @@ var Registrations = function (_events_1$EventEmitte) {
 
 exports.Registrations = Registrations;
 
-},{"../error/twilsockerror":266,"../logger":270,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/set":45,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/regenerator":57,"events":199,"uuid":290}],284:[function(_dereq_,module,exports){
+},{"../error/twilsockerror":263,"../logger":267,"babel-runtime/core-js/map":35,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/set":46,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/regenerator":58,"events":196,"uuid":285}],281:[function(_dereq_,module,exports){
 "use strict";
 
 var _regenerator = _dereq_("babel-runtime/regenerator");
@@ -27904,9 +29764,11 @@ var Upstream = function () {
                     message: message,
                     resolve: resolve,
                     reject: reject,
+                    alreadyRejected: false,
                     timeout: setTimeout(function () {
                         logger_1.log.debug('request is timed out');
                         reject(new twilsockerror_1.TwilsockError('Twilsock: request timeout'));
+                        requestDescriptor.alreadyRejected = true;
                     }, REQUEST_TIMEOUT)
                 };
                 _this.pendingMessages.push(requestDescriptor);
@@ -27919,17 +29781,20 @@ var Upstream = function () {
 
             var _loop = function _loop() {
                 var request = _this2.pendingMessages[0];
-                try {
-                    var message = request.message;
-                    _this2.actualSend(message).then(function (response) {
-                        return request.resolve(response);
-                    }).catch(function (e) {
-                        return request.reject(e);
-                    });
-                    clearTimeout(request.timeout);
-                } catch (e) {
-                    logger_1.log.debug('Failed to send pending message', e);
-                    return "break";
+                // Do not send message if we've rejected its promise already
+                if (!request.alreadyRejected) {
+                    try {
+                        var message = request.message;
+                        _this2.actualSend(message).then(function (response) {
+                            return request.resolve(response);
+                        }).catch(function (e) {
+                            return request.reject(e);
+                        });
+                        clearTimeout(request.timeout);
+                    } catch (e) {
+                        logger_1.log.debug('Failed to send pending message', e);
+                        return "break";
+                    }
                 }
                 _this2.pendingMessages.splice(0, 1);
             };
@@ -28030,7 +29895,7 @@ var Upstream = function () {
 
 exports.Upstream = Upstream;
 
-},{"../error/twilsockerror":266,"../error/twilsockupstreamerror":268,"../index":269,"../logger":270,"../protocol/messages":277,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/regenerator":57}],285:[function(_dereq_,module,exports){
+},{"../error/twilsockerror":263,"../error/twilsockupstreamerror":265,"../index":266,"../logger":267,"../protocol/messages":274,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/regenerator":58}],282:[function(_dereq_,module,exports){
 (function (global){
 "use strict";
 
@@ -28121,7 +29986,7 @@ exports.TokenStorage = TokenStorage;
 TokenStorage.initialize();
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50}],286:[function(_dereq_,module,exports){
+},{"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51}],283:[function(_dereq_,module,exports){
 "use strict";
 
 var _promise = _dereq_("babel-runtime/core-js/promise");
@@ -28147,10 +30012,6 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 var _possibleConstructorReturn2 = _dereq_("babel-runtime/helpers/possibleConstructorReturn");
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-var _get3 = _dereq_("babel-runtime/helpers/get");
-
-var _get4 = _interopRequireDefault(_get3);
 
 var _inherits2 = _dereq_("babel-runtime/helpers/inherits");
 
@@ -28231,6 +30092,9 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
         });
         _this.websocket.on('message', function (message) {
             return _this.onIncomingMessage(message);
+        });
+        _this.websocket.on('socketError', function (e) {
+            return _this.emit('connectionError', { terminal: false, message: e.message, httpStatusCode: null, errorCode: null });
         });
         _this.transport = transport;
         _this.config = config;
@@ -28368,18 +30232,6 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
             }
         }
     }, {
-        key: "emit",
-        value: function emit(event) {
-            var _get2;
-
-            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                args[_key - 1] = arguments[_key];
-            }
-
-            logger_1.log.debug("Emitting '" + event.toString() + "'" + (args.length > 0 ? ' with ' + args.length + ' argument/s' : ''));
-            return (_get2 = (0, _get4.default)(TwilsockChannel.prototype.__proto__ || (0, _getPrototypeOf2.default)(TwilsockChannel.prototype), "emit", this)).call.apply(_get2, [this, event].concat(args));
-        }
-    }, {
         key: "startDisconnectTimer",
         value: function startDisconnectTimer() {
             var _this2 = this;
@@ -28408,7 +30260,7 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
         value: function initRetry() {
             logger_1.log.debug('initRetry');
             if (this.retrier.inProgress) {
-                this.retrier.cancel();
+                this.retrier.attemptFailed();
             } else {
                 this.retrier.start();
             }
@@ -28476,7 +30328,9 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
                     this.fsm.receiveOffload({ status: header.status.status, body: payload });
                 } else if (header.status.code === 406) {
                     // Not acceptable message
-                    logger_1.log.error("Server closed connection because can't parse protocol: " + (0, _stringify2.default)(header.status));
+                    var _message = "Server closed connection because can't parse protocol: " + (0, _stringify2.default)(header.status);
+                    this.emitReplyConnectionError(_message, header, true);
+                    logger_1.log.error(_message);
                     this.fsm.receiveFatalClose();
                 } else if (header.status.code === 417) {
                     // Protocol error
@@ -28502,7 +30356,7 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
         key: "sendInit",
         value: function () {
             var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                var reply;
+                var reply, isTerminalError;
                 return _regenerator2.default.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
@@ -28527,8 +30381,11 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
                                 _context.t0 = _context["catch"](1);
 
                                 if (_context.t0 instanceof twilsockreplyerror_1.TwilsockReplyError) {
+                                    isTerminalError = false;
+
                                     logger_1.log.warn("Init rejected by server: " + (0, _stringify2.default)(_context.t0.reply.status));
                                     if (_context.t0.reply.status.code === 401 || _context.t0.reply.status.code === 403) {
+                                        isTerminalError = true;
                                         this.fsm.tokenRejected(_context.t0.reply.status);
                                         if (_context.t0.reply.status.errorCode === this.tokenExpiredSasCode) {
                                             this.emit('tokenExpired');
@@ -28541,7 +30398,9 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
                                     } else {
                                         this.fsm.initError(true);
                                     }
+                                    this.emitReplyConnectionError(_context.t0.message, _context.t0.reply, isTerminalError);
                                 } else {
+                                    this.emit('connectionError', { terminal: true, message: _context.t0.message, httpStatusCode: null, errorCode: null });
                                     this.fsm.initError(true);
                                 }
                                 this.emit('tokenUpdated', _context.t0);
@@ -28564,7 +30423,7 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
         key: "sendUpdate",
         value: function () {
             var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-                var message, reply;
+                var message, reply, isTerminalError;
                 return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
@@ -28588,8 +30447,11 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
                                 _context2.t0 = _context2["catch"](2);
 
                                 if (_context2.t0 instanceof twilsockreplyerror_1.TwilsockReplyError) {
+                                    isTerminalError = false;
+
                                     logger_1.log.warn("Token update rejected by server: " + (0, _stringify2.default)(_context2.t0.reply.status));
                                     if (_context2.t0.reply.status.code === 401 || _context2.t0.reply.status.code === 403) {
+                                        isTerminalError = true;
                                         this.fsm.tokenRejected(_context2.t0.reply.status);
                                         if (_context2.t0.reply.status.errorCode === this.tokenExpiredSasCode) {
                                             this.emit('tokenExpired');
@@ -28600,7 +30462,9 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
                                     } else {
                                         this.fsm.updateError(_context2.t0.reply.status);
                                     }
+                                    this.emitReplyConnectionError(_context2.t0.message, _context2.t0.reply, isTerminalError);
                                 } else {
+                                    this.emit('error', false, _context2.t0.message, null, null);
                                     this.fsm.updateError(_context2.t0);
                                 }
                                 this.emit('tokenUpdated', _context2.t0);
@@ -28619,6 +30483,14 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
 
             return sendUpdate;
         }()
+    }, {
+        key: "emitReplyConnectionError",
+        value: function emitReplyConnectionError(message, header, terminal) {
+            var description = header.status && header.status.description ? header.status.description : message;
+            var httpStatusCode = header.status.code;
+            var errorCode = header.status && header.status.errorCode ? header.status.errorCode : null;
+            this.emit('connectionError', { terminal: terminal, message: description, httpStatusCode: httpStatusCode, errorCode: errorCode });
+        }
     }, {
         key: "cancelInit",
         value: function cancelInit() {
@@ -28759,7 +30631,7 @@ var TwilsockChannel = function (_events_1$EventEmitte) {
 exports.TwilsockChannel = TwilsockChannel;
 exports.TwilsockImpl = TwilsockChannel;
 
-},{"./backoffretrier":261,"./error/twilsockreplyerror":267,"./logger":270,"./parser":274,"./protocol/messages":277,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":43,"babel-runtime/helpers/asyncToGenerator":48,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/get":51,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"babel-runtime/helpers/typeof":56,"babel-runtime/regenerator":57,"events":199,"javascript-state-machine":203}],287:[function(_dereq_,module,exports){
+},{"./backoffretrier":258,"./error/twilsockreplyerror":264,"./logger":267,"./parser":271,"./protocol/messages":274,"babel-runtime/core-js/json/stringify":34,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/core-js/promise":44,"babel-runtime/helpers/asyncToGenerator":49,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"babel-runtime/helpers/typeof":57,"babel-runtime/regenerator":58,"events":196,"javascript-state-machine":199}],284:[function(_dereq_,module,exports){
 (function (global){
 "use strict";
 
@@ -28820,6 +30692,7 @@ var WebSocketChannel = function (_events_1$EventEmitte) {
             };
             socket.onerror = function (e) {
                 logger_1.log.debug('error:', e);
+                _this2.emit('socketError', e);
             };
             socket.onmessage = function (message) {
                 _this2.emit('message', message.data);
@@ -28857,604 +30730,7 @@ var WebSocketChannel = function (_events_1$EventEmitte) {
 exports.WebSocketChannel = WebSocketChannel;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./logger":270,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":49,"babel-runtime/helpers/createClass":50,"babel-runtime/helpers/inherits":52,"babel-runtime/helpers/possibleConstructorReturn":53,"events":199,"ws":64}],288:[function(_dereq_,module,exports){
-module.exports = function isBuffer(arg) {
-  return arg && typeof arg === 'object'
-    && typeof arg.copy === 'function'
-    && typeof arg.fill === 'function'
-    && typeof arg.readUInt8 === 'function';
-}
-},{}],289:[function(_dereq_,module,exports){
-(function (process,global){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-var formatRegExp = /%[sdj%]/g;
-exports.format = function(f) {
-  if (!isString(f)) {
-    var objects = [];
-    for (var i = 0; i < arguments.length; i++) {
-      objects.push(inspect(arguments[i]));
-    }
-    return objects.join(' ');
-  }
-
-  var i = 1;
-  var args = arguments;
-  var len = args.length;
-  var str = String(f).replace(formatRegExp, function(x) {
-    if (x === '%%') return '%';
-    if (i >= len) return x;
-    switch (x) {
-      case '%s': return String(args[i++]);
-      case '%d': return Number(args[i++]);
-      case '%j':
-        try {
-          return JSON.stringify(args[i++]);
-        } catch (_) {
-          return '[Circular]';
-        }
-      default:
-        return x;
-    }
-  });
-  for (var x = args[i]; i < len; x = args[++i]) {
-    if (isNull(x) || !isObject(x)) {
-      str += ' ' + x;
-    } else {
-      str += ' ' + inspect(x);
-    }
-  }
-  return str;
-};
-
-
-// Mark that a method should not be used.
-// Returns a modified function which warns once by default.
-// If --no-deprecation is set, then it is a no-op.
-exports.deprecate = function(fn, msg) {
-  // Allow for deprecating things in the process of starting up.
-  if (isUndefined(global.process)) {
-    return function() {
-      return exports.deprecate(fn, msg).apply(this, arguments);
-    };
-  }
-
-  if (process.noDeprecation === true) {
-    return fn;
-  }
-
-  var warned = false;
-  function deprecated() {
-    if (!warned) {
-      if (process.throwDeprecation) {
-        throw new Error(msg);
-      } else if (process.traceDeprecation) {
-        console.trace(msg);
-      } else {
-        console.error(msg);
-      }
-      warned = true;
-    }
-    return fn.apply(this, arguments);
-  }
-
-  return deprecated;
-};
-
-
-var debugs = {};
-var debugEnviron;
-exports.debuglog = function(set) {
-  if (isUndefined(debugEnviron))
-    debugEnviron = process.env.NODE_DEBUG || '';
-  set = set.toUpperCase();
-  if (!debugs[set]) {
-    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
-      var pid = process.pid;
-      debugs[set] = function() {
-        var msg = exports.format.apply(exports, arguments);
-        console.error('%s %d: %s', set, pid, msg);
-      };
-    } else {
-      debugs[set] = function() {};
-    }
-  }
-  return debugs[set];
-};
-
-
-/**
- * Echos the value of a value. Trys to print the value out
- * in the best way possible given the different types.
- *
- * @param {Object} obj The object to print out.
- * @param {Object} opts Optional options object that alters the output.
- */
-/* legacy: obj, showHidden, depth, colors*/
-function inspect(obj, opts) {
-  // default options
-  var ctx = {
-    seen: [],
-    stylize: stylizeNoColor
-  };
-  // legacy...
-  if (arguments.length >= 3) ctx.depth = arguments[2];
-  if (arguments.length >= 4) ctx.colors = arguments[3];
-  if (isBoolean(opts)) {
-    // legacy...
-    ctx.showHidden = opts;
-  } else if (opts) {
-    // got an "options" object
-    exports._extend(ctx, opts);
-  }
-  // set default options
-  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
-  if (isUndefined(ctx.depth)) ctx.depth = 2;
-  if (isUndefined(ctx.colors)) ctx.colors = false;
-  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
-  if (ctx.colors) ctx.stylize = stylizeWithColor;
-  return formatValue(ctx, obj, ctx.depth);
-}
-exports.inspect = inspect;
-
-
-// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
-inspect.colors = {
-  'bold' : [1, 22],
-  'italic' : [3, 23],
-  'underline' : [4, 24],
-  'inverse' : [7, 27],
-  'white' : [37, 39],
-  'grey' : [90, 39],
-  'black' : [30, 39],
-  'blue' : [34, 39],
-  'cyan' : [36, 39],
-  'green' : [32, 39],
-  'magenta' : [35, 39],
-  'red' : [31, 39],
-  'yellow' : [33, 39]
-};
-
-// Don't use 'blue' not visible on cmd.exe
-inspect.styles = {
-  'special': 'cyan',
-  'number': 'yellow',
-  'boolean': 'yellow',
-  'undefined': 'grey',
-  'null': 'bold',
-  'string': 'green',
-  'date': 'magenta',
-  // "name": intentionally not styling
-  'regexp': 'red'
-};
-
-
-function stylizeWithColor(str, styleType) {
-  var style = inspect.styles[styleType];
-
-  if (style) {
-    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
-           '\u001b[' + inspect.colors[style][1] + 'm';
-  } else {
-    return str;
-  }
-}
-
-
-function stylizeNoColor(str, styleType) {
-  return str;
-}
-
-
-function arrayToHash(array) {
-  var hash = {};
-
-  array.forEach(function(val, idx) {
-    hash[val] = true;
-  });
-
-  return hash;
-}
-
-
-function formatValue(ctx, value, recurseTimes) {
-  // Provide a hook for user-specified inspect functions.
-  // Check that value is an object with an inspect function on it
-  if (ctx.customInspect &&
-      value &&
-      isFunction(value.inspect) &&
-      // Filter out the util module, it's inspect function is special
-      value.inspect !== exports.inspect &&
-      // Also filter out any prototype objects using the circular check.
-      !(value.constructor && value.constructor.prototype === value)) {
-    var ret = value.inspect(recurseTimes, ctx);
-    if (!isString(ret)) {
-      ret = formatValue(ctx, ret, recurseTimes);
-    }
-    return ret;
-  }
-
-  // Primitive types cannot have properties
-  var primitive = formatPrimitive(ctx, value);
-  if (primitive) {
-    return primitive;
-  }
-
-  // Look up the keys of the object.
-  var keys = Object.keys(value);
-  var visibleKeys = arrayToHash(keys);
-
-  if (ctx.showHidden) {
-    keys = Object.getOwnPropertyNames(value);
-  }
-
-  // IE doesn't make error fields non-enumerable
-  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
-  if (isError(value)
-      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
-    return formatError(value);
-  }
-
-  // Some type of object without properties can be shortcutted.
-  if (keys.length === 0) {
-    if (isFunction(value)) {
-      var name = value.name ? ': ' + value.name : '';
-      return ctx.stylize('[Function' + name + ']', 'special');
-    }
-    if (isRegExp(value)) {
-      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
-    }
-    if (isDate(value)) {
-      return ctx.stylize(Date.prototype.toString.call(value), 'date');
-    }
-    if (isError(value)) {
-      return formatError(value);
-    }
-  }
-
-  var base = '', array = false, braces = ['{', '}'];
-
-  // Make Array say that they are Array
-  if (isArray(value)) {
-    array = true;
-    braces = ['[', ']'];
-  }
-
-  // Make functions say that they are functions
-  if (isFunction(value)) {
-    var n = value.name ? ': ' + value.name : '';
-    base = ' [Function' + n + ']';
-  }
-
-  // Make RegExps say that they are RegExps
-  if (isRegExp(value)) {
-    base = ' ' + RegExp.prototype.toString.call(value);
-  }
-
-  // Make dates with properties first say the date
-  if (isDate(value)) {
-    base = ' ' + Date.prototype.toUTCString.call(value);
-  }
-
-  // Make error with message first say the error
-  if (isError(value)) {
-    base = ' ' + formatError(value);
-  }
-
-  if (keys.length === 0 && (!array || value.length == 0)) {
-    return braces[0] + base + braces[1];
-  }
-
-  if (recurseTimes < 0) {
-    if (isRegExp(value)) {
-      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
-    } else {
-      return ctx.stylize('[Object]', 'special');
-    }
-  }
-
-  ctx.seen.push(value);
-
-  var output;
-  if (array) {
-    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
-  } else {
-    output = keys.map(function(key) {
-      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
-    });
-  }
-
-  ctx.seen.pop();
-
-  return reduceToSingleString(output, base, braces);
-}
-
-
-function formatPrimitive(ctx, value) {
-  if (isUndefined(value))
-    return ctx.stylize('undefined', 'undefined');
-  if (isString(value)) {
-    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
-                                             .replace(/'/g, "\\'")
-                                             .replace(/\\"/g, '"') + '\'';
-    return ctx.stylize(simple, 'string');
-  }
-  if (isNumber(value))
-    return ctx.stylize('' + value, 'number');
-  if (isBoolean(value))
-    return ctx.stylize('' + value, 'boolean');
-  // For some reason typeof null is "object", so special case here.
-  if (isNull(value))
-    return ctx.stylize('null', 'null');
-}
-
-
-function formatError(value) {
-  return '[' + Error.prototype.toString.call(value) + ']';
-}
-
-
-function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
-  var output = [];
-  for (var i = 0, l = value.length; i < l; ++i) {
-    if (hasOwnProperty(value, String(i))) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          String(i), true));
-    } else {
-      output.push('');
-    }
-  }
-  keys.forEach(function(key) {
-    if (!key.match(/^\d+$/)) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          key, true));
-    }
-  });
-  return output;
-}
-
-
-function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
-  var name, str, desc;
-  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
-  if (desc.get) {
-    if (desc.set) {
-      str = ctx.stylize('[Getter/Setter]', 'special');
-    } else {
-      str = ctx.stylize('[Getter]', 'special');
-    }
-  } else {
-    if (desc.set) {
-      str = ctx.stylize('[Setter]', 'special');
-    }
-  }
-  if (!hasOwnProperty(visibleKeys, key)) {
-    name = '[' + key + ']';
-  }
-  if (!str) {
-    if (ctx.seen.indexOf(desc.value) < 0) {
-      if (isNull(recurseTimes)) {
-        str = formatValue(ctx, desc.value, null);
-      } else {
-        str = formatValue(ctx, desc.value, recurseTimes - 1);
-      }
-      if (str.indexOf('\n') > -1) {
-        if (array) {
-          str = str.split('\n').map(function(line) {
-            return '  ' + line;
-          }).join('\n').substr(2);
-        } else {
-          str = '\n' + str.split('\n').map(function(line) {
-            return '   ' + line;
-          }).join('\n');
-        }
-      }
-    } else {
-      str = ctx.stylize('[Circular]', 'special');
-    }
-  }
-  if (isUndefined(name)) {
-    if (array && key.match(/^\d+$/)) {
-      return str;
-    }
-    name = JSON.stringify('' + key);
-    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
-      name = name.substr(1, name.length - 2);
-      name = ctx.stylize(name, 'name');
-    } else {
-      name = name.replace(/'/g, "\\'")
-                 .replace(/\\"/g, '"')
-                 .replace(/(^"|"$)/g, "'");
-      name = ctx.stylize(name, 'string');
-    }
-  }
-
-  return name + ': ' + str;
-}
-
-
-function reduceToSingleString(output, base, braces) {
-  var numLinesEst = 0;
-  var length = output.reduce(function(prev, cur) {
-    numLinesEst++;
-    if (cur.indexOf('\n') >= 0) numLinesEst++;
-    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
-  }, 0);
-
-  if (length > 60) {
-    return braces[0] +
-           (base === '' ? '' : base + '\n ') +
-           ' ' +
-           output.join(',\n  ') +
-           ' ' +
-           braces[1];
-  }
-
-  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
-}
-
-
-// NOTE: These type checking functions intentionally don't use `instanceof`
-// because it is fragile and can be easily faked with `Object.create()`.
-function isArray(ar) {
-  return Array.isArray(ar);
-}
-exports.isArray = isArray;
-
-function isBoolean(arg) {
-  return typeof arg === 'boolean';
-}
-exports.isBoolean = isBoolean;
-
-function isNull(arg) {
-  return arg === null;
-}
-exports.isNull = isNull;
-
-function isNullOrUndefined(arg) {
-  return arg == null;
-}
-exports.isNullOrUndefined = isNullOrUndefined;
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-exports.isNumber = isNumber;
-
-function isString(arg) {
-  return typeof arg === 'string';
-}
-exports.isString = isString;
-
-function isSymbol(arg) {
-  return typeof arg === 'symbol';
-}
-exports.isSymbol = isSymbol;
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-exports.isUndefined = isUndefined;
-
-function isRegExp(re) {
-  return isObject(re) && objectToString(re) === '[object RegExp]';
-}
-exports.isRegExp = isRegExp;
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-exports.isObject = isObject;
-
-function isDate(d) {
-  return isObject(d) && objectToString(d) === '[object Date]';
-}
-exports.isDate = isDate;
-
-function isError(e) {
-  return isObject(e) &&
-      (objectToString(e) === '[object Error]' || e instanceof Error);
-}
-exports.isError = isError;
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-exports.isFunction = isFunction;
-
-function isPrimitive(arg) {
-  return arg === null ||
-         typeof arg === 'boolean' ||
-         typeof arg === 'number' ||
-         typeof arg === 'string' ||
-         typeof arg === 'symbol' ||  // ES6 symbol
-         typeof arg === 'undefined';
-}
-exports.isPrimitive = isPrimitive;
-
-exports.isBuffer = _dereq_('./support/isBuffer');
-
-function objectToString(o) {
-  return Object.prototype.toString.call(o);
-}
-
-
-function pad(n) {
-  return n < 10 ? '0' + n.toString(10) : n.toString(10);
-}
-
-
-var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-              'Oct', 'Nov', 'Dec'];
-
-// 26 Feb 16:19:34
-function timestamp() {
-  var d = new Date();
-  var time = [pad(d.getHours()),
-              pad(d.getMinutes()),
-              pad(d.getSeconds())].join(':');
-  return [d.getDate(), months[d.getMonth()], time].join(' ');
-}
-
-
-// log is just a thin wrapper to console.log that prepends a timestamp
-exports.log = function() {
-  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
-};
-
-
-/**
- * Inherit the prototype methods from one constructor into another.
- *
- * The Function.prototype.inherits from lang.js rewritten as a standalone
- * function (not on Function.prototype). NOTE: If this file is to be loaded
- * during bootstrapping this function needs to be rewritten using some native
- * functions as prototype setup using normal JavaScript does not work as
- * expected during bootstrapping (see mirror.js in r114903).
- *
- * @param {function} ctor Constructor function which needs to inherit the
- *     prototype.
- * @param {function} superCtor Constructor function to inherit prototype from.
- */
-exports.inherits = _dereq_('inherits');
-
-exports._extend = function(origin, add) {
-  // Don't do anything if add isn't an object
-  if (!add || !isObject(add)) return origin;
-
-  var keys = Object.keys(add);
-  var i = keys.length;
-  while (i--) {
-    origin[keys[i]] = add[keys[i]];
-  }
-  return origin;
-};
-
-function hasOwnProperty(obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-}
-
-}).call(this,_dereq_('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":288,"_process":211,"inherits":200}],290:[function(_dereq_,module,exports){
+},{"./logger":267,"babel-runtime/core-js/object/get-prototype-of":41,"babel-runtime/helpers/classCallCheck":50,"babel-runtime/helpers/createClass":51,"babel-runtime/helpers/inherits":53,"babel-runtime/helpers/possibleConstructorReturn":54,"events":196,"ws":59}],285:[function(_dereq_,module,exports){
 var v1 = _dereq_('./v1');
 var v4 = _dereq_('./v4');
 
@@ -29464,7 +30740,7 @@ uuid.v4 = v4;
 
 module.exports = uuid;
 
-},{"./v1":293,"./v4":294}],291:[function(_dereq_,module,exports){
+},{"./v1":288,"./v4":289}],286:[function(_dereq_,module,exports){
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
@@ -29490,7 +30766,7 @@ function bytesToUuid(buf, offset) {
 
 module.exports = bytesToUuid;
 
-},{}],292:[function(_dereq_,module,exports){
+},{}],287:[function(_dereq_,module,exports){
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
 // and inconsistent support for the `crypto` API.  We do the best we can via
@@ -29526,7 +30802,7 @@ if (getRandomValues) {
   };
 }
 
-},{}],293:[function(_dereq_,module,exports){
+},{}],288:[function(_dereq_,module,exports){
 var rng = _dereq_('./lib/rng');
 var bytesToUuid = _dereq_('./lib/bytesToUuid');
 
@@ -29637,7 +30913,7 @@ function v1(options, buf, offset) {
 
 module.exports = v1;
 
-},{"./lib/bytesToUuid":291,"./lib/rng":292}],294:[function(_dereq_,module,exports){
+},{"./lib/bytesToUuid":286,"./lib/rng":287}],289:[function(_dereq_,module,exports){
 var rng = _dereq_('./lib/rng');
 var bytesToUuid = _dereq_('./lib/bytesToUuid');
 
@@ -29668,10 +30944,10 @@ function v4(options, buf, offset) {
 
 module.exports = v4;
 
-},{"./lib/bytesToUuid":291,"./lib/rng":292}],295:[function(_dereq_,module,exports){
+},{"./lib/bytesToUuid":286,"./lib/rng":287}],290:[function(_dereq_,module,exports){
 module.exports={
   "name": "twilio-chat",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Twilio Chat service client library",
   "main": "lib/index.js",
   "browser": "browser/index.js",
@@ -29679,71 +30955,71 @@ module.exports={
   "author": "Twilio",
   "license": "MIT",
   "dependencies": {
-    "twilio-mcs-client": "^0.2.2",
-    "twilio-notifications": "^0.5.3",
-    "twilio-sync": "^0.8.6",
-    "twilsock": "^0.5.6",
-    "iso8601-duration": "^1.1.1",
-    "isomorphic-form-data": "^1.0.0",
-    "loglevel": "^1.6.1",
-    "operation-retrier": "latest",
+    "twilio-mcs-client": "^0.2.4",
+    "twilio-notifications": "^0.5.7",
+    "twilio-sync": "^0.11.2",
+    "twilsock": "^0.5.10",
+    "iso8601-duration": "^1.2.0",
+    "isomorphic-form-data": "^2.0.0",
+    "loglevel": "^1.6.3",
+    "operation-retrier": "^3.0.0",
     "platform": "^1.3.5",
-    "rfc6902": "^2.2.2",
-    "uuid": "^3.2.1"
+    "rfc6902": "^3.0.2",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.2",
+    "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "7.1.0",
     "@types/chai-string": "^1.4.1",
-    "@types/core-js": "^0.9.46",
-    "@types/mocha": "^5.0.0",
-    "@types/node": "^9.6.5",
-    "@types/sinon": "^4.3.2",
-    "@types/sinon-chai": "^2.7.30",
-    "async": "^2.6.0",
+    "@types/core-js": "^2.5.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.4",
+    "@types/sinon": "^7.0.12",
+    "@types/sinon-chai": "^3.2.2",
+    "async": "^3.0.1",
     "async-test-tools": "^1.0.7",
     "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.3",
     "babel-plugin-transform-builtin-extend": "^1.1.2",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "babel-runtime": "^6.26.0",
     "babelify": "^8.0.0",
     "backoff": "^2.5.0",
-    "browserify": "^16.0.0",
-    "browserify-replace": "^0.9.0",
-    "chai": "^4.1.2",
+    "browserify": "^16.2.3",
+    "browserify-replace": "^1.0.0",
+    "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "chai-string": "^1.4.0",
+    "chai-string": "^1.5.0",
     "cheerio": "^1.0.0-rc.2",
-    "del": "^3.0.0",
-    "fancy-log": "^1.3.2",
-    "fs": "0.0.1-security",
-    "gulp": "^4.0.0",
+    "cross-env": "^5.2.0",
+    "del": "^4.1.1",
+    "fancy-log": "^1.3.3",
+    "fs": "0.0.2",
+    "gulp": "^4.0.2",
     "gulp-babel": "^7.0.1",
     "gulp-derequire": "^2.1.0",
     "gulp-if": "^2.0.2",
     "gulp-insert": "^0.5.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-sourcemaps": "^2.6.4",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.5",
     "gulp-tap": "^1.0.1",
-    "gulp-tslint": "^8.1.2",
-    "gulp-typescript": "^4.0.2",
-    "gulp-uglify-es": "^1.0.1",
+    "gulp-tslint": "^8.1.4",
+    "gulp-typescript": "^5.0.1",
+    "gulp-uglify-es": "^1.0.4",
     "ink-docstrap": "^1.3.2",
-    "jsdoc": "^3.5.5",
+    "jsdoc": "~3.5.5",
     "jsdoc-strip-async-await": "^0.1.0",
-    "mocha": "^5.0.2",
-    "mocha.parallel": "^0.15.5",
-    "nyc": "^11.7.3",
+    "mocha": "^6.1.4",
+    "mocha.parallel": "^0.15.6",
+    "nyc": "^14.1.1",
     "path": "^0.12.7",
-    "sinon": "^5.0.7",
-    "sinon-chai": "^3.0.0",
-    "source-map-explorer": "^1.5.0",
-    "ts-node": "^4.1.0",
-    "tslint": "^5.9.1",
-    "twilio": "^3.15.0",
-    "typescript": "^2.8.1",
+    "sinon": "^7.3.2",
+    "sinon-chai": "^3.3.0",
+    "source-map-explorer": "^1.8.0",
+    "ts-node": "^8.2.0",
+    "tslint": "^5.17.0",
+    "twilio": "^3.31.1",
+    "typescript": "^3.5.1",
     "uglify-save-license": "^0.4.1",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
