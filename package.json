@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-twilio-chat",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Cordova plugin for Twilio Programmable Chat",
   "repository": {
     "type": "git",
@@ -27,9 +27,8 @@
   ],
   "author": "Twilio",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "copyfiles": "^1.2.0",
-    "twilio-chat": "4.0.0"
+    "twilio-chat": "5.0.0"
   }
 }
